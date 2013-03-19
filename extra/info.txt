@@ -1,0 +1,1 @@
+user/pass: admin/spot12345
