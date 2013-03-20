@@ -34,7 +34,7 @@
 <div class="row-fluid">
 	<div class="span12">
 
-<?php echo form_open('login', array('class' => "form-horizontal", 'autocomplete' => 'off')); ?>
+<?php echo form_open('login', array('class' => "form-horizontal", 'autocomplete' => 'off', 'data-ajax' => 'false')); ?>
 
 	<div class="control-group <?php echo iif( form_error('login') , 'error') ;?>">
 		<label class="control-label" for="login_value"><?php echo $this->settings_lib->item('auth.login_type') == 'both' ? lang('bf_login_type_both') : ucwords($this->settings_lib->item('auth.login_type')) ?></label>
