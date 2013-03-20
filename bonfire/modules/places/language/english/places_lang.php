@@ -1,0 +1,30 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+$lang['places_manage']			= 'Manage Places';
+$lang['places_edit']				= 'Edit';
+$lang['places_true']				= 'True';
+$lang['places_false']				= 'False';
+$lang['places_create']			= 'Create';
+$lang['places_list']				= 'List';
+$lang['places_new']				= 'New';
+$lang['places_edit_text']			= 'Edit this to suit your needs';
+$lang['places_no_records']			= 'There aren\'t any places in the system.';
+$lang['places_create_new']			= 'Create a new Places.';
+$lang['places_create_success']			= 'Places successfully created.';
+$lang['places_create_failure']			= 'There was a problem creating the places: ';
+$lang['places_create_new_button']			= 'Create New Places';
+$lang['places_invalid_id']			= 'Invalid Places ID.';
+$lang['places_edit_success']			= 'Places successfully saved.';
+$lang['places_edit_failure']			= 'There was a problem saving the places: ';
+$lang['places_delete_success']			= 'record(s) successfully deleted.';
+$lang['places_delete_failure']			= 'We could not delete the record: ';
+$lang['places_delete_error']			= 'You have not selected any records to delete.';
+$lang['places_actions']			= 'Actions';
+$lang['places_cancel']			= 'Cancel';
+$lang['places_delete_record']			= 'Delete this Places';
+$lang['places_delete_confirm']			= 'Are you sure you want to delete this places?';
+$lang['places_edit_heading']			= 'Edit Places';
+
+// Activities
+$lang['places_act_create_record']			= 'Created record with ID';
+$lang['places_act_edit_record']			= 'Updated record with ID';
+$lang['places_act_delete_record']			= 'Deleted record with ID';
