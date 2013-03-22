@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 22, 2013 at 05:35 PM
+-- Generation Time: Mar 23, 2013 at 01:12 AM
 -- Server version: 5.5.29
 -- PHP Version: 5.3.10-1ubuntu3.6
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `sp_activities` (
   `created_on` datetime NOT NULL,
   `deleted` tinyint(12) NOT NULL DEFAULT '0',
   PRIMARY KEY (`activity_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
 --
 -- Dumping data for table `sp_activities`
@@ -47,7 +47,8 @@ INSERT INTO `sp_activities` (`activity_id`, `user_id`, `activity`, `module`, `cr
 (4, 2, 'logged out from: 127.0.0.1', 'users', '2013-03-21 17:07:48', 0),
 (5, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-21 17:08:24', 0),
 (6, 1, 'logged out from: 127.0.0.1', 'users', '2013-03-21 17:20:48', 0),
-(7, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-21 17:25:30', 0);
+(7, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-21 17:25:30', 0),
+(8, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-22 13:23:12', 0);
 
 -- --------------------------------------------------------
 
@@ -186,18 +187,19 @@ CREATE TABLE IF NOT EXISTS `sp_places` (
   `places_name` varchar(255) NOT NULL,
   `places_address` varchar(255) NOT NULL,
   `places_type` varchar(255) NOT NULL,
-  `places_longtitude` varchar(25) NOT NULL,
-  `places_latitude` varchar(25) NOT NULL,
+  `places_longtitude` double NOT NULL,
+  `places_latitude` double NOT NULL,
   `places_image` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `sp_places`
 --
 
 INSERT INTO `sp_places` (`id`, `places_name`, `places_address`, `places_type`, `places_longtitude`, `places_latitude`, `places_image`) VALUES
-(1, 'dat', 'dat', 'dat', 'dat', 'dat', 'dat');
+(1, 'dat', 'dat', 'dat', 0, 0, 'dat'),
+(2, 'dat1', 'dat1', 'dat1', 0, 0, 'dat1');
 
 -- --------------------------------------------------------
 
@@ -435,14 +437,15 @@ CREATE TABLE IF NOT EXISTS `sp_spots` (
   `checkin_time` datetime DEFAULT NULL,
   `checkout_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `sp_spots`
 --
 
 INSERT INTO `sp_spots` (`id`, `spots_user_id`, `spots_place_id`, `checkin_status`, `is_checkin`, `checkin_time`, `checkout_time`) VALUES
-(1, 1, 1, 1, 1, '2013-03-22 00:00:00', NULL);
+(1, 1, 1, 1, 1, '2013-03-22 00:00:00', NULL),
+(5, 2, 1, 1, 1, '2013-03-22 17:57:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -471,6 +474,8 @@ CREATE TABLE IF NOT EXISTS `sp_users` (
   `language` varchar(20) NOT NULL DEFAULT 'english',
   `active` tinyint(1) NOT NULL DEFAULT '0',
   `activate_hash` varchar(40) NOT NULL DEFAULT '',
+  `gender` tinyint(6) NOT NULL DEFAULT '0' COMMENT '0:female,1:male',
+  `image` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `email` (`email`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
@@ -479,9 +484,9 @@ CREATE TABLE IF NOT EXISTS `sp_users` (
 -- Dumping data for table `sp_users`
 --
 
-INSERT INTO `sp_users` (`id`, `role_id`, `email`, `username`, `password_hash`, `reset_hash`, `salt`, `last_login`, `last_ip`, `created_on`, `deleted`, `banned`, `ban_message`, `reset_by`, `display_name`, `display_name_changed`, `timezone`, `language`, `active`, `activate_hash`) VALUES
-(1, 1, 'me@home.com', 'admin', 'ace1cf1bee204c2270114bb4fb845904a896f0a4', NULL, 'gMSh9Ib', '2013-03-21 17:25:30', '127.0.0.1', '0000-00-00 00:00:00', 0, 0, NULL, NULL, '', NULL, 'UM6', 'english', 1, ''),
-(2, 4, 'abc@gmail.com', '', 'd3c6d2973285cc60fda1995e17b1e3b8db2b15ae', NULL, 'dcRVxZ8', '2013-03-21 16:28:26', '127.0.0.1', '2013-03-21 16:15:40', 0, 0, NULL, NULL, 'abc@gmail.com', NULL, 'UM6', 'english', 1, '');
+INSERT INTO `sp_users` (`id`, `role_id`, `email`, `username`, `password_hash`, `reset_hash`, `salt`, `last_login`, `last_ip`, `created_on`, `deleted`, `banned`, `ban_message`, `reset_by`, `display_name`, `display_name_changed`, `timezone`, `language`, `active`, `activate_hash`, `gender`, `image`) VALUES
+(1, 1, 'me@home.com', 'admin', 'ace1cf1bee204c2270114bb4fb845904a896f0a4', NULL, 'gMSh9Ib', '2013-03-22 13:23:12', '127.0.0.1', '0000-00-00 00:00:00', 0, 0, NULL, NULL, '', NULL, 'UM6', 'english', 1, '', 0, NULL),
+(2, 4, 'abc@gmail.com', '', 'd3c6d2973285cc60fda1995e17b1e3b8db2b15ae', NULL, 'dcRVxZ8', '2013-03-21 16:28:26', '127.0.0.1', '2013-03-21 16:15:40', 0, 0, NULL, NULL, 'abc@gmail.com', NULL, 'UM6', 'english', 1, '', 1, NULL);
 
 -- --------------------------------------------------------
 

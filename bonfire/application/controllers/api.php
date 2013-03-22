@@ -132,17 +132,86 @@ class Api extends Front_Controller
 	 *
 	 * @return void
 	 */
-	public function get_image()
+	public function spots()
 	{
-		$arr = array(
-				0 => 'kdkd',
-				1 => 'fdsdfs'
-		);
-		Template::set('result', json_encode($arr));
+		$this->write_log_for_request("spots");
+		/*SELECT latitude, longitude, SQRT(
+				POW(69.1 * (latitude - [startlat]), 2) +
+				POW(69.1 * ([startlng] - longitude) * COS(latitude / 57.3), 2)) AS distance
+				FROM TableName HAVING distance < 25 ORDER BY distance;*/
+		$query_str = "SELECT * FROM sp_places ";
+		$email = 'me@home.com';
+		$user_gender = $this->get_gender($email); // default is female
+		$result = array();
+		
+		$query = $this->db->query($query_str);
+		if ($query->num_rows() > 0)
+            {
+                foreach($query->result_array() as $row)
+                {
+                	$row['people'] = $this->get_list_user_in_venue($row['id'],$user_gender);
+                    $result [] = $this->build_data_venue($row);
+                }
+            }
+		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
-	}//end index()
+	}//end spots()
+	
+	
+	public function people()
+	{
+		$this->write_log_for_request("people");
+		// dummy data
+		$user_id = '2';
+		$places_id = '1';
+		$status_checkin = '1';
+		$gender	= '1';
+		
+		$result = array();
+		if($spot_id = $this->spots_model->insert(array(
+					'spots_user_id' => $user_id,
+					'spots_place_id'=> $places_id,
+					'checkin_status'=> $status_checkin,
+					'is_checkin'	=> 1,
+					'checkin_time'	=> date('Y-m-d H:i:s')	
+				)) ){
+			$query_str = "SELECT user.id,user.image,user.email  
+						  FROM sp_users user, sp_spots spot 
+						  WHERE user.id = spot.spots_user_id 
+						  AND	spot.spots_place_id = {$places_id} 
+						  AND	user.gender != {$gender}
+						  AND 	user.id != {$user_id}";
+			
+			$query = $this->db->query($query_str);
+			if ($query->num_rows() > 0)
+			{
+				foreach($query->result_array() as $row)
+				{
+					$result [] = $row;
+				}
+			}
+		} else {
+			
+		}
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
+		Template::render('api');
+	}//end people()
 
+	public function profile()
+	{
+		$this->write_log_for_request("profile");
+		// dummy data
+		$user_id = '2';
+		$checkin_times = $this->spots_model->count_by('spots_user_id',$user_id);	
+		$result = array();
+		$result['count'] = $checkin_times;
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
+		Template::render('api');
+	}//end people()
+	
 	//--------------------------------------------------------------------
 
 	/**
@@ -154,6 +223,58 @@ class Api extends Front_Controller
 				'status'=>'success'
 			   ,'code' => '200');
 	}
+	
+	/**
+	 * Get list user in a venue, just get opposite gender 
+	 * @param place_id : id of place
+	 * @param gender   : gender of user
+	 */
+	private function get_list_user_in_venue($place_id='', $gender= 0){
+		$result = array();
+		$query_str = "SELECT email, image, checkin_status
+					  FROM 	sp_users , sp_spots 
+					  WHERE spots_place_id = {$place_id}
+					  AND 	spots_user_id = sp_users.id
+					  AND	sp_users.gender != {$gender}
+					  AND 	is_checkin = 1";
+		$query = $this->db->query($query_str);
+		if( $query->num_rows() > 0 ){
+			foreach ($query->result_array() as $row){
+				$result [] = array(
+						'email' 	=> $row['email'],
+						'image'		=> $row['image'],
+						'status'	=> $row['checkin_status']
+				);
+			}
+		}
+		
+		return $result;
+	}
+	
+	/**
+	 * Build data from db to array based on JSON format 
+	 * @param data : data from query database
+	 */
+	private function build_data_venue($data){
+		return array(
+					'name' 		=> $data['places_name'],
+					'address'	=> $data['places_address'],
+					'longtitude'=> $data['places_longtitude'],
+					'latitude'	=> $data['places_latitude'],
+					'type'		=> $data['places_type'],
+					'image'		=> $data['places_image'],
+					'people'	=> $data['people']
+				);
+	}
+	
+	private function get_gender($email){
+		$user = $this->user_model->find_by('email',$email);
+		if($user){
+			return $user->gender;
+		}
+		return 0;
+	}
+	
 	
 	/**
 	 * Write log for each request to api 

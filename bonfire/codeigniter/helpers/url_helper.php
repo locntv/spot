@@ -163,7 +163,7 @@ if ( ! function_exists('anchor'))
 			$attributes = _parse_attributes($attributes);
 		}
 
-		return '<a href="'.$site_url.'"'.$attributes.'>'.$title.'</a>';
+		return '<a href="'.$site_url.'"'.$attributes.' data-ajax="false">'.$title.'</a>';
 	}
 }
 
