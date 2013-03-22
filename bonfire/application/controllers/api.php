@@ -39,17 +39,7 @@ class Api extends Front_Controller
 	public function __construct()
 	{
 		parent::__construct();
-	
-		if (!class_exists('User_model'))
-		{
-			$this->load->model('users/User_model', 'user_model');
-		}
-		
-		if (!class_exists('Places_model'))
-		{
-			$this->load->model('places/Places_model', 'place_model');
-		}
-	
+		$this->load->model('places/places_model', null, true);
 		$this->load->database();
 	
 		$this->load->library('users/auth');
@@ -79,11 +69,33 @@ class Api extends Front_Controller
 	 */
 	public function signup()
 	{
-		$arr = array(
-				0 => 'abc',
-				1 => 'cdf'
-		);
-		Template::set('result', json_encode($arr));
+		//Assign variable
+		$result = array();
+		
+		//Process validate and save
+		if(!isset($_GET['email']) || !isset($_GET['password'])){
+			$result['code'] = '100';
+		} else {
+			$validate = $this->validate_signup($_GET['email'],$_GET['password']);
+			if( $validate['status'] == 'error' ){
+				$result['code'] = $validate['code'];
+			} else {
+				$data = array(
+						'email'		=> $_GET['email'],
+						'password'	=> $_GET['password'],
+						'active'	=> 1
+				);
+				if($user_id = $this->user_model->insert($data)){
+					$result['code'] = '200';
+				}else {
+					$result['code'] = '104';
+				}
+			}
+		}
+		
+		//render json
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
 		Template::render('api');
 	}//end index()
 	
@@ -95,15 +107,18 @@ class Api extends Front_Controller
 	public function signin()
 	{
 		// dummy data
+		$email = isset($_GET['email']) ? $_GET['email'] : '';
+		$pass  = isset($_GET['password']) ? $_GET['password'] : '';
+		$result = array();
 		
-		$email = "vqdat169@gmail.com";
-		$pass  = "123456";
+		if($this->auth->login($email,$pass,false)){
+			$result['code'] = 200;
+		} else {
+			$result['code'] = 100;
+		}
 		
-		$arr = array(
-				0 => 'abc',
-				1 => 'cdf'
-		);
-		Template::set('result', json_encode($arr));
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
 		Template::render('api');
 	}//end index()
 	
@@ -125,5 +140,14 @@ class Api extends Front_Controller
 
 	//--------------------------------------------------------------------
 
+	/**
+	 * Validate sign up 
+	 * 
+	 */
+	private function validate_signup($email='', $password=''){
+		return array(
+				'status'=>'success'
+			   ,'code' => '200');
+	}
 
 }//end class

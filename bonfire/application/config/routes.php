@@ -48,6 +48,7 @@ $route['logout']				= 'users/logout';
 $route['forgot_password']		= 'users/forgot_password';
 $route['reset_password/(:any)/(:any)']	= "users/reset_password/$1/$2";
 $route['activate/(:any)/(:any)']					= 'users/activate/$1/$2';
+$route['profile']			    = 'users/profile';
 
 // Contexts
 $route[SITE_AREA .'/([a-z_]+)/(:any)/(:any)/(:any)/(:any)/(:any)']		= "$2/$1/$3/$4/$5/$6";
