@@ -3,11 +3,12 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 18, 2013 at 07:26 AM
+-- Generation Time: Mar 22, 2013 at 05:35 PM
 -- Server version: 5.5.29
--- PHP Version: 5.3.10-1ubuntu3.5
+-- PHP Version: 5.3.10-1ubuntu3.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -33,7 +34,20 @@ CREATE TABLE IF NOT EXISTS `sp_activities` (
   `created_on` datetime NOT NULL,
   `deleted` tinyint(12) NOT NULL DEFAULT '0',
   PRIMARY KEY (`activity_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+
+--
+-- Dumping data for table `sp_activities`
+--
+
+INSERT INTO `sp_activities` (`activity_id`, `user_id`, `activity`, `module`, `created_on`, `deleted`) VALUES
+(1, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-20 13:35:43', 0),
+(2, 1, 'Created Module: Places : 127.0.0.1', 'modulebuilder', '2013-03-20 13:44:43', 0),
+(3, 1, 'Created record with ID: 1 : 127.0.0.1', 'places', '2013-03-20 13:58:38', 0),
+(4, 2, 'logged out from: 127.0.0.1', 'users', '2013-03-21 17:07:48', 0),
+(5, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-21 17:08:24', 0),
+(6, 1, 'logged out from: 127.0.0.1', 'users', '2013-03-21 17:20:48', 0),
+(7, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-21 17:25:30', 0);
 
 -- --------------------------------------------------------
 
@@ -68,7 +82,14 @@ CREATE TABLE IF NOT EXISTS `sp_login_attempts` (
   `login` varchar(50) NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `sp_login_attempts`
+--
+
+INSERT INTO `sp_login_attempts` (`id`, `ip_address`, `login`, `time`) VALUES
+(1, '127.0.0.1', 'abc@gmail.com', '2013-03-21 16:28:39');
 
 -- --------------------------------------------------------
 
@@ -82,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `sp_permissions` (
   `description` varchar(100) NOT NULL,
   `status` enum('active','inactive','deleted') DEFAULT 'active',
   PRIMARY KEY (`permission_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=51 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=67 ;
 
 --
 -- Dumping data for table `sp_permissions`
@@ -136,7 +157,47 @@ INSERT INTO `sp_permissions` (`permission_id`, `name`, `description`, `status`) 
 (47, 'Bonfire.Update.Manage', 'To manage the Bonfire Update.', 'active'),
 (48, 'Bonfire.Update.View', 'To view the Developer Update menu.', 'active'),
 (49, 'Bonfire.Profiler.View', 'To view the Console Profiler Bar.', 'active'),
-(50, 'Bonfire.Roles.Add', 'To add New Roles', 'active');
+(50, 'Bonfire.Roles.Add', 'To add New Roles', 'active'),
+(51, 'Places.Content.View', '', 'active'),
+(52, 'Places.Content.Create', '', 'active'),
+(53, 'Places.Content.Edit', '', 'active'),
+(54, 'Places.Content.Delete', '', 'active'),
+(55, 'Places.Reports.View', '', 'active'),
+(56, 'Places.Reports.Create', '', 'active'),
+(57, 'Places.Reports.Edit', '', 'active'),
+(58, 'Places.Reports.Delete', '', 'active'),
+(59, 'Places.Settings.View', '', 'active'),
+(60, 'Places.Settings.Create', '', 'active'),
+(61, 'Places.Settings.Edit', '', 'active'),
+(62, 'Places.Settings.Delete', '', 'active'),
+(63, 'Places.Developer.View', '', 'active'),
+(64, 'Places.Developer.Create', '', 'active'),
+(65, 'Places.Developer.Edit', '', 'active'),
+(66, 'Places.Developer.Delete', '', 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sp_places`
+--
+
+CREATE TABLE IF NOT EXISTS `sp_places` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `places_name` varchar(255) NOT NULL,
+  `places_address` varchar(255) NOT NULL,
+  `places_type` varchar(255) NOT NULL,
+  `places_longtitude` varchar(25) NOT NULL,
+  `places_latitude` varchar(25) NOT NULL,
+  `places_image` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `sp_places`
+--
+
+INSERT INTO `sp_places` (`id`, `places_name`, `places_address`, `places_type`, `places_longtitude`, `places_latitude`, `places_image`) VALUES
+(1, 'dat', 'dat', 'dat', 'dat', 'dat', 'dat');
 
 -- --------------------------------------------------------
 
@@ -231,6 +292,22 @@ INSERT INTO `sp_role_permissions` (`role_id`, `permission_id`) VALUES
 (1, 48),
 (1, 49),
 (1, 50),
+(1, 51),
+(1, 52),
+(1, 53),
+(1, 54),
+(1, 55),
+(1, 56),
+(1, 57),
+(1, 58),
+(1, 59),
+(1, 60),
+(1, 61),
+(1, 62),
+(1, 63),
+(1, 64),
+(1, 65),
+(1, 66),
 (2, 1),
 (2, 2),
 (2, 3),
@@ -268,7 +345,8 @@ CREATE TABLE IF NOT EXISTS `sp_schema_version` (
 
 INSERT INTO `sp_schema_version` (`type`, `version`) VALUES
 ('app_', 0),
-('core', 34);
+('core', 34),
+('places_', 2);
 
 -- --------------------------------------------------------
 
@@ -345,6 +423,30 @@ INSERT INTO `sp_settings` (`name`, `module`, `value`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `sp_spots`
+--
+
+CREATE TABLE IF NOT EXISTS `sp_spots` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `spots_user_id` int(11) NOT NULL,
+  `spots_place_id` int(11) NOT NULL,
+  `checkin_status` tinyint(4) NOT NULL,
+  `is_checkin` tinyint(4) NOT NULL,
+  `checkin_time` datetime DEFAULT NULL,
+  `checkout_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `sp_spots`
+--
+
+INSERT INTO `sp_spots` (`id`, `spots_user_id`, `spots_place_id`, `checkin_status`, `is_checkin`, `checkin_time`, `checkout_time`) VALUES
+(1, 1, 1, 1, 1, '2013-03-22 00:00:00', NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sp_users`
 --
 
@@ -371,14 +473,15 @@ CREATE TABLE IF NOT EXISTS `sp_users` (
   `activate_hash` varchar(40) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `email` (`email`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `sp_users`
 --
 
 INSERT INTO `sp_users` (`id`, `role_id`, `email`, `username`, `password_hash`, `reset_hash`, `salt`, `last_login`, `last_ip`, `created_on`, `deleted`, `banned`, `ban_message`, `reset_by`, `display_name`, `display_name_changed`, `timezone`, `language`, `active`, `activate_hash`) VALUES
-(1, 1, 'me@home.com', 'admin', 'b9035ded68357df5f35ac5566f00dc712b61ee1e', NULL, 'gMSh9Ib', '0000-00-00 00:00:00', '', '0000-00-00 00:00:00', 0, 0, NULL, NULL, '', NULL, 'UM6', 'english', 1, '');
+(1, 1, 'me@home.com', 'admin', 'ace1cf1bee204c2270114bb4fb845904a896f0a4', NULL, 'gMSh9Ib', '2013-03-21 17:25:30', '127.0.0.1', '0000-00-00 00:00:00', 0, 0, NULL, NULL, '', NULL, 'UM6', 'english', 1, ''),
+(2, 4, 'abc@gmail.com', '', 'd3c6d2973285cc60fda1995e17b1e3b8db2b15ae', NULL, 'dcRVxZ8', '2013-03-21 16:28:26', '127.0.0.1', '2013-03-21 16:15:40', 0, 0, NULL, NULL, 'abc@gmail.com', NULL, 'UM6', 'english', 1, '');
 
 -- --------------------------------------------------------
 

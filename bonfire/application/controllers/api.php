@@ -39,9 +39,12 @@ class Api extends Front_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		$config =& get_config();
+		
+		$this->_log_path = APPPATH.'logs/api/';
 		$this->load->model('places/places_model', null, true);
+		$this->load->model('places/spots_model', null, true);
 		$this->load->database();
-	
 		$this->load->library('users/auth');
 	}//end __construct()
 	
@@ -52,7 +55,7 @@ class Api extends Front_Controller
 	 */
 	public function index()
 	{
-		$records = $this->places_model->find_all();
+		$records = $this->spots_model->find_all();
 		
 		$arr = array(
 			0 => 'abc',
@@ -70,19 +73,20 @@ class Api extends Front_Controller
 	public function signup()
 	{
 		//Assign variable
+		$this->write_log_for_request("signup");
 		$result = array();
 		
 		//Process validate and save
-		if(!isset($_GET['email']) || !isset($_GET['password'])){
+		if(!isset($_POST['email']) || !isset($_POST['password'])){
 			$result['code'] = '100';
 		} else {
-			$validate = $this->validate_signup($_GET['email'],$_GET['password']);
+			$validate = $this->validate_signup($_POST['email'],$_POST['password']);
 			if( $validate['status'] == 'error' ){
 				$result['code'] = $validate['code'];
 			} else {
 				$data = array(
-						'email'		=> $_GET['email'],
-						'password'	=> $_GET['password'],
+						'email'		=> $_POST['email'],
+						'password'	=> $_POST['password'],
 						'active'	=> 1
 				);
 				if($user_id = $this->user_model->insert($data)){
@@ -105,10 +109,11 @@ class Api extends Front_Controller
 	 * @return void
 	 */
 	public function signin()
-	{
+	{	
+		$this->write_log_for_request("signin");
 		// dummy data
-		$email = isset($_GET['email']) ? $_GET['email'] : '';
-		$pass  = isset($_GET['password']) ? $_GET['password'] : '';
+		$email = isset($_POST['email']) ? $_POST['email'] : '';
+		$pass  = isset($_POST['password']) ? $_POST['password'] : '';
 		$result = array();
 		
 		if($this->auth->login($email,$pass,false)){
@@ -148,6 +153,36 @@ class Api extends Front_Controller
 		return array(
 				'status'=>'success'
 			   ,'code' => '200');
+	}
+	
+	/**
+	 * Write log for each request to api 
+	 * @param funciton : name of api called
+	 */
+	private function write_log_for_request($function='index'){
+		$message = "Receive request ". date('Y-m-d H:i:s');
+		foreach( $_POST as $key=>$value){
+			$message .= $key . "-" . $_POST[ $key ] ."\n";
+		}
+		$message .= "\n";
+		$filepath = $this->_log_path. $function .'/' .date('Y-m-d').'.txt';
+		$this->write_log($filepath,$message);
+	}
+	
+	/**
+	 * Write log to file 
+	 * 
+	 */
+	private function write_log($filepath, $message){
+		if(!file_exists($filepath)){//file not exist
+			$info = pathinfo($filepath);
+		
+			@mkdir($info['dirname'], 0777, true);
+		}
+		$fh = fopen($filepath, 'a');
+
+	    fwrite($fh, $message);
+	    fclose($fh);
 	}
 
 }//end class
