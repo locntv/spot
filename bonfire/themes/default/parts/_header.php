@@ -8,9 +8,10 @@
 		<meta name="author" content="">
 
 		<script src="<?php echo Template::theme_url('js/jquery.js') ?>"></script>
-		<script src="<?php echo Template::theme_url('js/jquery.mobile-1.3.0.js') ?>"></script>
+		<script src="<?php echo Template::theme_url('js/jquery.mobile-1.2.0.js') ?>"></script>
 
-		<?php echo Assets::css('css/jquery.mobile-1.3.0.css'); ?>
+		<?php echo Assets::css('css/jquery.mobile-1.2.0.css'); ?>
+		<?php echo Assets::css('css/spot.css'); ?>
 
 		<style type="text/css">
 			html { height: 100% }
