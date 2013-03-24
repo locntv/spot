@@ -182,7 +182,7 @@ class content extends Admin_Controller {
 		$this->form_validation->set_rules('places_name','Name','required|unique[sp_places.places_name,sp_places.id]|max_length[255]');
 		$this->form_validation->set_rules('places_address','Address','required|unique[sp_places.places_address,sp_places.id]|max_length[255]');
 		$this->form_validation->set_rules('places_type','Type','required|max_length[255]');
-		$this->form_validation->set_rules('places_longtitude','Longtitude','required|max_length[25]');
+		$this->form_validation->set_rules('places_longitude','longitude','required|max_length[25]');
 		$this->form_validation->set_rules('places_latitude','Latitude','required|max_length[25]');
 		$this->form_validation->set_rules('places_image','Image','required|max_length[255]');
 
@@ -197,7 +197,7 @@ class content extends Admin_Controller {
 		$data['places_name']        = $this->input->post('places_name');
 		$data['places_address']        = $this->input->post('places_address');
 		$data['places_type']        = $this->input->post('places_type');
-		$data['places_longtitude']        = $this->input->post('places_longtitude');
+		$data['places_longitude']        = $this->input->post('places_longitude');
 		$data['places_latitude']        = $this->input->post('places_latitude');
 		$data['places_image']        = $this->input->post('places_image');
 

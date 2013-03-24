@@ -77,7 +77,11 @@ class Api extends Front_Controller
 		$result = array();
 		
 		//Process validate and save
-		if(!isset($_POST['email']) || !isset($_POST['password'])){
+		if(    !isset($_POST['email']) || empty($_POST['email'])
+			|| !isset($_POST['password']) || empty($_POST['password'])
+			|| !isset($_POST['first_name']) || empty($_POST['first_name'])
+			|| !isset($_POST['last_name']) || empty($_POST['last_name'])
+			|| !isset($_POST['gender']) || empty($_POST['gender'])	){
 			$result['code'] = '100';
 		} else {
 			$validate = $this->validate_signup($_POST['email'],$_POST['password']);
@@ -85,12 +89,16 @@ class Api extends Front_Controller
 				$result['code'] = $validate['code'];
 			} else {
 				$data = array(
+						'first_name'=> $_POST['first_name'],
+						'last_name'	=> $_POST['last_name'],
 						'email'		=> $_POST['email'],
 						'password'	=> $_POST['password'],
+						'gender'	=> $_POST['gender'],
 						'active'	=> 1
 				);
 				if($user_id = $this->user_model->insert($data)){
 					$result['code'] = '200';
+					$result['user_id'] = $user_id;
 				}else {
 					$result['code'] = '104';
 				}
@@ -118,6 +126,7 @@ class Api extends Front_Controller
 		
 		if($this->auth->login($email,$pass,false)){
 			$result['code'] = 200;
+			$result['user_id'] = $this->auth->user_id();
 		} else {
 			$result['code'] = 100;
 		}
@@ -139,20 +148,37 @@ class Api extends Front_Controller
 				POW(69.1 * (latitude - [startlat]), 2) +
 				POW(69.1 * ([startlng] - longitude) * COS(latitude / 57.3), 2)) AS distance
 				FROM TableName HAVING distance < 25 ORDER BY distance;*/
-		$query_str = "SELECT * FROM sp_places ";
-		$email = 'me@home.com';
-		$user_gender = $this->get_gender($email); // default is female
 		$result = array();
+		if(empty($_POST['longitude']) || empty($_POST['latitude'])
+			|| empty($_POST['user_id']) ){
+			$result['code'] = '100';
+		} else {
+			$user = $this->user_model->find($_POST['user_id']);
+			if( $user !== FALSE){
+				$query_str = "SELECT
+								id,places_name,places_address,places_type,places_latitude, places_longitude,places_image,
+								SQRT( POW(69.1 * (places_latitude - {$_POST['latitude']}), 2) +
+									  POW(69.1 * ({$_POST['longitude']} - places_longitude) * COS(places_latitude / 57.3), 2)
+								) AS distance
+							  FROM sp_places HAVING distance < 0.1 ORDER BY distance;";
+				$user_gender = $user->gender; // default is female
+				$result = array();
+					
+				$query = $this->db->query($query_str);
+				if ($query->num_rows() > 0)
+				{
+					foreach($query->result_array() as $row)
+					{
+						$row['people'] = $this->get_list_user_in_venue($row['id'],$user_gender);
+						$result [] = $this->build_data_venue($row);
+					}
+				}
+			} else {
+				$result['code'] = '101';
+			}
+			
+		}
 		
-		$query = $this->db->query($query_str);
-		if ($query->num_rows() > 0)
-            {
-                foreach($query->result_array() as $row)
-                {
-                	$row['people'] = $this->get_list_user_in_venue($row['id'],$user_gender);
-                    $result [] = $this->build_data_venue($row);
-                }
-            }
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
@@ -212,6 +238,20 @@ class Api extends Front_Controller
 		Template::render('api');
 	}//end people()
 	
+	public function checkout(){
+		$this->write_log_for_request("profile");
+		
+		$user_id = '1';
+		$place_id = '1';
+		$curtime = date('Y-m-d H:i:s');
+		$sql	= "UPDATE sp_spots SET is_checkin =0,checkout_time='{$curtime}'
+					WHERE spots_user_id = {$user_id} AND spots_user_id = {$place_id}";
+		$query = $this->db->query($sql);
+		Template::set('result', json_encode($query));
+		Template::set_view("api/index");
+		Template::render('api');
+	}
+	
 	//--------------------------------------------------------------------
 
 	/**
@@ -219,9 +259,14 @@ class Api extends Front_Controller
 	 * 
 	 */
 	private function validate_signup($email='', $password=''){
+		$user = $this->user_model->find_by('email', $_POST['email']);
+		if($user !== FALSE){ // user has existed
+			return array(
+				'status'=>'error'
+			   ,'code' => '101'); 
+		}
 		return array(
-				'status'=>'success'
-			   ,'code' => '200');
+				'status'=>'success');
 	}
 	
 	/**
@@ -231,18 +276,20 @@ class Api extends Front_Controller
 	 */
 	private function get_list_user_in_venue($place_id='', $gender= 0){
 		$result = array();
-		$query_str = "SELECT email, image, checkin_status
+		$query_str = "SELECT sp_users.id, sp_spots.checkin_status
 					  FROM 	sp_users , sp_spots 
 					  WHERE spots_place_id = {$place_id}
-					  AND 	spots_user_id = sp_users.id
-					  AND	sp_users.gender != {$gender}
-					  AND 	is_checkin = 1";
+					  AND (	
+					  		(spots_user_id = sp_users.id) 
+					  		OR
+					  		(sp_users.gender != {$gender} AND is_checkin = 1)
+					  	)";
 		$query = $this->db->query($query_str);
 		if( $query->num_rows() > 0 ){
 			foreach ($query->result_array() as $row){
 				$result [] = array(
-						'email' 	=> $row['email'],
-						'image'		=> $row['image'],
+						'user_id' 	=> $row['id'],
+						//'image'		=> $row['image'],
 						'status'	=> $row['checkin_status']
 				);
 			}
@@ -259,22 +306,13 @@ class Api extends Front_Controller
 		return array(
 					'name' 		=> $data['places_name'],
 					'address'	=> $data['places_address'],
-					'longtitude'=> $data['places_longtitude'],
+					'longitude' => $data['places_longitude'],
 					'latitude'	=> $data['places_latitude'],
 					'type'		=> $data['places_type'],
 					'image'		=> $data['places_image'],
 					'people'	=> $data['people']
 				);
-	}
-	
-	private function get_gender($email){
-		$user = $this->user_model->find_by('email',$email);
-		if($user){
-			return $user->gender;
-		}
-		return 0;
-	}
-	
+	}	
 	
 	/**
 	 * Write log for each request to api 

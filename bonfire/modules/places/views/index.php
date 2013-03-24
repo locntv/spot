@@ -13,7 +13,7 @@
 		<th>Name</th>
 		<th>Address</th>
 		<th>Type</th>
-		<th>Longtitude</th>
+		<th>longitude</th>
 		<th>Latitude</th>
 		<th>Image</th>
 		

@@ -62,7 +62,7 @@ if ( ! function_exists('form_open'))
 
 		$form .= _attributes_to_string($attributes, TRUE);
 
-		$form .= '>';
+		$form .= ' data-ajax="false">';
 
 		// Add CSRF field if enabled, but leave it out for GET requests and requests to external websites	
 		if ($CI->config->item('csrf_protection') === TRUE AND ! (strpos($action, $CI->config->base_url()) === FALSE OR strpos($form, 'method="get"')))	

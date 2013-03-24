@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 23, 2013 at 01:12 AM
+-- Generation Time: Mar 25, 2013 at 01:31 AM
 -- Server version: 5.5.29
 -- PHP Version: 5.3.10-1ubuntu3.6
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `sp_activities` (
   `created_on` datetime NOT NULL,
   `deleted` tinyint(12) NOT NULL DEFAULT '0',
   PRIMARY KEY (`activity_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=28 ;
 
 --
 -- Dumping data for table `sp_activities`
@@ -48,7 +48,26 @@ INSERT INTO `sp_activities` (`activity_id`, `user_id`, `activity`, `module`, `cr
 (5, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-21 17:08:24', 0),
 (6, 1, 'logged out from: 127.0.0.1', 'users', '2013-03-21 17:20:48', 0),
 (7, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-21 17:25:30', 0),
-(8, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-22 13:23:12', 0);
+(8, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-22 13:23:12', 0),
+(9, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-23 07:40:34', 0),
+(10, 3, 'registered a new account.', 'users', '2013-03-23 08:04:05', 0),
+(11, 1, 'logged out from: 127.0.0.1', 'users', '2013-03-23 08:04:26', 0),
+(12, 4, 'registered a new account.', 'users', '2013-03-23 10:02:56', 0),
+(13, 5, 'registered a new account.', 'users', '2013-03-23 10:04:10', 0),
+(14, 6, 'registered a new account.', 'users', '2013-03-23 10:07:56', 0),
+(15, 5, 'logged in from: 127.0.0.1', 'users', '2013-03-23 10:14:25', 0),
+(16, 5, 'logged out from: 127.0.0.1', 'users', '2013-03-23 10:49:21', 0),
+(17, 7, 'registered a new account.', 'users', '2013-03-23 10:49:58', 0),
+(18, 8, 'registered a new account.', 'users', '2013-03-23 11:34:00', 0),
+(19, 9, 'registered a new account.', 'users', '2013-03-23 11:35:03', 0),
+(20, 8, 'logged in from: 127.0.0.1', 'users', '2013-03-23 11:35:58', 0),
+(21, 1, 'logged in from: 127.0.0.1', 'users', '2013-03-24 15:56:47', 0),
+(22, 1, 'Created record with ID: 3 : 127.0.0.1', 'places', '2013-03-24 15:58:21', 0),
+(23, 1, 'Created record with ID: 4 : 127.0.0.1', 'places', '2013-03-24 17:47:13', 0),
+(24, 1, 'Created record with ID: 5 : 127.0.0.1', 'places', '2013-03-24 17:49:42', 0),
+(25, 1, 'Updated record with ID: 4 : 127.0.0.1', 'places', '2013-03-24 17:58:39', 0),
+(26, 1, 'Updated record with ID: 5 : 127.0.0.1', 'places', '2013-03-24 17:59:00', 0),
+(27, 1, 'Updated record with ID: 5 : 127.0.0.1', 'places', '2013-03-24 17:59:25', 0);
 
 -- --------------------------------------------------------
 
@@ -83,14 +102,7 @@ CREATE TABLE IF NOT EXISTS `sp_login_attempts` (
   `login` varchar(50) NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `sp_login_attempts`
---
-
-INSERT INTO `sp_login_attempts` (`id`, `ip_address`, `login`, `time`) VALUES
-(1, '127.0.0.1', 'abc@gmail.com', '2013-03-21 16:28:39');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -187,19 +199,22 @@ CREATE TABLE IF NOT EXISTS `sp_places` (
   `places_name` varchar(255) NOT NULL,
   `places_address` varchar(255) NOT NULL,
   `places_type` varchar(255) NOT NULL,
-  `places_longtitude` double NOT NULL,
+  `places_longitude` double NOT NULL,
   `places_latitude` double NOT NULL,
   `places_image` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `sp_places`
 --
 
-INSERT INTO `sp_places` (`id`, `places_name`, `places_address`, `places_type`, `places_longtitude`, `places_latitude`, `places_image`) VALUES
+INSERT INTO `sp_places` (`id`, `places_name`, `places_address`, `places_type`, `places_longitude`, `places_latitude`, `places_image`) VALUES
 (1, 'dat', 'dat', 'dat', 0, 0, 'dat'),
-(2, 'dat1', 'dat1', 'dat1', 0, 0, 'dat1');
+(2, 'dat1', 'dat1', 'dat1', 0, 0, 'dat1'),
+(3, 'test', 'test', 'test', 232.122, 122.222, 'test'),
+(4, 'Test1', '1627 Phạm Thế Hiển, 6, Quận 8', 'Test', 106.652648, 10.738832, 'test1'),
+(5, 'Test 2', '1649 Phạm Thế Hiển, 6, Quận 8', 'Test', 106.652348, 10.738747, 'Test');
 
 -- --------------------------------------------------------
 
@@ -444,8 +459,8 @@ CREATE TABLE IF NOT EXISTS `sp_spots` (
 --
 
 INSERT INTO `sp_spots` (`id`, `spots_user_id`, `spots_place_id`, `checkin_status`, `is_checkin`, `checkin_time`, `checkout_time`) VALUES
-(1, 1, 1, 1, 1, '2013-03-22 00:00:00', NULL),
-(5, 2, 1, 1, 1, '2013-03-22 17:57:00', NULL);
+(1, 1, 1, 1, 0, '2013-03-22 00:00:00', '2013-03-23 06:35:43'),
+(5, 2, 1, 1, 0, '2013-03-22 17:57:00', '2013-03-23 06:25:16');
 
 -- --------------------------------------------------------
 
@@ -457,6 +472,8 @@ CREATE TABLE IF NOT EXISTS `sp_users` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int(11) NOT NULL DEFAULT '4',
   `email` varchar(120) NOT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
   `username` varchar(30) NOT NULL DEFAULT '',
   `password_hash` varchar(40) NOT NULL,
   `reset_hash` varchar(40) DEFAULT NULL,
@@ -478,15 +495,23 @@ CREATE TABLE IF NOT EXISTS `sp_users` (
   `image` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `email` (`email`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
 -- Dumping data for table `sp_users`
 --
 
-INSERT INTO `sp_users` (`id`, `role_id`, `email`, `username`, `password_hash`, `reset_hash`, `salt`, `last_login`, `last_ip`, `created_on`, `deleted`, `banned`, `ban_message`, `reset_by`, `display_name`, `display_name_changed`, `timezone`, `language`, `active`, `activate_hash`, `gender`, `image`) VALUES
-(1, 1, 'me@home.com', 'admin', 'ace1cf1bee204c2270114bb4fb845904a896f0a4', NULL, 'gMSh9Ib', '2013-03-22 13:23:12', '127.0.0.1', '0000-00-00 00:00:00', 0, 0, NULL, NULL, '', NULL, 'UM6', 'english', 1, '', 0, NULL),
-(2, 4, 'abc@gmail.com', '', 'd3c6d2973285cc60fda1995e17b1e3b8db2b15ae', NULL, 'dcRVxZ8', '2013-03-21 16:28:26', '127.0.0.1', '2013-03-21 16:15:40', 0, 0, NULL, NULL, 'abc@gmail.com', NULL, 'UM6', 'english', 1, '', 1, NULL);
+INSERT INTO `sp_users` (`id`, `role_id`, `email`, `first_name`, `last_name`, `username`, `password_hash`, `reset_hash`, `salt`, `last_login`, `last_ip`, `created_on`, `deleted`, `banned`, `ban_message`, `reset_by`, `display_name`, `display_name_changed`, `timezone`, `language`, `active`, `activate_hash`, `gender`, `image`) VALUES
+(1, 1, 'me@home.com', '', '', 'admin', 'ace1cf1bee204c2270114bb4fb845904a896f0a4', NULL, 'gMSh9Ib', '2013-03-24 15:56:47', '127.0.0.1', '0000-00-00 00:00:00', 0, 0, NULL, NULL, '', NULL, 'UM6', 'english', 1, '', 0, NULL),
+(2, 4, 'abc@gmail.com', '', '', '', 'd3c6d2973285cc60fda1995e17b1e3b8db2b15ae', NULL, 'dcRVxZ8', '2013-03-21 16:28:26', '127.0.0.1', '2013-03-21 16:15:40', 0, 0, NULL, NULL, 'abc@gmail.com', NULL, 'UM6', 'english', 1, '', 1, NULL),
+(3, 4, 'test@gmail.com', '', '', '', 'd6824ab71a97ccdd8daa6fd51a2ac3a29e780c21', NULL, 'BIPCmNj', '0000-00-00 00:00:00', '', '2013-03-23 08:04:05', 0, 0, NULL, NULL, 'test@gmail.com', NULL, 'UM6', 'english', 1, '', 0, NULL),
+(4, 4, 'test111@gmail.com', '', '', '', '207e5cac8b866ab4ef897999ee8f4e31a615a9d1', NULL, 'Y6qFYug', '0000-00-00 00:00:00', '', '2013-03-23 10:02:56', 0, 0, NULL, NULL, 'test111@gmail.com', NULL, 'UM6', 'english', 1, '', 0, NULL),
+(5, 4, 'testaaa@gmail.com', '', '', '', '17dafb551512a25c230b448100fdeccc8f03ab19', NULL, 'witYe7m', '2013-03-23 10:14:25', '127.0.0.1', '2013-03-23 10:04:09', 0, 0, NULL, NULL, 'testaaa@gmail.com', NULL, 'UM6', 'english', 1, '', 1, NULL),
+(6, 4, 'aaaa@rergg.com', '', '', '', '53bea7619034a83b2ce9928e9a1721f36f46375a', NULL, '3U3bBZ0', '0000-00-00 00:00:00', '', '2013-03-23 10:07:56', 0, 0, NULL, NULL, 'aaaa@rergg.com', NULL, 'UM6', 'english', 1, '', 1, NULL),
+(7, 4, '111111@gmail.com', '', '', '', '5e334573f518adb59c8694a7da9d7aaf56be45c9', NULL, 'C2ziJu3', '0000-00-00 00:00:00', '', '2013-03-23 10:49:58', 0, 0, NULL, NULL, '111111@gmail.com', NULL, 'UM6', 'english', 1, '', 0, NULL),
+(8, 4, 'aaa@gmail.com', '', '', '', '587f93f67933e1f63fca81760661f061802b8213', NULL, 'gyMJ4Wq', '2013-03-24 15:28:35', '192.168.0.107', '2013-03-23 11:34:00', 0, 0, NULL, NULL, 'aaa@gmail.com', NULL, 'UM6', 'english', 1, '', 1, NULL),
+(9, 4, 'aaaaaaaa@gmail.com', '', '', '', '7b38c0503f06516ef9dd3672fb4c128af6a4ced9', NULL, '41OQuwu', '0000-00-00 00:00:00', '', '2013-03-23 11:35:02', 0, 0, NULL, NULL, 'aaaaaaaa@gmail.com', NULL, 'UM6', 'english', 1, '', 0, NULL),
+(10, 4, 'data@gmail.com', 'dat', 'vo', '', '094ab8c5a90f9e6f6e547526434a34883e9944ee', NULL, 'jaKYLLl', '0000-00-00 00:00:00', '', '2013-03-24 15:19:34', 0, 0, NULL, NULL, 'data@gmail.com', NULL, 'UM6', 'english', 1, '', 1, NULL);
 
 -- --------------------------------------------------------
 

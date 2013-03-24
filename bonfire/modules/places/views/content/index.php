@@ -11,7 +11,7 @@
 					<th>Name</th>
 					<th>Address</th>
 					<th>Type</th>
-					<th>Longtitude</th>
+					<th>Longitude</th>
 					<th>Latitude</th>
 					<th>Image</th>
 				</tr>
@@ -44,7 +44,7 @@
 			
 				<td><?php echo $record->places_address?></td>
 				<td><?php echo $record->places_type?></td>
-				<td><?php echo $record->places_longtitude?></td>
+				<td><?php echo $record->places_longitude?></td>
 				<td><?php echo $record->places_latitude?></td>
 				<td><?php echo $record->places_image?></td>
 				</tr>

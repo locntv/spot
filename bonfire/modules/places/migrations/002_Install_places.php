@@ -27,7 +27,7 @@ class Migration_Install_places extends Migration {
 				'constraint' => 255,
 				
 			),
-			'places_longtitude' => array(
+			'places_longitude' => array(
 				'type' => 'VARCHAR',
 				'constraint' => 25,
 				

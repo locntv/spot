@@ -13,22 +13,26 @@
 			</div>
 		</div>
 <?php endif; ?>
-
-<div class="row-fluid">
-	<div class="span10 offset2">
-		<div class="alert alert-info fade in">
-		  <a data-dismiss="alert" class="close">&times;</a>
-			<h4 class="alert-heading"><?php echo lang('bf_required_note'); ?></h4>
-			<?php if (isset($password_hints) ) echo $password_hints; ?>
+<?php if (isset($error)) : ?>
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="alert alert-error fade in">
+						<a data-dismiss="alert" class="close">&times;</a>
+					<?php 
+						foreach($error as $err){
+							echo $err;
+						}
+					?>
+				</div>
+			</div>
 		</div>
-	</div>
-</div>
+<?php endif; ?>
 
 <div class="row-fluid">
 	<div class="span12">
 
-<?php echo form_open('register', array('class' => "form-horizontal", 'autocomplete' => 'off')); ?>
-
+<?php echo form_open('register', array('class' => "form-horizontal", 'autocomplete' => 'off','enctype' => 'multipart/form-data')); ?>
+<input type="hidden" name="MAX_FILE_SIZE" value="100000000" />
 
 	<div class="control-group <?php echo iif( form_error('email') , 'error'); ?>">
 		<label class="control-label required" for="email"><?php echo lang('bf_email'); ?></label>
@@ -37,23 +41,6 @@
 		</div>
 	</div>
 
-	<div class="control-group <?php echo iif( form_error('display_name') , 'error') ;?>">
-		<label class="control-label" for="display_name"><?php echo lang('bf_display_name'); ?></label>
-		<div class="controls">
-			<input class="span6" type="text" name="display_name" id="display_name" value="<?php echo set_value('display_name'); ?>" />
-		</div>
-	</div>
-
-	<?php if ( $this->settings_lib->item('auth.login_type') !== 'email' OR $this->settings_lib->item('auth.use_usernames') == 1): ?>
-
-	<div class="control-group <?php echo iif( form_error('username') , 'error'); ?>">
-		<label class="control-label required" for="username"><?php echo lang('bf_username'); ?></label>
-		<div class="controls">
-			<input class="span6" type="text" name="username" id="username" value="<?php echo set_value('username') ?>" placeholder="username" />
-		</div>
-	</div>
-
-	<?php endif; ?>
 	<br/>
 
 		<div class="control-group <?php echo iif( form_error('password') , 'error'); ?>">
@@ -70,44 +57,27 @@
 				<input class="span6" type="password" name="pass_confirm" id="pass_confirm" value="" placeholder="<?php echo lang('bf_password_confirm'); ?>" />
 			</div>
 		</div>
-
-		<?php if (isset($languages) && is_array($languages) && count($languages)) : ?>
-			<?php if(count($languages) == 1): ?>
-				<input type="hidden" id="language" name="language" value="<?php echo $languages[0]; ?>">
-			<?php else: ?>
-				<div class="control-group <?php echo form_error('language') ? 'error' : '' ?>">
-					<label class="control-label required" for="language"><?php echo lang('bf_language') ?></label>
-					<div class="controls">
-						<select name="language" id="language" class="chzn-select">
-						<?php foreach ($languages as $language) : ?>
-							<option value="<?php e($language) ?>" <?php echo set_select('language', $language, config_item('language') == $language ? TRUE : FALSE) ?>>
-								<?php e(ucfirst($language)) ?>
-							</option>
-
-						<?php endforeach; ?>
-						</select>
-						<?php if (form_error('language')) echo '<span class="help-inline">'. form_error('language') .'</span>'; ?>
-					</div>
-				</div>
-			<?php endif; ?>
-		<?php endif; ?>
-
-		<div class="control-group <?php echo form_error('timezone') ? 'error' : '' ?>">
-			<label class="control-label required" for="timezones"><?php echo lang('bf_timezone') ?></label>
-			<div class="controls">
-				<?php echo timezone_menu(set_value('timezones')); ?>
-				<?php if (form_error('timezones')) echo '<span class="help-inline">'. form_error('timezones') .'</span>'; ?>
-			</div>
+		
+		<div class="control-group <?php echo iif( form_error('gender') , 'error'); ?>">
+		    <label for="select-native-1">I am:</label>
+		    <div class="controls">
+			    <select name="gender" id="select-native-1">
+			    	<option value="">Select Sex</option>
+			        <option value="0">Female</option>
+			        <option value="1">Male</option>
+			    </select>
+		    </div>
 		</div>
+		
+		<span class="fileinput-button" data-role="button" data-icon="plus">
+		    <input type="file" data-clear-btn="false" name="image" multiple data-role="none" accept="image/*"/>
+		</span>
+		<p class="help-block"><?php echo lang('us_img_help'); ?></p>
 
 		<?php
 			// Allow modules to render custom fields
 			Events::trigger('render_user_form');
 		?>
-
-		<!-- Start of User Meta -->
-		<?php $this->load->view('users/user_meta', array('frontend_only' => TRUE));?>
-		<!-- End of User Meta -->
 
 	<div class="control-group">
 		<div class="controls">

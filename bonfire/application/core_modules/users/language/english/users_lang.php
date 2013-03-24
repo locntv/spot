@@ -215,3 +215,5 @@ $lang['us_passwords_match']			= 'Match!';
 $lang['us_pass_weak']				= 'Weak';
 $lang['us_pass_good']				= 'Good';
 $lang['us_pass_strong']				= 'Strong';
+
+$lang['us_img_help']				= "Image must be below 1MB, width < 1024,height < 768";

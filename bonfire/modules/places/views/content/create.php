@@ -43,11 +43,11 @@ $id = isset($places['id']) ? $places['id'] : '';
 
 
         </div>
-        <div class="control-group <?php echo form_error('places_longtitude') ? 'error' : ''; ?>">
-            <?php echo form_label('Longtitude'. lang('bf_form_label_required'), 'places_longtitude', array('class' => "control-label") ); ?>
+        <div class="control-group <?php echo form_error('places_longitude') ? 'error' : ''; ?>">
+            <?php echo form_label('Longitude'. lang('bf_form_label_required'), 'places_longitude', array('class' => "control-label") ); ?>
             <div class='controls'>
-        <input id="places_longtitude" type="text" name="places_longtitude" maxlength="25" value="<?php echo set_value('places_longtitude', isset($places['places_longtitude']) ? $places['places_longtitude'] : ''); ?>"  />
-        <span class="help-inline"><?php echo form_error('places_longtitude'); ?></span>
+        <input id="places_longitude" type="text" name="places_longitude" maxlength="25" value="<?php echo set_value('places_longitude', isset($places['places_longitude']) ? $places['places_longitude'] : ''); ?>"  />
+        <span class="help-inline"><?php echo form_error('places_longitude'); ?></span>
         </div>
 
 
