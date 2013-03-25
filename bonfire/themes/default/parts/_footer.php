@@ -1,12 +1,7 @@
 	<div data-role="footer">
-		<table>
-			<tr>
-				<td><a href="#"><img src="" /></a></td>
-				<td>afsfds</td>
-				<td>fdasfsd</td>
-				<td>fsa</td>
-			</tr>
-		</table>
+		<div data-role="navbar">
+			<?php echo navbar_select( 'navbar.footer', uri_string() ); ?>
+		</div><!-- /navbar -->
 	</div><!-- /footer -->
 
 </div><!-- /page -->

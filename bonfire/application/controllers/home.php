@@ -31,17 +31,49 @@
 class Home extends Front_Controller
 {
 
-
 	/**
-	 * Displays the homepage of the Bonfire app
+	 * Displays the spots page
 	 *
 	 * @return void
 	 */
 	public function index()
 	{
+		Template::set('page_title', 'Spots');
 		Template::render();
-	}//end index()
+	}//end spots()
 
+	/**
+	 * Displays the map page
+	 *
+	 * @return void
+	 */
+	public function map()
+	{
+		Template::set('page_title', 'Map');
+		Template::render();
+	}//end map()
+
+	/**
+	 * Displays the people page
+	 *
+	 * @return void
+	 */
+	public function people()
+	{
+		Template::set('page_title', 'People');
+		Template::render();
+	}//end people()
+
+	/**
+	 * Displays the me page
+	 *
+	 * @return void
+	 */
+	public function me()
+	{
+		Template::set('page_title', 'Me');
+		Template::render();
+	}//end me()
 	//--------------------------------------------------------------------
 
 

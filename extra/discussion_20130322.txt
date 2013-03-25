@@ -1,0 +1,64 @@
+Upload image
+============
+truong hop upload anh tren mobile do
+i think a simple message that says "please upload photo from laptop" would be sufficient
+
+
+
+Check in & check out
+====================
+A user can only check-in to 1 spot. When he checks-in to a new spot, he automatically checks out of previous spots
+A user automatically checks out after 4 hours
+A user automatically checks out after he is 0.25 miles away from where he checked-in
+
+by the way, one note. When a user checks-in into a venue, please highlight the venue
+highlight the venue box in the Spots page, so the user knows which place he is checked in
+
+
+Domain info
+===========
+Username: stoplightspot
+Password: FIELD3team
+
+Map API
+=======
+I'd like to enter an address of a venue
+so the admin page should allow me to enter name, address
+
+
+For web-app
+=========== 
+- When the page is refreshed, we will check user location:
+  * For checks-out
+    -> after 4 hours <<< Do we need run cron to update user status at venue
+    -> 0.1 miles away from where he checked-in
+  * For checks-in
+    -> only check-in to 1 spot and automatically checks out of previous spots
+10min + when user hits refresh on spots page
+i think together the user experience should be decent
+
+
+If there is no spot, the "Spots page" should be empty
+if a venue has no user checked-in, it should still show up in the spots page, but show display 0 user checked-in
+recall for each venue, it shows the name, address, and # of people checked-in
+is this clear?
+hi team
+please let me know if they are more questions
+I also need to sleep, its 1am here :)
+for Monday 3/25, we will test the following
+• Admins can add venues to the admin webpage
+• Users can create profiles.
+• Users can check-in to venues (shouldn’t be possible if > 0.1 mile away). 
+    o In the spots page, checked-in venue should be highlighted.
+    o User can only check-in to one venue. 
+• Ratio bubble should accurately reflect # of users (of opposite sex) who are checked-in
+• User check-out once they move > 0.1 mile away (and when they check-in somewhere else)
+    o User is also check-out automatically after 4 hours. This is to prevent the case that the user just closes the iOS app or native app. 
+• User location is updated by hitting refresh + every 10 minutes for both native and iOS app.
+
+Draw pie chart
+==============
+http://jsfiddle.net/nanoquantumtech/XN3ZB/
+
+
+giasu.mobi:12096/phpMyAdmin/

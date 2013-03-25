@@ -172,7 +172,7 @@ $config['template.parse_views']		= FALSE;
 |
 */
 $config['template.message_template'] =<<<EOD
- <div class="alert alert-block alert-{type} fade in notification">
+<div class="alert alert-block alert-{type} fade in notification">
 		<a data-dismiss="alert" class="close" href="#">&times;</a>
 		<div>{message}</div>
 	</div>
@@ -284,3 +284,22 @@ $config['emailer.write_to_file'] = false;
 //--------------------------------------------------------------------
 $config['migrate.auto_core']	= TRUE;
 $config['migrate.auto_app']		= FALSE;
+
+$config['navbar.footer'] = array(
+	'spot' => array(
+		'name' => 'Spots',
+		'active' => array('', 'home', 'home/spot')
+	),
+	'map' => array(
+		'name' => 'Map',
+		'active' => array('home/map')
+	),
+	'people' => array(
+		'name' => 'People',
+		'active' => array('home/people')
+	),
+	'me' => array(
+		'name' => 'Me',
+		'active' => array('home/me')
+	),
+);
