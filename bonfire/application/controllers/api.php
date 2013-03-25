@@ -31,6 +31,7 @@
 class Api extends Front_Controller
 {
 
+	
 	/**
 	 * Setup the required libraries etc
 	 *
@@ -41,6 +42,9 @@ class Api extends Front_Controller
 		parent::__construct();
 		$config =& get_config();
 		
+		$this->red_status 		= 1;
+		$this->yellow_status 	= 2;
+		$this->green_status		= 3;	
 		$this->_log_path = APPPATH.'logs/api/';
 		$this->load->model('places/places_model', null, true);
 		$this->load->model('places/spots_model', null, true);
@@ -81,13 +85,29 @@ class Api extends Front_Controller
 			|| !isset($_POST['password']) || empty($_POST['password'])
 			|| !isset($_POST['first_name']) || empty($_POST['first_name'])
 			|| !isset($_POST['last_name']) || empty($_POST['last_name'])
-			|| !isset($_POST['gender']) || empty($_POST['gender'])	){
+			|| !isset($_POST['gender']) ){
 			$result['code'] = '100';
 		} else {
 			$validate = $this->validate_signup($_POST['email'],$_POST['password']);
 			if( $validate['status'] == 'error' ){
 				$result['code'] = $validate['code'];
 			} else {
+				$is_image_uploaded = TRUE;
+				$is_image		   = FALSE;
+				if($_FILES['image']['name'] != ''){
+					$is_image 				= TRUE;
+					$config['upload_path'] 	= ASSET_PATH.'images/user';
+					$config['allowed_types']= 'gif|jpg|png';
+					$config['max_size']		= '1024';
+					$config['max_width']  	= '128';
+					$config['max_height']  	= '128';
+				
+					$this->load->library('upload', $config);
+					if(!$this->upload->do_upload("image")){
+						//$error = array('errors' => $this->upload->display_errors());
+						$is_image_uploaded = FALSE;
+					}
+				}
 				$data = array(
 						'first_name'=> $_POST['first_name'],
 						'last_name'	=> $_POST['last_name'],
@@ -96,11 +116,25 @@ class Api extends Front_Controller
 						'gender'	=> $_POST['gender'],
 						'active'	=> 1
 				);
-				if($user_id = $this->user_model->insert($data)){
-					$result['code'] = '200';
-					$result['user_id'] = $user_id;
-				}else {
-					$result['code'] = '104';
+				if($is_image_uploaded == FALSE){
+					$result['code'] = '103';
+				} else {
+					if($user_id = $this->user_model->insert($data)){
+						$image_name = $user_id."_imageprofile.png";
+						$command = "mv {$config['upload_path']}/{$_FILES['image']['name']}  {$config['upload_path']}/{$image_name}";
+						@shell_exec($command);
+ 						//Assets::assets_url('image')."/user/".$user_id."_imageprofile.png";
+						if($this->user_model->update($user_id, array(
+								'image' => Assets::assets_url('image')."/user/".$user_id."_imageprofile.png")
+											  ) ){
+							$result['code'] = '200';
+							$result['user_id'] = $user_id;
+						} else {
+							$result['code'] = '102';
+						}
+					}else {
+						$result['code'] = '102';
+					}
 				}
 			}
 		}
