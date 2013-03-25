@@ -44,7 +44,8 @@ class Api extends Front_Controller
 		
 		$this->red_status 		= 1;
 		$this->yellow_status 	= 2;
-		$this->green_status		= 3;	
+		$this->green_status		= 3;
+		$this->allowed_distance = 0.1; //0.1 miles	
 		$this->_log_path = APPPATH.'logs/api/';
 		$this->load->model('places/places_model', null, true);
 		$this->load->model('places/spots_model', null, true);
@@ -187,15 +188,14 @@ class Api extends Front_Controller
 			|| !isset($_POST['user_id']) ){
 			$result['code'] = '100';
 		} else {
-			$user = $this->user_model->find($_POST['user_id']);
-			if( $user !== FALSE){
+			if( $this->current_user && $this->current_user->id == $_POST['user_id']){
 				$query_str = "SELECT
 								id,places_name,places_address,places_type,places_latitude, places_longitude,places_image,
 								SQRT( POW(69.1 * (places_latitude - {$_POST['latitude']}), 2) +
 									  POW(69.1 * ({$_POST['longitude']} - places_longitude) * COS(places_latitude / 57.3), 2)
 								) AS distance
 							  FROM sp_places HAVING distance < 0.1 ORDER BY distance;";
-				$user_gender = $user->gender; // default is female
+				$user_gender = $this->current_user->gender; // default is female
 				$result = array();
 					
 				$query = $this->db->query($query_str);
@@ -205,7 +205,7 @@ class Api extends Front_Controller
 					{
 						//$row['people'] = $this->get_list_user_in_venue($row['id'],$user_gender);
 						$row['people'] = $this->get_status_in_venue($_POST['user_id'], $row['id'], $user_gender);
-						$result [] = $this->build_data_venue($row);
+						$result ['data'][] = $this->build_data_venue($row);
 					}
 					$result['code'] = 200;
 				}
@@ -220,17 +220,68 @@ class Api extends Front_Controller
 		Template::render('api');
 	}//end spots()
 	
+	/**
+	 * API for checkin 
+	 * @param POST data include user_id,place_id,user_longitude,user_latitude
+	 * 		  place_longitude, place_latitude, status_checkin
+	 */
+	public function checkin(){
+		$this->write_log_for_request("checkin");
+		$result = array();
+		if( !isset($_POST['user_id']) || !isset($_POST['place_id']) 
+			|| !isset($_POST['user_longitude']) 
+			|| !isset($_POST['user_latitude'])
+			|| !isset($_POST['place_longitude']) 
+			|| !isset($_POST['place_latitude'])
+			|| !isset($_POST['status_checkin']) ){
+				$result['code'] = '100';
+		} else {
+			if($this->current_user && $this->current_user->id == $_POST['user_id']){
+				if($this->get_distance($_POST['user_longitude'], $_POST['user_latitude'], 
+						$_POST['place_longitude'], 
+						$_POST['place_latitude']) <= $this->allowed_distance){
+					if($this->spots_model->update($_POST['place_id'],
+							array(
+								'checkin_status'=> $_POST['status_checkin'],
+								'is_checkin'	=> 1,
+								'checkin_time'	=> date('Y-m-d H:i:s')))){
+						$result['code'] = '200';
+					} else{
+						$result['code'] = '103';
+					}
+				} else {
+					$result['code'] = '102';
+				}
+			} else {
+				$result['code'] = '101';
+			}
+		}
+	}
 	
+	/**
+	 * API for people 
+	 * @param POST data include user_id, place_id
+	 */
 	public function people()
 	{
 		$this->write_log_for_request("people");
 		// dummy data
-		$user_id = '2';
-		$places_id = '1';
-		$status_checkin = '1';
-		$gender	= '1';
-		
 		$result = array();
+		if(!isset($_POST['place_id']) || !isset($_POST['user_id'])){
+			$result['code'] = '100';
+		} else {
+			if($this->current_user && $this->current_user->id == $_POST['user_id']){
+				$query_str = "SELECT user.id,user.image,user.email
+				FROM sp_users user, sp_spots spot
+				WHERE user.id = spot.spots_user_id
+				AND	spot.spots_place_id = {$places_id}
+				AND	user.gender != {$gender}
+				AND 	user.id != {$user_id}";
+			} else {
+				$result['code'] = '101';
+			}
+		}		
+		
 		if($spot_id = $this->spots_model->insert(array(
 					'spots_user_id' => $user_id,
 					'spots_place_id'=> $places_id,
@@ -372,6 +423,15 @@ class Api extends Front_Controller
 		}
 		
 		return $result;
+	}
+	
+	private function get_distance($long_x, $lat_x, $long_y, $lat_y){
+		if(isset($long_x) && isset($lat_x) && isset($long_y) && isset($lat_y)){
+			return sqrt(pow(2, 69.1 * ($lat_y - $lat_x) +
+					pow(2, 69.1 * ($long_x - $long_y) * cos($lat_y / 57.3))));
+		}
+		return FALSE;
+		
 	}
 	
 	/**
