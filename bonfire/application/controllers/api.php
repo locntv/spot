@@ -117,21 +117,26 @@ class Api extends Front_Controller
 						'gender'	=> $_POST['gender'],
 						'active'	=> 1
 				);
-				if($is_image_uploaded == FALSE){
+				if($is_image_uploaded == FALSE){ // upload image error
 					$result['code'] = '103';
 				} else {
-					if($user_id = $this->user_model->insert($data)){
-						$image_name = $user_id."_imageprofile.png";
-						$command = "mv {$config['upload_path']}/{$_FILES['image']['name']}  {$config['upload_path']}/{$image_name}";
-						@shell_exec($command);
- 						//Assets::assets_url('image')."/user/".$user_id."_imageprofile.png";
-						if($this->user_model->update($user_id, array(
-								'image' => Assets::assets_url('image')."/user/".$user_id."_imageprofile.png")
-											  ) ){
+					if($user_id = $this->user_model->insert($data)){ // Save data success
+						if($is_image){ // Upload image
+							$image_name = $user_id."_imageprofile.png";
+							$command = "mv {$config['upload_path']}/{$_FILES['image']['name']}  {$config['upload_path']}/{$image_name}";
+							@shell_exec($command);
+							//Assets::assets_url('image')."/user/".$user_id."_imageprofile.png";
+							if($this->user_model->update($user_id, array(
+									'image' => Assets::assets_url('image')."/user/".$user_id."_imageprofile.png")
+							) ){
+								$result['code'] = '200';
+								$result['user_id'] = $user_id;
+							} else {
+								$result['code'] = '102';
+							}
+						} else { // Not upload image
 							$result['code'] = '200';
 							$result['user_id'] = $user_id;
-						} else {
-							$result['code'] = '102';
 						}
 					}else {
 						$result['code'] = '102';
