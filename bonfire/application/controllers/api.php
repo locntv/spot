@@ -196,9 +196,7 @@ class Api extends Front_Controller
 			if( $this->current_user && $this->current_user->id == $_POST['user_id']){
 				$query_str = "SELECT
 								id,places_name,places_address,places_type,places_latitude, places_longitude,places_image,
-								SQRT( POW(69.1 * (places_latitude - {$_POST['latitude']}), 2) +
-									  POW(69.1 * ({$_POST['longitude']} - places_longitude) * COS(places_latitude / 57.3), 2)
-								) AS distance
+								3956 * 2 * ASIN(SQRT(POWER(SIN(({$_POST['latitude']}- places_latitude) * pi()/180 / 2), 2) +COS({$_POST['latitude']} * pi()/180) *COS(places_latitude * pi()/180) *POWER(SIN(({$_POST['longitude']} -places_longitude) * pi()/180 / 2), 2) )) as distance
 							  FROM sp_places HAVING distance < 0.1 ORDER BY distance;";
 				$user_gender = $this->current_user->gender; // default is female
 				$result = array();
@@ -212,7 +210,9 @@ class Api extends Front_Controller
 						$row['people'] = $this->get_status_in_venue($_POST['user_id'], $row['id'], $user_gender);
 						$result ['data'][] = $this->build_data_venue($row);
 					}
-					$result['code'] = 200;
+					$result['code'] = '200';
+				} else {
+					$result['code'] = '102';
 				}
 			} else {
 				$result['code'] = '101';
@@ -242,9 +242,9 @@ class Api extends Front_Controller
 				$result['code'] = '100';
 		} else {
 			if($this->current_user && $this->current_user->id == $_POST['user_id']){
-				if($this->get_distance($_POST['user_longitude'], $_POST['user_latitude'], 
-						$_POST['place_longitude'], 
-						$_POST['place_latitude']) <= $this->allowed_distance){
+				if($this->distance($_POST['user_latitude'], $_POST['user_longitude'],
+					$_POST['place_latitude'],
+					$_POST['place_longitude'],true) <= $this->allowed_distance){
 					if($this->spots_model->update($_POST['place_id'],
 							array(
 								'checkin_status'=> $_POST['status_checkin'],
@@ -261,6 +261,10 @@ class Api extends Front_Controller
 				$result['code'] = '101';
 			}
 		}
+		
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
+		Template::render('api');
 	}
 	
 	/**
@@ -437,6 +441,24 @@ class Api extends Front_Controller
 		}
 		return FALSE;
 		
+	}
+	
+	private function distance($lat1, $lng1, $lat2, $lng2, $miles = true)
+	{
+		$pi80 = M_PI / 180;
+		$lat1 *= $pi80;
+		$lng1 *= $pi80;
+		$lat2 *= $pi80;
+		$lng2 *= $pi80;
+		 
+		$r = 6372.797; // mean radius of Earth in km
+		$dlat = $lat2 - $lat1;
+		$dlng = $lng2 - $lng1;
+		$a = sin($dlat / 2) * sin($dlat / 2) + cos($lat1) * cos($lat2) * sin($dlng / 2) * sin($dlng / 2);
+		$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+		$km = $r * $c;
+		 
+		return ($miles ? ($km * 0.621371192) : $km);
 	}
 	
 	/**
