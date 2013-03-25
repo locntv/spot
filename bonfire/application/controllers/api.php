@@ -183,8 +183,8 @@ class Api extends Front_Controller
 				POW(69.1 * ([startlng] - longitude) * COS(latitude / 57.3), 2)) AS distance
 				FROM TableName HAVING distance < 25 ORDER BY distance;*/
 		$result = array();
-		if(empty($_POST['longitude']) || empty($_POST['latitude'])
-			|| empty($_POST['user_id']) ){
+		if(!isset($_POST['longitude']) || !isset($_POST['latitude'])
+			|| !isset($_POST['user_id']) ){
 			$result['code'] = '100';
 		} else {
 			$user = $this->user_model->find($_POST['user_id']);
@@ -203,9 +203,11 @@ class Api extends Front_Controller
 				{
 					foreach($query->result_array() as $row)
 					{
-						$row['people'] = $this->get_list_user_in_venue($row['id'],$user_gender);
+						//$row['people'] = $this->get_list_user_in_venue($row['id'],$user_gender);
+						$row['people'] = $this->get_status_in_venue($_POST['user_id'], $row['id'], $user_gender);
 						$result [] = $this->build_data_venue($row);
 					}
+					$result['code'] = 200;
 				}
 			} else {
 				$result['code'] = '101';
@@ -326,6 +328,46 @@ class Api extends Front_Controller
 						//'image'		=> $row['image'],
 						'status'	=> $row['checkin_status']
 				);
+			}
+		}
+		
+		return $result;
+	}
+	
+	/**
+	 * Get list user in a venue, just get opposite gender
+	 * @param place_id : id of place
+	 * @param gender   : gender of user
+	 */
+	private function get_status_in_venue($user_id, $place_id='', $gender= 0){
+		$result = array();
+		$result['red'] = 0;
+		$result['yellow'] = 0;
+		$result['green'] = 0;
+		$query_str = "SELECT checkin_status, count(checkin_status)
+						FROM 	sp_spots , sp_users
+						WHERE spots_place_id = {$place_id}
+						AND sp_users.id = spots_user_id
+						AND spots_user_id != {$user_id}
+						AND sp_users.gender != {$gender} 
+						AND is_checkin = 1
+						GROUP BY checkin_status
+					";
+		$query = $this->db->query($query_str);
+		if( $query->num_rows() > 0 ){
+			foreach ($query->result_array() as $row){
+				switch ($row['checkin_status'] ){
+					case $this->red_status:
+						$result['red']++;
+						break;
+					case $this->yellow_status:
+						$result['yellow']++;
+						break;
+					case $this->green_status:
+						$result['green']++;
+						break;
+				}
+				
 			}
 		}
 		
