@@ -142,6 +142,8 @@ $lang['bf_email']				= 'Email';
 $lang['bf_user_settings']		= 'My Profile';
 $lang['bf_image']				= 'Image';
 $lang['bf_gender']				= 'Gender';
+$lang['bf_first_name']			= 'First Name';
+$lang['bf_last_name']			= 'Last Name';
 
 //--------------------------------------------------------------------
 // !

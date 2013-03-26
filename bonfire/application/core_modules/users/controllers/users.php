@@ -428,6 +428,8 @@ class Users extends Front_Controller
 		{
 			// Validate input
 			$this->form_validation->set_rules('email', 'lang:bf_email', 'required|trim|strip_tags|valid_email|max_length[120]|unique[users.email]|xss_clean');
+			$this->form_validation->set_rules('first_name', 'lang:bf_first_name', 'required|trim|strip_tags|max_length[120]|xss_clean');
+			$this->form_validation->set_rules('last_name', 'lang:bf_last_name', 'required|trim|strip_tags|max_length[120]|xss_clean');
 
 			/*if ($this->settings_lib->item('auth.use_usernames'))
 			{
@@ -460,11 +462,12 @@ class Users extends Front_Controller
 			{
 				// Time to save the user...
 				$data = array(
+						'first_name'=> $_POST['first_name'],
+						'last_name' => $_POST['last_name'],
 						'email'		=> $_POST['email'],
 						'password'	=> $_POST['password'],
 						'gender'	=> $_POST['gender']
 					);
-
 				// User activation method
 				$activation_method = $this->settings_lib->item('auth.user_activation_method');
 
@@ -479,7 +482,14 @@ class Users extends Front_Controller
 				{
 					// now add the meta is there is meta data
 					//$this->user_model->save_meta_for($user_id, $meta_data);
-
+					if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != ''){
+						$image_name = $user_id."_imageprofile.png";
+						$image_path = ASSET_PATH.'images/user';
+						$command = "mv {$image_path}/{$_FILES['image']['name']}  {$image_path}/{$image_name}";
+						@shell_exec($command);
+						$this->user_model->update($user_id, array(
+						'image' => Assets::assets_url('image')."user/".$user_id."_imageprofile.png"));
+					}
 					/*
 					 * USER ACTIVATIONS ENHANCEMENT
 					 */
@@ -1082,8 +1092,8 @@ class Users extends Front_Controller
 		
 		private function upload_image(){
 			if(isset($_POST['submit'])){
-				if($_FILES['image']['name'] != ''){
-					$config['upload_path'] = 'assets/images/user/';
+				if($_FILES['image']['name'] != '' && isset($_FILES['image']['name'])){
+					$config['upload_path'] 	= ASSET_PATH.'images/user';
 					$config['allowed_types'] = 'gif|jpg|png';
 					$config['max_size']	= '1024';
 					$config['max_width']  = '1024';
@@ -1093,7 +1103,7 @@ class Users extends Front_Controller
 					if(!$this->upload->do_upload("image")){
 						$error = array('errors' => $this->upload->display_errors());
 						//$this->load->view('upload', $error);
-						Template::set('error', $error);
+						Template::set('image_error', $error);
 						return FALSE;
 					}
 				}

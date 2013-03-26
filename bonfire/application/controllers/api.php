@@ -298,8 +298,7 @@ class Api extends Front_Controller
 		if( !isset($_POST['user_id']) || !isset($_POST['place_id']) ){
 			$result['code'] = '100';
 		} else {
-			$curtime = date('Y-m-d H:i:s');
-			$sql	= "UPDATE sp_spots SET is_checkin =0,checkout_time='{$curtime}'
+			$sql	= "UPDATE sp_spots SET is_checkin =0,checkout_time= NOW()
 						WHERE spots_user_id = {$_POST['user_id']} AND spots_place_id = {$_POST['place_id']}";
 			$query = $this->db->query($sql);
 			if($query !== TRUE){
@@ -451,6 +450,28 @@ class Api extends Front_Controller
 				}
 			} else {
 				$result['code'] = '101';
+			}
+		}
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
+		Template::render('api');
+	}
+	
+	public function sign_out(){
+		$this->write_log_for_request("sign_out");
+		// dummy data
+		$result = array();
+		if(!isset($_POST['user_id'])){
+			$result['code'] = '100';
+		} else {
+			$sql	= "UPDATE sp_spots 
+					   SET is_checkin =0,checkout_time= NOW()
+					   WHERE spots_user_id = {$_POST['user_id']}";
+			$query = $this->db->query($sql);
+			if($query !== TRUE){
+				$result['code'] = '101';
+			} else {
+				$result['code'] = '200';
 			}
 		}
 		Template::set('result', json_encode($result));

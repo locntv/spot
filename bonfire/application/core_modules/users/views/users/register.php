@@ -13,13 +13,13 @@
 			</div>
 		</div>
 <?php endif; ?>
-<?php if (isset($error)) : ?>
+<?php if (isset($image_error)) : ?>
 		<div class="row-fluid">
 			<div class="span12">
 				<div class="alert alert-error fade in">
 						<a data-dismiss="alert" class="close">&times;</a>
 					<?php 
-						foreach($error as $err){
+						foreach($image_error as $err){
 							echo $err;
 						}
 					?>
@@ -33,7 +33,21 @@
 
 <?php echo form_open('register', array('class' => "form-horizontal", 'autocomplete' => 'off','enctype' => 'multipart/form-data')); ?>
 <input type="hidden" name="MAX_FILE_SIZE" value="100000000" />
-
+	
+	<div class="control-group <?php echo iif( form_error('first_name') , 'error'); ?>">
+		<label class="control-label required" for="first_name"><?php echo lang('bf_first_name'); ?></label>
+		<div class="controls">
+		 <input class="span6" type="text" name="first_name" id="first_name"  value="<?php echo set_value('first_name'); ?>"  placeholder="First Name" />
+		</div>
+	</div>
+	
+	<div class="control-group <?php echo iif( form_error('last_name') , 'error'); ?>">
+		<label class="control-label required" for="last_name"><?php echo lang('bf_last_name'); ?></label>
+		<div class="controls">
+		 <input class="span6" type="text" name="last_name" id="last_name"  value="<?php echo set_value('last_name'); ?>"  placeholder="Last Name" />
+		</div>
+	</div>
+	
 	<div class="control-group <?php echo iif( form_error('email') , 'error'); ?>">
 		<label class="control-label required" for="email"><?php echo lang('bf_email'); ?></label>
 		<div class="controls">
