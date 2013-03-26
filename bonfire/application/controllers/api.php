@@ -328,7 +328,7 @@ class Api extends Front_Controller
 		} else {
 			$user = $this->user_model->find($_POST['user_id']);
 			if($user !== FALSE){
-				$query_str = "SELECT user.image,user.first_name,user.last_name,spot.checkin_status
+				$query_str = "SELECT user.id,user.image,user.first_name,user.last_name,spot.checkin_status
 					FROM sp_users user, sp_spots spot
 					WHERE user.id = spot.spots_user_id
 					AND	spot.spots_place_id = {$places_id}
@@ -367,8 +367,22 @@ class Api extends Front_Controller
 				$query_str = "SELECT user.id, user.first_name, user.last_name, user.image, count(spot.id) as checkin_time
 							  FROM sp_users user, sp_spots as spot
 							  WHERE user.id = spot.spots_user_id 
-							  AND spot.user_id = {$_POST['user_id']}
-							  AND DATE(spot.checkin_time) = {$cur_date}";				
+							  AND spot.spots_user_id = {$_POST['user_id']}
+							  AND DATE(spot.checkin_time) = CURDATE()";
+				$query = $this->db->query($query_str);
+				if ($query->num_rows() > 0)
+				{
+					foreach($query->result_array() as $row)
+					{
+						//$row['people'] = $this->get_list_user_in_venue($row['id'],$user_gender);
+						$result ['person']['user_id'] 			= $row['id'];
+						$result ['person']['first_name'] 		= $row['first_name'];
+						$result ['person']['last_name'] 		= $row['id'];
+						$result ['person']['image'] 			= $row['image'];
+						$result ['person']['checkin_times'] 	= $row['checkin_time'];
+					}
+					$result['code'] = '200';
+				}			
 			} else {
 				$result['code'] = '101';
 			}
@@ -379,6 +393,70 @@ class Api extends Front_Controller
 		Template::set_view("api/index");
 		Template::render('api');
 	}//end people()
+	
+	public function update_password(){
+		$this->write_log_for_request("update_password");
+		// dummy data
+		$result = array();
+		if(!isset($_POST['user_id']) || !isset($_POST['password'])){
+			$result['code'] = '100';
+		} else {
+			if($user = $this->user_model->find($_POST['user_id']) !== FALSE){
+				if($this->user_model->update($_POST['user_id'],
+						array('password' => $_POST['password'])) !== FALSE){
+					$result['code'] = '200';
+					$result['user_id'] = $_POST['user_id'];
+				} else {
+					$result['code'] = '102';
+				}
+			} else {
+				$result['code'] = '101';
+			}
+		}
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
+		Template::render('api');
+	}
+	
+	public function update_image(){
+		$this->write_log_for_request("update_image");
+		// dummy data
+		$result = array();
+		if(!isset($_POST['user_id']) || !isset($_FILES['image']['name'])){
+			$result['code'] = '100';
+		} else {
+			if($user = $this->user_model->find($_POST['user_id']) !== FALSE){
+				$config['upload_path'] 	= ASSET_PATH.'images/user';
+				$config['allowed_types']= 'gif|jpg|png';
+				$config['max_size']		= '1024';
+				$config['max_width']  	= '128';
+				$config['max_height']  	= '128';
+				
+				$this->load->library('upload', $config);
+				if(!$this->upload->do_upload("image")){
+					//$error = array('errors' => $this->upload->display_errors());
+					$result['code'] = '103';
+				} else {
+					$image_name = $_POST['user_id']."_imageprofile.png";
+					$command = "mv {$config['upload_path']}/{$_FILES['image']['name']}  {$config['upload_path']}/{$image_name}";
+					@shell_exec($command);
+					if($this->user_model->update($user_id, array(
+							'image' => Assets::assets_url('image')."/user/".$image_name."_imageprofile.png")
+					) ){
+						$result['code'] = '200';
+						$result['user_id'] = $_POST['user_id'];
+					} else {
+						$result['code'] = '102';
+					}
+				}
+			} else {
+				$result['code'] = '101';
+			}
+		}
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
+		Template::render('api');
+	}
 	
 	//--------------------------------------------------------------------
 
