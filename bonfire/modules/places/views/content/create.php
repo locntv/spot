@@ -1,84 +1,26 @@
 <style type="text/css">
 	#map_canvas { height: 200px; width: 100%; }
 </style>
-
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script type="text/javascript"
 	src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=en">
 </script>
-
+<script src="<?php echo Template::theme_url('js/google.map.custom.js'); ?>"></script>
 <script type="text/javascript">
-	var geocoder;
-	var map;
-	var marker = new google.maps.Marker( { draggable: true } );
-	var pos; // current position
 
-	function initialize() {
-		var mapOptions = {
-			zoom: 15,
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
-			mapTypeControl: false,
-			scrollwheel: false
-		};
-		map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+	$(document).ready(function() {
 
-		geocoder = new google.maps.Geocoder();
-		//marker.setMap(map);
+		var address = [];
+		address['id'] = '#places_address';
+		address['lat'] = '#places_latitude';
+		address['lng'] = '#places_longitude';
 
-		// Try HTML5 geolocation
-		if(navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function(position) {
-				pos = new google.maps.LatLng(position.coords.latitude,
-											position.coords.longitude);
-
-				new google.maps.Marker({
-					position: pos,
-					map: map,
-				});
-
-				map.setCenter(pos);
-			}, function() {
-				handleNoGeolocation(true);
-			});
-		} else {
-			// Browser doesn't support Geolocation
-			handleNoGeolocation(false);
-		}
-
-	}
-
-	function handleNoGeolocation(errorFlag) {
-		if (errorFlag) {
-			var content = 'Error: The Geolocation service failed.';
-		} else {
-			var content = 'Error: Your browser doesn\'t support geolocation.';
-		}
-
-		var options = {
-			map: map,
-			position: new google.maps.LatLng(60, 105),
-			content: content
-		};
-
-		var infowindow = new google.maps.InfoWindow(options);
-		map.setCenter(options.position);
-	}
-
-	google.maps.event.addDomListener(window, 'load', initialize);
-
+		MYMAP.init('#map_canvas', 15);
+		MYMAP.setCurrentMarker(true, address);
+		MYMAP.addDragMarkerEvent(MYMAP.currentMarker, '#places_address', '#places_latitude', '#places_longitude');
+	});
 	function codeAddress() {
-		var address = document.getElementById("places_address").value;
-		geocoder.geocode ( { 'address': address }, function( results, status )  {
-			if ( status == google.maps.GeocoderStatus.OK ) {
-				//map.setCenter( results[0].geometry.location );
-				marker.setPosition( results[0].geometry.location );
-			} else {
-				alert("Geocode was not successful for the following reason: " + status);
-			}
-		});
-	}
-
-	function setFocusOnSearch() {
-		document.getElementById("search").focus();
+		MYMAP.searchLocation(MYMAP.currentMarker, '#places_address', '#places_latitude', '#places_longitude');
 	}
 
 </script>
@@ -91,10 +33,10 @@
 </div>
 <?php endif; ?>
 <?php // Change the css classes to suit your needs
-if( isset($places) ) {
-	$places = (array)$places;
-}
-$id = isset($places['id']) ? $places['id'] : '';
+	if( isset($places) ) {
+		$places = (array)$places;
+	}
+	$id = isset($places['id']) ? $places['id'] : '';
 ?>
 <div class="admin-box">
 	<h3>Places</h3>
@@ -120,6 +62,7 @@ $id = isset($places['id']) ? $places['id'] : '';
 			<div class='controls'>
 				<input id="places_address" type="text" name="places_address" maxlength="255" value="<?php echo set_value('places_address', isset($places['places_address']) ? $places['places_address'] : ''); ?>"  />
 				<span class="help-inline"><?php echo form_error('places_address'); ?></span>
+				<a href="#" style="margin-left: 10px;font-size:14px;" onclick="javascript:codeAddress();">Search</a>
 			</div>
 		</div>
 
