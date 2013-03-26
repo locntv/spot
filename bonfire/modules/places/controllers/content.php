@@ -12,7 +12,7 @@ class content extends Admin_Controller {
 		$this->auth->restrict('Places.Content.View');
 		$this->load->model('places_model', null, true);
 		$this->lang->load('places');
-		
+
 		Template::set_block('sub_nav', 'content/_sub_nav');
 	}
 
@@ -89,6 +89,7 @@ class content extends Admin_Controller {
 		}
 		Assets::add_module_js('places', 'places.js');
 
+		Template::set('google_map', true);
 		Template::set('toolbar_title', lang('places_create') . ' Places');
 		Template::render();
 	}
@@ -178,13 +179,12 @@ class content extends Admin_Controller {
 			$_POST['id'] = $id;
 		}
 
-		
+
 		$this->form_validation->set_rules('places_name','Name','required|unique[sp_places.places_name,sp_places.id]|max_length[255]');
 		$this->form_validation->set_rules('places_address','Address','required|unique[sp_places.places_address,sp_places.id]|max_length[255]');
 		$this->form_validation->set_rules('places_type','Type','required|max_length[255]');
 		$this->form_validation->set_rules('places_longitude','longitude','required|max_length[25]');
 		$this->form_validation->set_rules('places_latitude','Latitude','required|max_length[25]');
-		$this->form_validation->set_rules('places_image','Image','required|max_length[255]');
 
 		if ($this->form_validation->run() === FALSE)
 		{
@@ -192,7 +192,7 @@ class content extends Admin_Controller {
 		}
 
 		// make sure we only pass in the fields we want
-		
+
 		$data = array();
 		$data['places_name']        = $this->input->post('places_name');
 		$data['places_address']        = $this->input->post('places_address');

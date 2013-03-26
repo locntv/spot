@@ -22,7 +22,7 @@
 
 	<script src="<?php echo Template::theme_url('js/modernizr-2.5.3.js'); ?>"></script>
 </head>
-<body class="desktop">
+<body class="desktop"<?php if ( isset( $google_map ) ) : ?> onload="initialize()"<?php endif; ?>>
 <!--[if lt IE 7]>
 		<p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or
 		<a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p>
@@ -109,7 +109,7 @@
 
 	</div><!-- /topbar -->
 
- <div class="subnav navbar-fixed-top" >
+<div class="subnav navbar-fixed-top" >
 	<div class="container-fluid">
 
 		<?php if (isset($toolbar_title)) : ?>
