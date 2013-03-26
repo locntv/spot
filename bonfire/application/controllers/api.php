@@ -95,7 +95,7 @@ class Api extends Front_Controller
 			} else {
 				$is_image_uploaded = TRUE;
 				$is_image		   = FALSE;
-				if($_FILES['image']['name'] != ''){
+				if(isset($_FILES['image']) && $_FILES['image']['name'] != ''){
 					$is_image 				= TRUE;
 					$config['upload_path'] 	= ASSET_PATH.'images/user';
 					$config['allowed_types']= 'gif|jpg|png';
@@ -193,12 +193,13 @@ class Api extends Front_Controller
 			|| !isset($_POST['user_id']) ){
 			$result['code'] = '100';
 		} else {
-			if( $this->current_user && $this->current_user->id == $_POST['user_id']){
+			$user = $this->user_model->find($_POST['user_id']);
+			if( $user !== FALSE){
 				$query_str = "SELECT
 								id,places_name,places_address,places_type,places_latitude, places_longitude,places_image,
 								3956 * 2 * ASIN(SQRT(POWER(SIN(({$_POST['latitude']}- places_latitude) * pi()/180 / 2), 2) +COS({$_POST['latitude']} * pi()/180) *COS(places_latitude * pi()/180) *POWER(SIN(({$_POST['longitude']} -places_longitude) * pi()/180 / 2), 2) )) as distance
 							  FROM sp_places HAVING distance < 0.1 ORDER BY distance;";
-				$user_gender = $this->current_user->gender; // default is female
+				$user_gender = $user->gender; // default is female
 				$result = array();
 					
 				$query = $this->db->query($query_str);
@@ -241,15 +242,18 @@ class Api extends Front_Controller
 			|| !isset($_POST['status_checkin']) ){
 				$result['code'] = '100';
 		} else {
-			if($this->current_user && $this->current_user->id == $_POST['user_id']){
+			$user = $this->user_model->find($_POST['user_id']);
+			if($user !== FALSE){
 				if($this->distance($_POST['user_latitude'], $_POST['user_longitude'],
 					$_POST['place_latitude'],
 					$_POST['place_longitude'],true) <= $this->allowed_distance){
-					if($this->spots_model->update($_POST['place_id'],
+					if($spot_id = $this->spots_model->insert(
 							array(
+								'spots_user_id' => $_POST['user_id'],
+								'spots_place_id'=> $_POST['place_id'],
 								'checkin_status'=> $_POST['status_checkin'],
 								'is_checkin'	=> 1,
-								'checkin_time'	=> date('Y-m-d H:i:s')))){
+								'checkin_time'	=> date('Y-m-d H:i:s'))) !== FALSE){
 						$result['code'] = '200';
 					} else{
 						$result['code'] = '103';
@@ -267,6 +271,49 @@ class Api extends Front_Controller
 		Template::render('api');
 	}
 	
+	public function is_checkin(){
+		$this->write_log_for_request("is_checkin");
+		$result = array();
+		if( !isset($_POST['user_id']) || !isset($_POST['place_id']) ){
+			$result['code'] = '100';
+		} else {
+			if($spot = $this->spot_model->find_by(array(
+					'spot_place_id' => $_POST['place_id'],
+					'spot_user_id'  => $_POST['user_id'],
+					'is_checkin'	=> 1)) !== FALSE){
+				$result['code'] = '101';
+			} else {
+				$result['code'] = '200';
+			}
+		}
+	
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
+		Template::render('api');
+	}
+	
+	public function checkout(){
+		$this->write_log_for_request("checkout");
+		$result = array();
+		if( !isset($_POST['user_id']) || !isset($_POST['place_id']) ){
+			$result['code'] = '100';
+		} else {
+			$curtime = date('Y-m-d H:i:s');
+			$sql	= "UPDATE sp_spots SET is_checkin =0,checkout_time='{$curtime}'
+						WHERE spots_user_id = {$_POST['user_id']} AND spots_place_id = {$_POST['place_id']}";
+			$query = $this->db->query($sql);
+			if($query !== TRUE){
+				$result['code'] = '101';
+			} else {
+				$result['code'] = '200';
+			}
+		}
+	
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
+		Template::render('api');
+	}
+	
 	/**
 	 * API for people 
 	 * @param POST data include user_id, place_id
@@ -279,43 +326,29 @@ class Api extends Front_Controller
 		if(!isset($_POST['place_id']) || !isset($_POST['user_id'])){
 			$result['code'] = '100';
 		} else {
-			if($this->current_user && $this->current_user->id == $_POST['user_id']){
-				$query_str = "SELECT user.id,user.image,user.email
-				FROM sp_users user, sp_spots spot
-				WHERE user.id = spot.spots_user_id
-				AND	spot.spots_place_id = {$places_id}
-				AND	user.gender != {$gender}
-				AND 	user.id != {$user_id}";
+			$user = $this->user_model->find($_POST['user_id']);
+			if($user !== FALSE){
+				$query_str = "SELECT user.image,user.first_name,user.last_name,spot.checkin_status
+					FROM sp_users user, sp_spots spot
+					WHERE user.id = spot.spots_user_id
+					AND	spot.spots_place_id = {$places_id}
+					AND user.id != {$user_id}";
+				$query = $this->db->query($query_str);
+				if ($query->num_rows() > 0)
+				{
+					foreach($query->result_array() as $row)
+					{
+						$result ['data'][] = $row;
+					}
+					$result['code'] = '200';
+				} else {
+					$result['code'] = '102';
+				}
 			} else {
 				$result['code'] = '101';
 			}
 		}		
 		
-		if($spot_id = $this->spots_model->insert(array(
-					'spots_user_id' => $user_id,
-					'spots_place_id'=> $places_id,
-					'checkin_status'=> $status_checkin,
-					'is_checkin'	=> 1,
-					'checkin_time'	=> date('Y-m-d H:i:s')	
-				)) ){
-			$query_str = "SELECT user.id,user.image,user.email  
-						  FROM sp_users user, sp_spots spot 
-						  WHERE user.id = spot.spots_user_id 
-						  AND	spot.spots_place_id = {$places_id} 
-						  AND	user.gender != {$gender}
-						  AND 	user.id != {$user_id}";
-			
-			$query = $this->db->query($query_str);
-			if ($query->num_rows() > 0)
-			{
-				foreach($query->result_array() as $row)
-				{
-					$result [] = $row;
-				}
-			}
-		} else {
-			
-		}
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
@@ -325,28 +358,27 @@ class Api extends Front_Controller
 	{
 		$this->write_log_for_request("profile");
 		// dummy data
-		$user_id = '2';
-		$checkin_times = $this->spots_model->count_by('spots_user_id',$user_id);	
 		$result = array();
-		$result['count'] = $checkin_times;
+		if(!isset($_POST['user_id'])){
+			$result['code'] = '100';
+		} else {
+			if($user = $this->user_model->find($_POST['user_id']) !== FALSE){
+				$cur_date = date('Y-m-d');
+				$query_str = "SELECT user.id, user.first_name, user.last_name, user.image, count(spot.id) as checkin_time
+							  FROM sp_users user, sp_spots as spot
+							  WHERE user.id = spot.spots_user_id 
+							  AND spot.user_id = {$_POST['user_id']}
+							  AND DATE(spot.checkin_time) = {$cur_date}";				
+			} else {
+				$result['code'] = '101';
+			}
+			
+		}
+		
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
 	}//end people()
-	
-	public function checkout(){
-		$this->write_log_for_request("profile");
-		
-		$user_id = '1';
-		$place_id = '1';
-		$curtime = date('Y-m-d H:i:s');
-		$sql	= "UPDATE sp_spots SET is_checkin =0,checkout_time='{$curtime}'
-					WHERE spots_user_id = {$user_id} AND spots_user_id = {$place_id}";
-		$query = $this->db->query($sql);
-		Template::set('result', json_encode($query));
-		Template::set_view("api/index");
-		Template::render('api');
-	}
 	
 	//--------------------------------------------------------------------
 
@@ -467,6 +499,7 @@ class Api extends Front_Controller
 	 */
 	private function build_data_venue($data){
 		return array(
+					'id'		=> $data['id'],
 					'name' 		=> $data['places_name'],
 					'address'	=> $data['places_address'],
 					'longitude' => $data['places_longitude'],
