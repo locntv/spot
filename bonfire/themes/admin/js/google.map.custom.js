@@ -13,7 +13,7 @@ MYMAP.init = function(selector, zoom) {
 		scrollwheel: false
 	}
 	this.map = new google.maps.Map($(selector)[0], myOptions);
-	this.bounds = new google.maps.LatLngBounds();
+	//this.bounds = new google.maps.LatLngBounds();
 	this.geocoder = new google.maps.Geocoder();
 }
 

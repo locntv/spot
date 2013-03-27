@@ -40,7 +40,7 @@
 ?>
 <div class="admin-box">
 	<h3>Places</h3>
-<?php echo form_open($this->uri->uri_string(), 'class="form-horizontal"'); ?>
+<?php echo form_open($this->uri->uri_string(), 'class="form-horizontal" enctype="multipart/form-data"'); ?>
 	<fieldset>
 		<div class="control-group <?php echo form_error('places_name') ? 'error' : ''; ?>">
 			<?php echo form_label('Name'. lang('bf_form_label_required'), 'places_name', array('class' => "control-label") ); ?>
