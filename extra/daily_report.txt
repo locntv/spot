@@ -3,22 +3,22 @@ Web-app
 =================================
 Profile creation 		=> done
 
-Check-in				=> 40%
- - show data
- - apply location (not yet)
-  
-Check-out				=> 50%
- - show data
- - apply location (not yet) 
+Check-in				=> 60%
+- show data
+- apply location
+
+Check-out				=> 60%
+- show data
+- apply location
 
 People page				=> 50%
 
-User location tracking	=> 0%
+User location tracking	=> 30%
 
 Admin webpage         	=> 60%
 
 Photo uploading			=> 60%
 
-Map view                => 50%
- - Show map and marker
- - Customize marker icon (not yet)
+Map view                => 70%
+- Show map and marker
+- Customize marker icon (not yet)
