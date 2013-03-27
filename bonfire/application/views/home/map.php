@@ -1,5 +1,5 @@
 <style type="text/css">
-	#map_canvas { height: 300px; width: 100%; }
+	#map_canvas { position:absolute; width:100%; height:90%; }
 </style>
 <script type="text/javascript"
 	src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=en">
@@ -10,12 +10,9 @@
 	$(document).ready(function() {
 
 		MYMAP.init('#map_canvas', 15);
-		//MYMAP.setCurrentMarker(true, address);
-		//MYMAP.addDragMarkerEvent(MYMAP.currentMarker, '#places_address', '#places_latitude', '#places_longitude');
+		MYMAP.setCurrentMarker(true, '');
 	});
 
 </script>
 
-<div class="container">
-	<div id="map_canvas"></div>
-</div>
+<div data-role="content" id="map_canvas"></div>

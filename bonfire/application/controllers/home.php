@@ -50,7 +50,7 @@ class Home extends Front_Controller
 	public function map()
 	{
 		Template::set('page_title', 'Map');
-		Template::render();
+		Template::render('index_fullscreen');
 	}//end map()
 
 	/**
