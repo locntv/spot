@@ -179,16 +179,34 @@ class content extends Admin_Controller {
 			$_POST['id'] = $id;
 		}
 
-
 		$this->form_validation->set_rules('places_name','Name','required|unique[sp_places.places_name,sp_places.id]|max_length[255]');
 		$this->form_validation->set_rules('places_address','Address','required|unique[sp_places.places_address,sp_places.id]|max_length[255]');
 		$this->form_validation->set_rules('places_type','Type','required|max_length[255]');
 		$this->form_validation->set_rules('places_longitude','longitude','required|max_length[25]');
 		$this->form_validation->set_rules('places_latitude','Latitude','required|max_length[25]');
 
-		if ($this->form_validation->run() === FALSE)
+		$is_image = FALSE;
+		$is_image_uploaded = TRUE;
+		if ($this->form_validation->run() === FALSE )
 		{
 			return FALSE;
+		} else {
+			if(isset($_FILES['places_image']['name']) && $_FILES['places_image']['name'] != ''){
+				$is_image = TRUE;
+				$config['upload_path'] 	= ASSET_PATH.'images/venue';
+				$config['allowed_types'] = 'gif|jpg|png';
+				$config['max_size']	= '1024';
+				$config['max_width']  = '1024';
+				$config['max_height']  = '768';
+			
+				$this->load->library('upload', $config);
+				if(!$this->upload->do_upload("places_image")){
+					$error = array('errors' => $this->upload->display_errors());
+					//$this->load->view('upload', $error);
+					Template::set('image_error', $error);
+					return FALSE;
+				}
+			}
 		}
 
 		// make sure we only pass in the fields we want
@@ -199,7 +217,10 @@ class content extends Admin_Controller {
 		$data['places_type']        = $this->input->post('places_type');
 		$data['places_longitude']        = $this->input->post('places_longitude');
 		$data['places_latitude']        = $this->input->post('places_latitude');
-		$data['places_image']        = $this->input->post('places_image');
+		if($is_image == TRUE){
+			$data['places_image']	= Assets::assets_url('image')."venue/".$_FILES['places_image']['name'];
+		}
+		//$data['places_image']        = $this->input->post('places_image');
 
 		if ($type == 'insert')
 		{
@@ -217,6 +238,7 @@ class content extends Admin_Controller {
 		{
 			$return = $this->places_model->update($id, $data);
 		}
+		
 
 		return $return;
 	}

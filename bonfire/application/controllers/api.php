@@ -60,7 +60,10 @@ class Api extends Front_Controller
 	 */
 	public function index()
 	{
-		$records = $this->spots_model->find_all();
+		$records = $this->spots_model->find_by(array(
+					'spots_place_id' => 1,
+					'spots_user_id'  => 1,
+					'is_checkin'	=> 1));
 		
 		$arr = array(
 			0 => 'abc',
@@ -277,13 +280,13 @@ class Api extends Front_Controller
 		if( !isset($_POST['user_id']) || !isset($_POST['place_id']) ){
 			$result['code'] = '100';
 		} else {
-			if($spot = $this->spot_model->find_by(array(
-					'spot_place_id' => $_POST['place_id'],
-					'spot_user_id'  => $_POST['user_id'],
+			if($spot = $this->spots_model->find_by(array(
+					'spots_place_id' => $_POST['place_id'],
+					'spots_user_id'  => $_POST['user_id'],
 					'is_checkin'	=> 1)) !== FALSE){
-				$result['code'] = '101';
-			} else {
 				$result['code'] = '200';
+			} else {
+				$result['code'] = '101';
 			}
 		}
 	
@@ -322,7 +325,8 @@ class Api extends Front_Controller
 		$this->write_log_for_request("people");
 		// dummy data
 		$result = array();
-		if(!isset($_POST['place_id']) || !isset($_POST['user_id'])){
+		if(!isset($_POST['place_id']) || !is_numeric($_POST['place_id']) 
+				|| !isset($_POST['user_id']) || !is_numeric($_POST['user_id'])){
 			$result['code'] = '100';
 		} else {
 			$user = $this->user_model->find($_POST['user_id']);
@@ -330,8 +334,8 @@ class Api extends Front_Controller
 				$query_str = "SELECT user.id,user.image,user.first_name,user.last_name,spot.checkin_status
 					FROM sp_users user, sp_spots spot
 					WHERE user.id = spot.spots_user_id
-					AND	spot.spots_place_id = {$places_id}
-					AND user.id != {$user_id}";
+					AND	spot.spots_place_id = {$_POST['place_id']}
+					AND user.id != {$_POST['user_id']}";
 				$query = $this->db->query($query_str);
 				if ($query->num_rows() > 0)
 				{
