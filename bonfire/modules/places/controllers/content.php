@@ -198,7 +198,7 @@ class content extends Admin_Controller {
 				$config['max_size']	= '1024';
 				$config['max_width']  = '1024';
 				$config['max_height']  = '768';
-			
+
 				$this->load->library('upload', $config);
 				if(!$this->upload->do_upload("places_image")){
 					$error = array('errors' => $this->upload->display_errors());
@@ -238,7 +238,7 @@ class content extends Admin_Controller {
 		{
 			$return = $this->places_model->update($id, $data);
 		}
-		
+
 
 		return $return;
 	}

@@ -111,7 +111,7 @@ $config['template.default_layout'] = "index";
 | NOTE: do not include an ending ".php" extension.
 |
 */
-$config['template.ajax_layout'] = 'ajax';
+$config['template.ajax_layout'] = 'api';
 
 /*
 |--------------------------------------------------------------------

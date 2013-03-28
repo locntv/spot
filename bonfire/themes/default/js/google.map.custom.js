@@ -144,32 +144,33 @@ MYMAP.searchLocation = function(marker, address_elementid, lat_elementid, lng_el
 		}
 	});
 }
-/*MYMAP.placeMarkers = function(filename) {
-	$.get(filename, function(xml){
-		$(xml).find("marker").each(function(){
-			var name = $(this).find('name').text();
-			var address = $(this).find('address').text();
 
-			// create a new LatLng point for the marker
-			var lat = $(this).find('lat').text();
-			var lng = $(this).find('lng').text();
-			var point = new google.maps.LatLng(parseFloat(lat),parseFloat(lng));
+MYMAP.getPlacesByLocation = function(selector, url) {
 
-			// extend the bounds to include the new point
-			MYMAP.bounds.extend(point);
+	// Try HTML5 geolocation
+	if(navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
 
-			var marker = new google.maps.Marker({
-				position: point,
-				map: MYMAP.map
+			$.ajax({
+				'dataType': 'json',
+				'type'    : 'POST',
+				'async'   : false,
+				'url'     : url,
+				'data'    : { lat: position.coords.latitude, lng: position.coords.longitude },
+				'success' : function(data) {
+					$(selector).empty();
+					$.each(data, function(index, element) {
+						$(selector).append(listing_item(index + 1, element));
+					});
+				}
 			});
-
-			var infoWindow = new google.maps.InfoWindow();
-			var html='<strong>'+name+'</strong.><br />'+address;
-			google.maps.event.addListener(marker, 'click', function() {
-				infoWindow.setContent(html);
-				infoWindow.open(MYMAP.map, marker);
-			});
-			MYMAP.map.fitBounds(MYMAP.bounds);
+			$(selector).listview("refresh");
+		}, function() {
+			handleNoGeolocation(true);
 		});
-	});
-}*/
+	} else {
+		// Browser doesn't support Geolocation
+		handleNoGeolocation(false);
+	}
+
+}
