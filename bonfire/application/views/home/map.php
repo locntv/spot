@@ -11,6 +11,7 @@
 
 		MYMAP.init('#map_canvas', 15);
 		MYMAP.setCurrentMarker(true, '');
+		MYMAP.placeMarkersByLocation('<?php echo site_url() ?>places/places_ajax');
 	});
 
 </script>
