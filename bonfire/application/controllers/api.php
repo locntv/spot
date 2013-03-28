@@ -31,7 +31,7 @@
 class Api extends Front_Controller
 {
 
-	
+
 	/**
 	 * Setup the required libraries etc
 	 *
@@ -41,18 +41,18 @@ class Api extends Front_Controller
 	{
 		parent::__construct();
 		$config =& get_config();
-		
+
 		$this->red_status 		= 1;
 		$this->yellow_status 	= 2;
 		$this->green_status		= 3;
-		$this->allowed_distance = 0.1; //0.1 miles	
+		$this->allowed_distance = 0.1; //0.1 miles
 		$this->_log_path = APPPATH.'logs/api/';
 		$this->load->model('places/places_model', null, true);
 		$this->load->model('places/spots_model', null, true);
 		$this->load->database();
 		$this->load->library('users/auth');
 	}//end __construct()
-	
+
 	/**
 	 * Displays the homepage of the Bonfire app
 	 *
@@ -64,7 +64,7 @@ class Api extends Front_Controller
 					'spots_place_id' => 1,
 					'spots_user_id'  => 1,
 					'is_checkin'	=> 1));
-		
+
 		$arr = array(
 			0 => 'abc',
 			1 => 'cdf'
@@ -72,7 +72,7 @@ class Api extends Front_Controller
 		Template::set('result', json_encode($records));
 		Template::render('api');
 	}//end index()
-	
+
 	/**
 	 * Receive request from app to sign up
 	 *
@@ -83,7 +83,7 @@ class Api extends Front_Controller
 		//Assign variable
 		$this->write_log_for_request("signup");
 		$result = array();
-		
+
 		//Process validate and save
 		if(    !isset($_POST['email']) || empty($_POST['email'])
 			|| !isset($_POST['password']) || empty($_POST['password'])
@@ -105,7 +105,7 @@ class Api extends Front_Controller
 					$config['max_size']		= '1024';
 					$config['max_width']  	= '128';
 					$config['max_height']  	= '128';
-				
+
 					$this->load->library('upload', $config);
 					if(!$this->upload->do_upload("image")){
 						//$error = array('errors' => $this->upload->display_errors());
@@ -147,38 +147,38 @@ class Api extends Front_Controller
 				}
 			}
 		}
-		
+
 		//render json
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
 	}//end index()
-	
+
 	/**
 	 * Receive request from appp to login
 	 *
 	 * @return void
 	 */
 	public function signin()
-	{	
+	{
 		$this->write_log_for_request("signin");
 		// dummy data
 		$email = isset($_POST['email']) ? $_POST['email'] : '';
 		$pass  = isset($_POST['password']) ? $_POST['password'] : '';
 		$result = array();
-		
+
 		if($this->auth->login($email,$pass,false)){
 			$result['code'] = 200;
 			$result['user_id'] = $this->auth->user_id();
 		} else {
 			$result['code'] = 100;
 		}
-		
+
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
 	}//end index()
-	
+
 	/**
 	 * Displays the homepage of the Bonfire app
 	 *
@@ -201,10 +201,10 @@ class Api extends Front_Controller
 				$query_str = "SELECT
 								id,places_name,places_address,places_type,places_latitude, places_longitude,places_image,
 								3956 * 2 * ASIN(SQRT(POWER(SIN(({$_POST['latitude']}- places_latitude) * pi()/180 / 2), 2) +COS({$_POST['latitude']} * pi()/180) *COS(places_latitude * pi()/180) *POWER(SIN(({$_POST['longitude']} -places_longitude) * pi()/180 / 2), 2) )) as distance
-							  FROM sp_places HAVING distance < 0.1 ORDER BY distance;";
+							FROM sp_places HAVING distance < 25 ORDER BY distance;";
 				$user_gender = $user->gender; // default is female
 				$result = array();
-					
+
 				$query = $this->db->query($query_str);
 				if ($query->num_rows() > 0)
 				{
@@ -221,26 +221,26 @@ class Api extends Front_Controller
 			} else {
 				$result['code'] = '101';
 			}
-			
+
 		}
-		
+
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
 	}//end spots()
-	
+
 	/**
-	 * API for checkin 
+	 * API for checkin
 	 * @param POST data include user_id,place_id,user_longitude,user_latitude
 	 * 		  place_longitude, place_latitude, status_checkin
 	 */
 	public function checkin(){
 		$this->write_log_for_request("checkin");
 		$result = array();
-		if( !isset($_POST['user_id']) || !isset($_POST['place_id']) 
-			|| !isset($_POST['user_longitude']) 
+		if( !isset($_POST['user_id']) || !isset($_POST['place_id'])
+			|| !isset($_POST['user_longitude'])
 			|| !isset($_POST['user_latitude'])
-			|| !isset($_POST['place_longitude']) 
+			|| !isset($_POST['place_longitude'])
 			|| !isset($_POST['place_latitude'])
 			|| !isset($_POST['status_checkin']) ){
 				$result['code'] = '100';
@@ -268,12 +268,12 @@ class Api extends Front_Controller
 				$result['code'] = '101';
 			}
 		}
-		
+
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
 	}
-	
+
 	public function is_checkin(){
 		$this->write_log_for_request("is_checkin");
 		$result = array();
@@ -289,12 +289,12 @@ class Api extends Front_Controller
 				$result['code'] = '101';
 			}
 		}
-	
+
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
 	}
-	
+
 	public function checkout(){
 		$this->write_log_for_request("checkout");
 		$result = array();
@@ -310,14 +310,14 @@ class Api extends Front_Controller
 				$result['code'] = '200';
 			}
 		}
-	
+
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
 	}
-	
+
 	/**
-	 * API for people 
+	 * API for people
 	 * @param POST data include user_id, place_id
 	 */
 	public function people()
@@ -325,7 +325,7 @@ class Api extends Front_Controller
 		$this->write_log_for_request("people");
 		// dummy data
 		$result = array();
-		if(!isset($_POST['place_id']) || !is_numeric($_POST['place_id']) 
+		if(!isset($_POST['place_id']) || !is_numeric($_POST['place_id'])
 				|| !isset($_POST['user_id']) || !is_numeric($_POST['user_id'])){
 			$result['code'] = '100';
 		} else {
@@ -350,8 +350,8 @@ class Api extends Front_Controller
 			} else {
 				$result['code'] = '101';
 			}
-		}		
-		
+		}
+
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
@@ -368,10 +368,10 @@ class Api extends Front_Controller
 			if($user = $this->user_model->find($_POST['user_id']) !== FALSE){
 				$cur_date = date('Y-m-d');
 				$query_str = "SELECT user.id, user.first_name, user.last_name, user.image, count(spot.id) as checkin_time
-							  FROM sp_users user, sp_spots as spot
-							  WHERE user.id = spot.spots_user_id 
-							  AND spot.spots_user_id = {$_POST['user_id']}
-							  AND DATE(spot.checkin_time) = CURDATE()";
+							FROM sp_users user, sp_spots as spot
+							WHERE user.id = spot.spots_user_id
+							AND spot.spots_user_id = {$_POST['user_id']}
+							AND DATE(spot.checkin_time) = CURDATE()";
 				$query = $this->db->query($query_str);
 				if ($query->num_rows() > 0)
 				{
@@ -385,18 +385,18 @@ class Api extends Front_Controller
 						$result ['person']['checkin_times'] 	= $row['checkin_time'];
 					}
 					$result['code'] = '200';
-				}			
+				}
 			} else {
 				$result['code'] = '101';
 			}
-			
+
 		}
-		
+
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
 		Template::render('api');
 	}//end people()
-	
+
 	public function update_password(){
 		$this->write_log_for_request("update_password");
 		// dummy data
@@ -420,7 +420,7 @@ class Api extends Front_Controller
 		Template::set_view("api/index");
 		Template::render('api');
 	}
-	
+
 	public function update_image(){
 		$this->write_log_for_request("update_image");
 		// dummy data
@@ -434,7 +434,7 @@ class Api extends Front_Controller
 				$config['max_size']		= '1024';
 				$config['max_width']  	= '128';
 				$config['max_height']  	= '128';
-				
+
 				$this->load->library('upload', $config);
 				if(!$this->upload->do_upload("image")){
 					//$error = array('errors' => $this->upload->display_errors());
@@ -460,7 +460,7 @@ class Api extends Front_Controller
 		Template::set_view("api/index");
 		Template::render('api');
 	}
-	
+
 	public function sign_out(){
 		$this->write_log_for_request("sign_out");
 		// dummy data
@@ -468,9 +468,9 @@ class Api extends Front_Controller
 		if(!isset($_POST['user_id'])){
 			$result['code'] = '100';
 		} else {
-			$sql	= "UPDATE sp_spots 
-					   SET is_checkin =0,checkout_time= NOW()
-					   WHERE spots_user_id = {$_POST['user_id']}";
+			$sql	= "UPDATE sp_spots
+					SET is_checkin =0,checkout_time= NOW()
+					WHERE spots_user_id = {$_POST['user_id']}";
 			$query = $this->db->query($sql);
 			if($query !== TRUE){
 				$result['code'] = '101';
@@ -482,39 +482,39 @@ class Api extends Front_Controller
 		Template::set_view("api/index");
 		Template::render('api');
 	}
-	
+
 	//--------------------------------------------------------------------
 
 	/**
-	 * Validate sign up 
-	 * 
+	 * Validate sign up
+	 *
 	 */
 	private function validate_signup($email='', $password=''){
 		$user = $this->user_model->find_by('email', $_POST['email']);
 		if($user !== FALSE){ // user has existed
 			return array(
 				'status'=>'error'
-			   ,'code' => '101'); 
+			,'code' => '101');
 		}
 		return array(
 				'status'=>'success');
 	}
-	
+
 	/**
-	 * Get list user in a venue, just get opposite gender 
+	 * Get list user in a venue, just get opposite gender
 	 * @param place_id : id of place
 	 * @param gender   : gender of user
 	 */
 	private function get_list_user_in_venue($place_id='', $gender= 0){
 		$result = array();
 		$query_str = "SELECT sp_users.id, sp_spots.checkin_status
-					  FROM 	sp_users , sp_spots 
-					  WHERE spots_place_id = {$place_id}
-					  AND (	
-					  		(spots_user_id = sp_users.id) 
-					  		OR
-					  		(sp_users.gender != {$gender} AND is_checkin = 1)
-					  	)";
+					FROM 	sp_users , sp_spots
+					WHERE spots_place_id = {$place_id}
+					AND (
+							(spots_user_id = sp_users.id)
+							OR
+							(sp_users.gender != {$gender} AND is_checkin = 1)
+						)";
 		$query = $this->db->query($query_str);
 		if( $query->num_rows() > 0 ){
 			foreach ($query->result_array() as $row){
@@ -525,10 +525,10 @@ class Api extends Front_Controller
 				);
 			}
 		}
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * Get list user in a venue, just get opposite gender
 	 * @param place_id : id of place
@@ -544,7 +544,7 @@ class Api extends Front_Controller
 						WHERE spots_place_id = {$place_id}
 						AND sp_users.id = spots_user_id
 						AND spots_user_id != {$user_id}
-						AND sp_users.gender != {$gender} 
+						AND sp_users.gender != {$gender}
 						AND is_checkin = 1
 						GROUP BY checkin_status
 					";
@@ -562,22 +562,22 @@ class Api extends Front_Controller
 						$result['green']++;
 						break;
 				}
-				
+
 			}
 		}
-		
+
 		return $result;
 	}
-	
+
 	private function get_distance($long_x, $lat_x, $long_y, $lat_y){
 		if(isset($long_x) && isset($lat_x) && isset($long_y) && isset($lat_y)){
 			return sqrt(pow(2, 69.1 * ($lat_y - $lat_x) +
 					pow(2, 69.1 * ($long_x - $long_y) * cos($lat_y / 57.3))));
 		}
 		return FALSE;
-		
+
 	}
-	
+
 	private function distance($lat1, $lng1, $lat2, $lng2, $miles = true)
 	{
 		$pi80 = M_PI / 180;
@@ -585,19 +585,19 @@ class Api extends Front_Controller
 		$lng1 *= $pi80;
 		$lat2 *= $pi80;
 		$lng2 *= $pi80;
-		 
+
 		$r = 6372.797; // mean radius of Earth in km
 		$dlat = $lat2 - $lat1;
 		$dlng = $lng2 - $lng1;
 		$a = sin($dlat / 2) * sin($dlat / 2) + cos($lat1) * cos($lat2) * sin($dlng / 2) * sin($dlng / 2);
 		$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 		$km = $r * $c;
-		 
+
 		return ($miles ? ($km * 0.621371192) : $km);
 	}
-	
+
 	/**
-	 * Build data from db to array based on JSON format 
+	 * Build data from db to array based on JSON format
 	 * @param data : data from query database
 	 */
 	private function build_data_venue($data){
@@ -611,10 +611,10 @@ class Api extends Front_Controller
 					'image'		=> $data['places_image'],
 					'people'	=> $data['people']
 				);
-	}	
-	
+	}
+
 	/**
-	 * Write log for each request to api 
+	 * Write log for each request to api
 	 * @param funciton : name of api called
 	 */
 	private function write_log_for_request($function='index'){
@@ -626,21 +626,21 @@ class Api extends Front_Controller
 		$filepath = $this->_log_path. $function .'/' .date('Y-m-d').'.txt';
 		$this->write_log($filepath,$message);
 	}
-	
+
 	/**
-	 * Write log to file 
-	 * 
+	 * Write log to file
+	 *
 	 */
 	private function write_log($filepath, $message){
 		if(!file_exists($filepath)){//file not exist
 			$info = pathinfo($filepath);
-		
+
 			@mkdir($info['dirname'], 0777, true);
 		}
 		$fh = fopen($filepath, 'a');
 
-	    fwrite($fh, $message);
-	    fclose($fh);
+		fwrite($fh, $message);
+		fclose($fh);
 	}
 
 }//end class

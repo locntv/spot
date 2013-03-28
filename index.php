@@ -25,7 +25,7 @@ if (is_dir(dirname(__FILE__).'/install') == true)
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
-	define('ENVIRONMENT', 'development');
+	define('ENVIRONMENT', 'testing');
 
 /*
  *---------------------------------------------------------------
@@ -217,7 +217,7 @@ if (is_dir(dirname(__FILE__).'/install') == true)
 
 	// Name of the "system folder"
 	define('SYSDIR', trim(strrchr(trim(BASEPATH, '/'), '/'), '/'));
-	
+
 
 	// The path to the "application" folder
 	if (is_dir($application_folder))
@@ -233,7 +233,7 @@ if (is_dir(dirname(__FILE__).'/install') == true)
 
 		define('APPPATH', BASEPATH.$application_folder.'/');
 	}
-	
+
 	if (is_dir($asset_path))
 	{
 		define('ASSET_PATH', $asset_path.'/');
@@ -244,7 +244,7 @@ if (is_dir(dirname(__FILE__).'/install') == true)
 		{
 			exit("Your application folder path does not appear to be set correctly. Please open the following file and correct this: ".SELF);
 		}
-	
+
 		define('ASSET_PATH', BASEPATH.$asset_path.'/');
 	}
 
