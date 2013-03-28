@@ -147,14 +147,24 @@ MYMAP.searchLocation = function(marker, address_elementid, lat_elementid, lng_el
 
 MYMAP.getPlacesByLocation = function(selector, url) {
 
-	var lat,lng;
 	// Try HTML5 geolocation
 	if(navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
-			lat = position.coords.latitude;
-			lng = position.coords.longitude;
-			//latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-			//MYMAP.map.fitBounds(MYMAP.bounds);
+
+			$.ajax({
+				'dataType': 'json',
+				'type'    : 'POST',
+				'async'   : false,
+				'url'     : url,
+				'data'    : { lat: position.coords.latitude, lng: position.coords.longitude },
+				'success' : function(data) {
+					$(selector).empty();
+					$.each(data, function(index, element) {
+						$(selector).append(listing_item(index + 1, element));
+					});
+				}
+			});
+			$(selector).listview("refresh");
 		}, function() {
 			handleNoGeolocation(true);
 		});
@@ -162,18 +172,5 @@ MYMAP.getPlacesByLocation = function(selector, url) {
 		// Browser doesn't support Geolocation
 		handleNoGeolocation(false);
 	}
-	$.ajax({
-		'dataType': 'json',
-		'type'    : 'POST',
-		'async'   : false,
-		'url'     : url,
-		//'data'    : { lat: lat, lng: lng },
-		'success' : function(data) {
-			$(selector).empty();
-			$.each(data, function(index, element) {
-				$(selector).append(listing_item(index + 1, element));
-			});
-		}
-	});
-	$(selector).listview("refresh");
+
 }

@@ -298,7 +298,7 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_expire' = The number in seconds the token should expire.
 */
 //$config['csrf_protection'] = TRUE;
-if(stripos($_SERVER["REQUEST_URI"],'/api') === FALSE || stripos($_SERVER["REQUEST_URI"],'/places/places_ajax') === FALSE)
+if(stripos($_SERVER["REQUEST_URI"],'/api') === FALSE && stripos($_SERVER["REQUEST_URI"],'/places/places_ajax') === FALSE)
 {
 	$config['csrf_protection'] = TRUE;
 }
