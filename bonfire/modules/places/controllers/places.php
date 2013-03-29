@@ -68,8 +68,8 @@ class places extends Front_Controller {
 		//Template::set('records', $records);
 		Template::set('result', $places_json);
 		//Template::set('flag', $flag);
-		Template::set_view("api/index");
-		Template::render('api');
+		Template::set_view("ajax/index");
+		Template::render('ajax');
 	}
 
 	//--------------------------------------------------------------------
