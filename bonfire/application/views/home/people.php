@@ -1,3 +1,26 @@
+<div data-role="dialog" id="sure" data-title="Are you sure?">
+	<div data-role="content">
+		<h3 class="sure-1">Noted</h3>
+		<p class="sure-2">Hello World</p>
+		<a href="#" class="sure-do" data-role="button" data-theme="b" data-rel="back">Yes</a>
+		<a href="#" data-role="button" data-theme="c" data-rel="back">No</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+	//$(document).ready(function() {
+		//$.mobile.changePage($("#sure"), null, true, true);
+	//});
+		$(function () {
+			$("div[data-role='page']").on("pageshow", function (event, ui) {
+				if (getValue() == null) {
+					// show the dialog
+					$.mobile.changePage("#sure");
+				}
+			});
+		});
+</script>
+
 <div class="container">
 	<div class="ui-grid-view">
 		<div class="ui-block-one"><div class="ui-bar ui-bar-e">Block A</div></div>

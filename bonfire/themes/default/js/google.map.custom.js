@@ -166,7 +166,7 @@ MYMAP.placeMarkersByLocation = function(url) {
 						var lat = element.places_latitude;
 						var lng = element.places_longitude;
 						var point = new google.maps.LatLng(parseFloat(lat),parseFloat(lng));
-alert(element.places_name);
+
 						var marker = new google.maps.Marker({
 							position: point,
 							map: MYMAP.map

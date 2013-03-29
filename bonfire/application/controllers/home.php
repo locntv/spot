@@ -50,6 +50,7 @@ class Home extends Front_Controller
 	public function map()
 	{
 		Template::set('page_title', 'Map');
+		Template::set('refresh', true);
 		Template::render('index_fullscreen');
 	}//end map()
 
@@ -58,8 +59,40 @@ class Home extends Front_Controller
 	 *
 	 * @return void
 	 */
-	public function people()
+	public function people( $place_id = 0 )
 	{
+		if ( $this->auth->is_logged_in() === FALSE ) {
+
+		}
+		/*$result = array();
+		if(!isset($_POST['place_id']) || !is_numeric($_POST['place_id'])
+				|| !isset($_POST['user_id']) || !is_numeric($_POST['user_id'])){
+			$result['code'] = '100';
+		} else {
+			$user = $this->user_model->find($_POST['user_id']);
+			if($user !== FALSE){
+				$query_str = "SELECT user.id,user.image,user.first_name,user.last_name,spot.checkin_status
+					FROM sp_users user, sp_spots spot
+					WHERE user.id = spot.spots_user_id
+					AND	spot.spots_place_id = {$_POST['place_id']}
+					AND user.id != {$_POST['user_id']}";
+				$query = $this->db->query($query_str);
+				if ($query->num_rows() > 0)
+				{
+					foreach($query->result_array() as $row)
+					{
+						$result ['data'][] = $row;
+					}
+					$result['code'] = '200';
+				} else {
+					$result['code'] = '102';
+				}
+			} else {
+				$result['code'] = '101';
+			}
+		}*/
+
+
 		Template::set('page_title', 'People');
 		Template::render();
 	}//end people()

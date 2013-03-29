@@ -7,7 +7,13 @@
 			<h4>Spots</h4>
 		<?php endif; ?>
 	</div><!-- /footer -->
-
 </div><!-- /page -->
+<?php if ( isset( $refresh ) ) : ?>
+<script type="text/javascript">
+	setInterval(function() {
+		location.reload(); //refresh page
+	}, 600000); //10 minutes
+</script>
+<?php endif; ?>
 </body>
 </html>
