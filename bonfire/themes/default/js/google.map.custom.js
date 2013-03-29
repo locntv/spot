@@ -76,7 +76,7 @@ MYMAP.placeMarkers = function(selector, url) {
 					infoWindow.setContent(html);
 					infoWindow.open(MYMAP.map, marker);
 				});
-				//MYMAP.map.fitBounds(MYMAP.bounds);
+
 				new google.maps.Marker({
 					position: new google.maps.LatLng(parseFloat(element.lat), parseFloat(element.lng)),
 					map: MYMAP.map,
@@ -84,13 +84,6 @@ MYMAP.placeMarkers = function(selector, url) {
 					title: element.note
 				});
 
-				/*latlng = new google.maps.LatLng(14.058326, 108.377199);
-				new google.maps.Marker({
-					position: latlng,
-					map: MYMAP.map,
-					//icon: image,
-					title: 'adssa'
-				});*/
 			});
 		}
 	});
@@ -145,7 +138,7 @@ MYMAP.searchLocation = function(marker, address_elementid, lat_elementid, lng_el
 	});
 }
 
-MYMAP.placeMarkersByLocation = function(url) {
+MYMAP.placeMarkersByLocation = function(url, icon_url) {
 
 	// Try HTML5 geolocation
 	if(navigator.geolocation) {
@@ -160,36 +153,36 @@ MYMAP.placeMarkersByLocation = function(url) {
 				'success' : function(data) {
 					//$(selector).empty();
 					$.each(data, function(index, element) {
-						//$(selector).append(listing_item(index + 1, element));
 
 						// create a new LatLng point for the marker
 						var lat = element.places_latitude;
 						var lng = element.places_longitude;
 						var point = new google.maps.LatLng(parseFloat(lat),parseFloat(lng));
 
-						var marker = new google.maps.Marker({
-							position: point,
-							map: MYMAP.map
-						});
+						var image = new google.maps.MarkerImage(
+							icon_url,
+							new google.maps.Size(32,32),
+							new google.maps.Point(0,0),
+							new google.maps.Point(16,32)
+						);
 
-						var infoWindow = new google.maps.InfoWindow();
-						var html='<p>' + element.places_name + '</p>';
-						google.maps.event.addListener(marker, 'click', function() {
-							infoWindow.setContent(html);
-							infoWindow.open(MYMAP.map, marker);
-						});
-						//MYMAP.map.fitBounds(MYMAP.bounds);
-						new google.maps.Marker({
-							position: new google.maps.LatLng(parseFloat(lat), parseFloat(lng)),
+						var marker = new google.maps.Marker({
+							draggable: true,
+							position: point,
 							map: MYMAP.map,
-							//icon: image,
+							icon: image,
 							title: element.places_name
 						});
 
+						var infoWindow = new google.maps.InfoWindow();
+						var html = '<b>' + element.places_name + '</b><br />';
+						html += element.places_address;
+						infoWindow.setContent(html);
+						infoWindow.open(MYMAP.map, marker);
 					});
 				}
 			});
-			$(selector).listview("refresh");
+
 		}, function() {
 			handleNoGeolocation(true);
 		});

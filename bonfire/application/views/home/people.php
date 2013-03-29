@@ -6,19 +6,23 @@
 		<a href="#" data-role="button" data-theme="c" data-rel="back">No</a>
 	</div>
 </div>
-
+<?php //echo anchor( '/', $this->settings_lib->item('site.title'), 'class="brand"' ); ?>
+<a id="lnkDialog" href="<?php echo site_url() ?>dialog/index" data-rel="dialog" data-transition="pop">fdasfas</a>
 <script type="text/javascript">
+	//alert('fds');
+	$("#lnkDialog").click();
+//$("#dialog").dialog();
 	//$(document).ready(function() {
 		//$.mobile.changePage($("#sure"), null, true, true);
 	//});
-		$(function () {
+		/*$(function () {
 			$("div[data-role='page']").on("pageshow", function (event, ui) {
 				if (getValue() == null) {
 					// show the dialog
 					$.mobile.changePage("#sure");
 				}
 			});
-		});
+		});*/
 </script>
 
 <div class="container">

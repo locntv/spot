@@ -107,6 +107,34 @@ class Home extends Front_Controller
 		Template::set('page_title', 'Me');
 		Template::render();
 	}//end me()
+
+	/**
+	 * Displays the me page
+	 *
+	 * @return void
+	 */
+	public function pie_icon( $width, $height ) {
+		$my_image = @imagecreatetruecolor($width, $height);
+
+		$white = imagecolorallocate($my_image, 255, 255, 255);
+		$red  = imagecolorallocate($my_image, 255, 0, 0);
+		$green = imagecolorallocate($my_image, 0, 102, 0);
+		$yellow = imagecolorallocate($my_image, 255, 255, 102);
+		$black = imagecolorallocate($my_image, 0, 0, 0);
+
+		// Make the background transparent
+		imagecolortransparent($my_image, $black);
+
+		imagefilledarc($my_image, $width/2 - 1, $height/2 - 1, $width - 1, $height - 1, 0, 90, $red, IMG_ARC_PIE);
+		imagefilledarc($my_image, $width/2 - 1, $height/2 - 1, $width - 1, $height - 1, 90, 180 , $green, IMG_ARC_PIE);
+		imagefilledarc($my_image, $width/2 - 1, $height/2 - 1, $width - 1, $height - 1, 180, 360 , $yellow, IMG_ARC_PIE);
+
+		header("Content-type: image/png");
+		imagepng($my_image);
+
+		imagedestroy($my_image);
+		Template::render('api');
+	}//end me()
 	//--------------------------------------------------------------------
 
 
