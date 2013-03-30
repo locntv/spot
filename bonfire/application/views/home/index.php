@@ -11,7 +11,7 @@
 	});
 
 	function listing_item( id, data ) {
-		html =  '<li><a href="#"><img src="#" class="ui-li-icon"/>';
+		html =  '<li><a href="#"><img src="' + data.places_image + '" width="100%" class="ui-li-icon"/>';
 		html += '<h2><span>' + id + '.</span> ' + data.places_name + '</h2>';
 		html += '<p>' + data.places_address + '</p>';
 		html += '<p>' + data.places_type + '</p>';

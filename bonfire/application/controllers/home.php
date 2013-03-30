@@ -62,7 +62,7 @@ class Home extends Front_Controller
 	public function people( $place_id = 0 )
 	{
 		if ( $this->auth->is_logged_in() === FALSE ) {
-
+			Template::redirect( '/dialog/index?type=register' );
 		}
 		/*$result = array();
 		if(!isset($_POST['place_id']) || !is_numeric($_POST['place_id'])
@@ -104,6 +104,9 @@ class Home extends Front_Controller
 	 */
 	public function me()
 	{
+		if ( $this->auth->is_logged_in() === FALSE ) {
+			Template::redirect( '/dialog/index?type=register' );
+		}
 		Template::set('page_title', 'Me');
 		Template::render();
 	}//end me()

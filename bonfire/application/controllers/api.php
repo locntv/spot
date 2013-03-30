@@ -45,7 +45,7 @@ class Api extends Front_Controller
 		$this->red_status 		= 1;
 		$this->yellow_status 	= 2;
 		$this->green_status		= 3;
-		$this->allowed_distance = 0.2; //0.1 miles
+		$this->allowed_distance = 1; //1 miles
 		$this->_log_path = APPPATH.'logs/api/';
 		$this->load->model('places/places_model', null, true);
 		$this->load->model('places/spots_model', null, true);

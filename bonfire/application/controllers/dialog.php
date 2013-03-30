@@ -38,6 +38,25 @@ class Dialog extends Front_Controller
 	 */
 	public function index()
 	{
+		$type = $this->input->get('type');
+		switch ($type) {
+			case 'register':
+				$dialog = array(
+					'content' => 'You have to login first before go to this page',
+					'callback' => array(
+						'name' => 'Go to home',
+						'url' => 'home'
+					),
+					'goto' => array(
+						'name' => 'Login',
+						'url' => 'login'
+					)
+				);
+				Template::set('dialog', $dialog);
+				Template::set('dialog_title', 'Error');
+				break;
+		}
+
 		Template::set('page_title', 'Spots');
 		Template::render('dialog');
 	}//end spots()
