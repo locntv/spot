@@ -49,6 +49,7 @@ class Api extends Front_Controller
 		$this->_log_path = APPPATH.'logs/api/';
 		$this->load->model('places/places_model', null, true);
 		$this->load->model('places/spots_model', null, true);
+		$this->load->model('places/spots_history_model', null, true);
 		$this->load->database();
 		$this->load->library('users/auth');
 	}//end __construct()
@@ -263,6 +264,12 @@ class Api extends Front_Controller
 									'is_checkin'	=> 1,
 									'checkin_time'	=> date('Y-m-d H:i:s'))) !== FALSE){
 							$result['code'] = '200';
+							//Insert spots history
+							$this->spots_history_model->insert(
+									array(
+											'spots_id' => $spot_id,
+											'checkin_status'=> $_POST['status_checkin'],
+											'checkin_time'	=> date('Y-m-d H:i:s')));
 						} else{
 							$result['code'] = '103';
 						}
@@ -274,6 +281,12 @@ class Api extends Front_Controller
 						if ( $query !== TRUE) {
 							$result['code'] = '101';
 						} else {
+							//Insert spots history
+							$this->spots_history_model->insert(
+									array(
+									'spots_id' => $spot->id,
+									'checkin_status'=> $_POST['status_checkin'],
+									'checkin_time'	=> date('Y-m-d H:i:s')));
 							$result['code'] = '200';
 						}
 					}
@@ -317,14 +330,28 @@ class Api extends Front_Controller
 		if( !isset($_POST['user_id']) || !isset($_POST['place_id']) ){
 			$result['code'] = '100';
 		} else {
-			$sql	= "UPDATE sp_spots SET is_checkin =0,checkout_time= NOW()
-						WHERE spots_user_id = {$_POST['user_id']} AND spots_place_id = {$_POST['place_id']}";
-			$query = $this->db->query($sql);
-			if($query !== TRUE){
-				$result['code'] = '101';
+			$spot = $this->spots_model->find_by( array(
+					'spots_user_id' => $_POST['user_id'],
+					'spots_place_id' => $_POST['place_id'],
+			));
+			if($spot === FALSE){
+				$result['code'] = '102'; 
 			} else {
-				$result['code'] = '200';
+				$sql	= "UPDATE sp_spots SET is_checkin =0,checkout_time= NOW()
+					WHERE spots_user_id = {$_POST['user_id']} AND spots_place_id = {$_POST['place_id']}";
+				$query = $this->db->query($sql);
+				if($query !== TRUE){
+					$result['code'] = '101';
+				} else {
+					$this->spots_history_model->insert(
+									array(
+											'spots_id' => $spot->id,
+											'checkin_status'=> $_POST['status_checkin'],
+											'checkout_time'	=> date('Y-m-d H:i:s')));
+					$result['code'] = '200';
+				}
 			}
+			
 		}
 
 		Template::set('result', json_encode($result));
@@ -420,7 +447,8 @@ class Api extends Front_Controller
 		} else {
 			if($user = $this->user_model->find($_POST['user_id']) !== FALSE){
 				if($this->user_model->update($_POST['user_id'],
-						array('password' => $_POST['password'])) !== FALSE){
+						array('password' => $_POST['password'],
+							  'pass_confirm' => $_POST['password'])) !== FALSE){
 					$result['code'] = '200';
 					$result['user_id'] = $_POST['user_id'];
 				} else {
@@ -457,8 +485,8 @@ class Api extends Front_Controller
 					$image_name = $_POST['user_id']."_imageprofile.png";
 					$command = "mv {$config['upload_path']}/{$_FILES['image']['name']}  {$config['upload_path']}/{$image_name}";
 					@shell_exec($command);
-					if($this->user_model->update($user_id, array(
-							'image' => Assets::assets_url('image')."/user/".$image_name."_imageprofile.png")
+					if($this->user_model->update($_POST['user_id'], array(
+							'image' => Assets::assets_url('image')."user/".$image_name)
 					) ){
 						$result['code'] = '200';
 						$result['user_id'] = $_POST['user_id'];
