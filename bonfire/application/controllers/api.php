@@ -250,7 +250,10 @@ class Api extends Front_Controller
 				if($this->distance($_POST['user_latitude'], $_POST['user_longitude'],
 					$_POST['place_latitude'],
 					$_POST['place_longitude'],true) <= $this->allowed_distance){
-					$spot = $this->spots_model->find_by('spots_user_id', $_POST['user_id']);
+					$spot = $this->spots_model->find_by( array(
+						'spots_user_id' => $_POST['user_id'],
+						'spots_place_id' => $_POST['place_id'],
+					));
 					if ( $spot === FALSE ) {
 						if($spot_id = $this->spots_model->insert(
 								array(
