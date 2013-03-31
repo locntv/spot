@@ -88,7 +88,7 @@ class content extends Admin_Controller {
 			}
 		}
 		Assets::add_module_js('places', 'places.js');
-
+		Template::set( 'folder_name', 'venue' );
 		Template::set('google_map', true);
 		Template::set('toolbar_title', lang('places_create') . ' Places');
 		Template::render();
@@ -148,7 +148,7 @@ class content extends Admin_Controller {
 		}
 		Template::set('places', $this->places_model->find($id));
 		Assets::add_module_js('places', 'places.js');
-
+		Template::set( 'folder_name', 'venue' );
 		Template::set('toolbar_title', lang('places_edit') . ' Places');
 		Template::render();
 	}
@@ -190,7 +190,29 @@ class content extends Admin_Controller {
 		if ($this->form_validation->run() === FALSE )
 		{
 			return FALSE;
+		}
+
+		$data = array();
+		$data['places_name']        = $this->input->post('places_name');
+		$data['places_address']        = $this->input->post('places_address');
+		$data['places_type']        = $this->input->post('places_type');
+		$data['places_longitude']        = $this->input->post('places_longitude');
+		$data['places_latitude']        = $this->input->post('places_latitude');
+
+		$this->load->helper('file_upload');
+		$file_upload_result = file_upload_image( $_FILES, 'places_image', 'venue', 160, 160 );
+		$thumb = $this->input->post('thumb');
+		if ( empty( $file_upload_result["error"] ) ) {
+			$data['places_image'] = $file_upload_result["data"];
+			if ( $type == 'update' && !empty( $thumb ) ) {
+					$thumb_arr = explode(".", $thumb);
+					delete_file_upload( realpath("assets/images/venue"), $thumb_arr[0] );
+				}
 		} else {
+			$data['places_image'] = ( !empty( $thumb ) )?$this->input->post('thumb'):'';
+		}
+
+		/*else {
 			if(isset($_FILES['places_image']['name']) && $_FILES['places_image']['name'] != ''){
 				$is_image = TRUE;
 				$config['upload_path'] 	= ASSET_PATH.'images/venue';
@@ -207,20 +229,7 @@ class content extends Admin_Controller {
 					return FALSE;
 				}
 			}
-		}
-
-		// make sure we only pass in the fields we want
-
-		$data = array();
-		$data['places_name']        = $this->input->post('places_name');
-		$data['places_address']        = $this->input->post('places_address');
-		$data['places_type']        = $this->input->post('places_type');
-		$data['places_longitude']        = $this->input->post('places_longitude');
-		$data['places_latitude']        = $this->input->post('places_latitude');
-		if($is_image == TRUE){
-			$data['places_image']	= Assets::assets_url('image')."venue/".$_FILES['places_image']['name'];
-		}
-		//$data['places_image']        = $this->input->post('places_image');
+		}*/
 
 		if ($type == 'insert')
 		{

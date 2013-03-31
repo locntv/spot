@@ -140,5 +140,82 @@ class Home extends Front_Controller
 	}//end me()
 	//--------------------------------------------------------------------
 
+/**
+	 * checkin before access people page
+	 * @return
+	 *  0 : not checkin and distance is far than allowed
+	 *  1 : not checkin and distance is allowed
+	 *  2 : checked in and distance is allowed
+	 */
+	public function checkin(){
+		$result = 0;
+
+		if ( $this->input->post('lat') && $this->input->post('lng') && $this->input->post('place_id') ) {
+			$this->load->model('places/places_model', null, true);
+			$this->load->library('utils');
+			$place = $this->places_model->find($this->input->post('place_id'));
+			$distance = $this->utils->get_distance_between_points(
+					$this->input->post('lat'), $this->input->post('lng'),
+					$place->places_latitude, $place->places_longitude, 'Mi' );
+			$is_checkin = $this->is_checkin($this->input->post('place_id'), $this->current_user->id);
+			//$this->current_user->id
+			if($place !== FALSE){ // Place is not existed
+				if($distance <= 1 && $is_checkin === TRUE){ // In allowed distance and has checked in
+					$result = 2;
+				} else if($distance > 1) {
+					if($is_checkin === TRUE){
+						$this->checkout($this->input->post('place_id'), $this->current_user->id);
+					}
+					$result = 0;
+				} else if($distance <=1 && $is_checkin === FALSE){
+					$result = 1;
+				}
+			}
+		}
+		echo json_encode($result);
+		die;
+		/*Template::set('result', json_encode($result));
+		Template::set_view("ajax/index");
+		Template::render('ajax');*/
+	}
+
+	private function is_checkin($place_id, $user_id){
+		$this->load->model('places/spots_model', null, true);
+		$spot = $this->spots_model->find_by(array(
+					'spots_place_id' => $place_id,
+					'spots_user_id'  => $user_id,
+					'is_checkin'	=> 1));
+		if($spot !== FALSE){
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+		return FALSE;
+	}
+
+	function checkout($place_id, $user_id){
+		$this->load->model('places/spots_model', null, true);
+		$this->load->model('places/spots_history_model', null, true);
+
+		$spot = $this->spots_model->find_by(
+					array(
+						'spots_place_id' => $place_id,
+						'spots_user_id' => $user_id
+						)
+				);
+		if($spot !== FALSE){
+			// Checkout spot
+			$this->spots_model->update($spot->id,
+							array('checkout_time' => date('Y-m-d H:i:s')));
+			// Update history
+			$spot_history_id = $this->spots_history_model->select('id')->order_by('id','desc')->find_by('spots_id',$spot->id);
+			if($spot_history_id !== FALSE){
+				$spot_history_id = $spot_history_id->id;
+				$this->spots_history_model->update($spot_history_id,array(
+						'checkout_time'	=> date('Y-m-d H:i:s')
+				));
+			}
+		}
+	}
 
 }//end class

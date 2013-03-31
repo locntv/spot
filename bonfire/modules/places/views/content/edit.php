@@ -81,8 +81,23 @@
 		<div class="control-group <?php echo form_error('places_image') ? 'error' : ''; ?>">
 			<?php echo form_label('Image'. lang('bf_form_label_required'), 'places_image', array('class' => "control-label") ); ?>
 			<div class='controls'>
-				<input id="places_image" type="file" name="places_image" value="<?php echo set_value('places_image', isset($places['places_image']) ? $places['places_image'] : ''); ?>"  />
-				<span class="help-inline"><?php echo form_error('places_image'); ?></span>
+				<table width="100%" cellpadding="0" cellspacing="0"><tr>
+					<td width="40%">
+						<input id="places_image" type="file" name="places_image" />
+						<input type="hidden" name="thumb" value="<?php echo $places['places_image'] ?>" />
+						<span class="help-inline"><?php echo form_error('places_image'); ?></span>
+					</td>
+					<td align="left">
+						<?php
+							if ( !empty( $places['places_image'] ) ):
+								$image_thumb = str_replace(".", "_160x160.", $places['places_image']);
+						?>
+						<div id="preview-thumb" class="image-wrapper">
+							<img alt="<?php echo $places['places_image'] ?>" src="<?php echo base_url(); ?>assets/images/<?php echo $folder_name ?>/<?php echo $image_thumb ?>">
+						</div>
+						<?php endif; ?>
+					</td>
+				</tr></table>
 			</div>
 		</div>
 

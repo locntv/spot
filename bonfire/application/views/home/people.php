@@ -1,3 +1,21 @@
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=en">
+</script>
+
+<script src="<?php echo Template::theme_url('js/google.map.custom.js'); ?>"></script>
+
+<script type="text/javascript">
+<!--
+	$(document).ready(function() {
+		MYMAP.getPeopleByLocation('#listing', '<?php echo site_url() ?>places/people_ajax');
+	});
+//-->
+</script>
+
+<div class="container">
+	<ul id="listing" data-role="listview" data-inset="true"></ul>
+</div>
+
 <div class="container">
 	<div class="ui-grid-view">
 		<div class="ui-block-one"><div class="ui-bar ui-bar-e">Block A</div></div>

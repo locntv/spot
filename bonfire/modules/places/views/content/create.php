@@ -80,9 +80,9 @@
 		<input id="places_latitude" type="hidden" name="places_latitude" value="<?php echo set_value('places_latitude', isset($places['places_latitude']) ? $places['places_latitude'] : ''); ?>"  />
 
 		<div class="control-group <?php echo form_error('places_image') ? 'error' : ''; ?>">
-			<?php echo form_label('Image'. lang('bf_form_label_required'), 'places_image', array('class' => "control-label") ); ?>
+			<?php echo form_label('Image', 'places_image', array('class' => "control-label") ); ?>
 			<div class='controls'>
-				<input id="places_image" type="file" name="places_image" value="<?php echo set_value('places_image', isset($places['places_image']) ? $places['places_image'] : ''); ?>"  />
+				<input id="places_image" type="file" name="places_image" />
 				<span class="help-inline"><?php echo form_error('places_image'); ?></span>
 			</div>
 		</div>

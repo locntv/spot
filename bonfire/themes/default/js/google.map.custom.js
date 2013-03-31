@@ -2,7 +2,9 @@ var MYMAP = {
 	map: null,
 	bounds: null,
 	currentMarker: null,
-	geocoder: null
+	geocoder: null,
+	curLng: null,
+	curLat: null
 }
 
 MYMAP.init = function(selector, zoom) {
@@ -167,18 +169,18 @@ MYMAP.placeMarkersByLocation = function(url, icon_url) {
 						);
 
 						var marker = new google.maps.Marker({
-							draggable: true,
+							//draggable: true,
 							position: point,
 							map: MYMAP.map,
 							icon: image,
 							title: element.places_name
 						});
 
-						var infoWindow = new google.maps.InfoWindow();
+						/*var infoWindow = new google.maps.InfoWindow();
 						var html = '<b>' + element.places_name + '</b><br />';
 						html += element.places_address;
 						infoWindow.setContent(html);
-						infoWindow.open(MYMAP.map, marker);
+						infoWindow.open(MYMAP.map, marker);*/
 					});
 				}
 			});
@@ -197,7 +199,8 @@ MYMAP.getPlacesByLocation = function(selector, url) {
 	// Try HTML5 geolocation
 	if(navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
-
+			MYMAP.curLat = position.coords.latitude;
+			MYMAP.curLng = position.coords.longitude;
 			$.ajax({
 				'dataType': 'json',
 				'type'    : 'POST',
