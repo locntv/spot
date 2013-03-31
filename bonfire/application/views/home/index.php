@@ -36,9 +36,11 @@
 			'url'     : 'home/checkin',
 			'data'    : { lat: MYMAP.curLat, lng: MYMAP.curLng, place_id: place_id },
 			'success' : function(data) {
-				if (data == 1) {
+				if (data.code == 1) {
+					$( "#popup_spot_name" ).html(data.place_name);
+					$( "#popup_place_id" ).val(place_id);
 					$( "#popupDialog" ).popup( "open" );
-				} else if (data == 2) {
+				} else if (data.code == 2) {
 					document.location.href = 'home/people/' + place_id;
 				} else {
 					document.location.href = 'home';
@@ -55,12 +57,27 @@
 
 <div data-role="popup" id="popupDialog" data-overlay-theme="a" data-theme="c" style="max-width:400px;" class="ui-corner-all">
 	<div data-role="header" data-theme="a" class="ui-corner-top">
-		<h1>Delete Page?</h1>
+		<h1>Check in</h1>
 	</div>
 	<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
-		<h3 class="ui-title">Are you sure you want to delete this page?</h3>
-		<p>This action cannot be undone.</p>
+		<h3 class="ui-title" id="popup_spot_name" style="text-align: center;"></h3>
+		<form action="home/process_checkin" data-ajax="false" method="post">
+		<div data-role="fieldcontain">
+			<fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
+				<input type="radio" name="checkin-status" id="checkin-status-1" value="1" checked="checked" />
+				<label for="checkin-status-1">Red</label>
+
+				<input type="radio" name="checkin-status" id="checkin-status-2" value="2" />
+				<label for="checkin-status-2">Yellow</label>
+
+				<input type="radio" name="checkin-status" id="checkin-status-3" value="3" />
+				<label for="checkin-status-3">Green</label>
+			</fieldset>
+		</div>
 		<a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
-		<a href="#" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Delete</a>
+		<input type="hidden" value="" id="popup_place_id" name="place_id">
+		<input type="submit" value="Check-in" data-inline="true" data-theme="b">
+		<!--a href="#" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Check-in</a-->
+		</form>
 	</div>
 </div>
