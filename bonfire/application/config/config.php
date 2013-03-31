@@ -300,7 +300,8 @@ $config['global_xss_filtering'] = FALSE;
 //$config['csrf_protection'] = TRUE;
 if(stripos($_SERVER["REQUEST_URI"],'/api') === FALSE
 	&& stripos($_SERVER["REQUEST_URI"],'/places/places_ajax') === FALSE
-	&& stripos($_SERVER["REQUEST_URI"],'/home/checkin') === FALSE)
+	&& stripos($_SERVER["REQUEST_URI"],'/home/checkin') === FALSE
+	&& stripos($_SERVER["REQUEST_URI"],'/home/process_checkin') === FALSE)
 {
 	$config['csrf_protection'] = TRUE;
 }

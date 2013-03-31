@@ -66,7 +66,7 @@ class Home extends Front_Controller
 		}
 
 		$result = array();
-		
+
 		$query_str = "SELECT user.id,user.image,user.first_name,user.last_name,spot.checkin_status
 			FROM sp_spots spot left join sp_users user on user.id = spot.spots_user_id
 			WHERE spot.spots_place_id = {$place_id}
@@ -79,8 +79,8 @@ class Home extends Front_Controller
 				$result[] = $row;
 			}
 		}
-		
-		Template::set('result', json_encode($result));
+
+		Template::set('result', $result);
 		Template::set('page_title', 'People');
 		Template::render();
 	}//end people()
@@ -96,7 +96,7 @@ class Home extends Front_Controller
 			Template::redirect( '/dialog/index?type=register' );
 		}
 		$checkin = 0;
-		
+
 		$query_str = "SELECT count(history.id) as count
 							FROM sp_users user, sp_spots as spot, sp_spots_history as history
 							WHERE user.id = spot.spots_user_id
@@ -163,7 +163,7 @@ class Home extends Front_Controller
 			//$this->current_user->id
 			if($place !== FALSE){ // Place is not existed
 				$result['place_name'] = $place->places_name;
- 				if($distance <= 1 && $is_checkin === TRUE){ // In allowed distance and has checked in
+				if($distance <= 1 && $is_checkin === TRUE){ // In allowed distance and has checked in
 					$result['code'] = 2;
 				} else if($distance > 1) {
 					if($is_checkin === TRUE){
@@ -181,13 +181,13 @@ class Home extends Front_Controller
 		Template::set_view("ajax/index");
 		Template::render('ajax');*/
 	}
-	
+
 	//
 	public function process_checkin(){
 		if ( $this->input->post('checkin-status') && $this->input->post('place_id') ) {
 			$this->load->model('places/spots_model', null, true);
 			$this->load->model('places/spots_history_model', null, true);
-			
+
 			$spot = $this->spots_model->find_by( array(
 					'spots_user_id' => $this->current_user->id,
 					'spots_place_id' => $this->input->post('place_id'),
@@ -209,7 +209,7 @@ class Home extends Front_Controller
 										'checkin_time'	=> date('Y-m-d H:i:s')
 										)
 							);
-								
+
 					Template::redirect( '/home/people/'.$this->input->post('place_id') );
 				}
 			} else {
