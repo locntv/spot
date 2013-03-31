@@ -134,6 +134,26 @@ class Users extends Front_Controller
 		// Log the Activity
 		$this->activity_model->log_activity($this->current_user->id, lang('us_log_logged_out').': ' . $this->input->ip_address(), 'users');
 
+		// Checkout all spots when logout
+		$this->load->model('places/spots_model', null, true);
+		$this->load->model('places/spots_history_model', null, true);
+		
+		$spot = $this->spots_model->find_by(
+				array('spots_user_id' => $this->current_user->id,
+					  'is_checkin'=> 1));
+		if($spot !== FALSE){
+			$this->spots_model->update($spot->id,
+					array('checkout_time' => date('Y-m-d H:i:s'),
+						  'is_checkin'	  => 0));
+			$spot_history_id = $this->spots_history_model->select('id')->order_by('id','desc')->find_by('spots_id',$spot->id);
+			if($spot_history_id !== FALSE){
+				$spot_history_id = $spot_history_id->id;
+				$this->spots_history_model->update($spot_history_id,array(
+						'checkout_time'	=> date('Y-m-d H:i:s')
+				));
+			}
+		}
+		
 		$this->auth->logout();
 
 		redirect('/');

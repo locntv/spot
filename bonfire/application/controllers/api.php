@@ -692,7 +692,7 @@ class Api extends Front_Controller
 					'longitude' => $data['places_longitude'],
 					'latitude'	=> $data['places_latitude'],
 					'type'		=> $data['places_type'],
-					'image'		=> $data['places_image'],
+					'image'		=> base_url()."assets/images/venue/".$data['places_image'],
 					'people'	=> $data['people']
 				);
 	}

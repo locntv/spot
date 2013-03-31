@@ -31,6 +31,15 @@
 class Home extends Front_Controller
 {
 
+	public function __construct()
+	{
+		parent::__construct();
+		if(!isset($this->current_user)){
+			Template::redirect("/login");
+		}
+		
+	}//end __construct()
+	
 	/**
 	 * Displays the spots page
 	 *
@@ -64,6 +73,20 @@ class Home extends Front_Controller
 		if ( $this->auth->is_logged_in() === FALSE ) {
 			Template::redirect( '/dialog/index?type=register' );
 		}
+		
+		//Checkout previous spot
+		$query_str = "SELECT spots_place_id FROM sp_spots WHERE
+					is_checkin = 1 AND spots_user_id = {$this->current_user->id}
+					AND spots_place_id != {$place_id}";
+		$query = $this->db->query($query_str);
+		if ($query->num_rows() > 0)
+		{
+			foreach($query->result_array() as $row)
+			{
+				$this->checkout($row['spots_place_id'], $this->current_user->id);
+			}
+		}
+		//
 
 		$result = array();
 
@@ -231,8 +254,6 @@ class Home extends Front_Controller
 										'checkin_time'	=> date('Y-m-d H:i:s')
 										)
 							);
-
-					Template::redirect( '/home/people/'.$this->input->post('place_id') );
 				}
 			} else {
 				$sql = "UPDATE sp_spots SET is_checkin = 1, checkin_time = NOW(),checkin_status = {$this->input->post('checkin-status')}
@@ -247,9 +268,23 @@ class Home extends Front_Controller
 									'checkin_time'	=> date('Y-m-d H:i:s')
 							)
 					);
-					Template::redirect( '/home/people/'.$this->input->post('place_id') );
 				}
 			}
+			
+			//Checkout previous spot
+			/*$query_str = "SELECT spots_place_id FROM sp_spots WHERE
+						  is_checkin = 1 AND spots_user_id = {$this->current_user->id}
+						  AND spots_place_id != {$this->input->post('place_id')}";
+			$query = $this->db->query($query_str);
+			if ($query->num_rows() > 0)
+			{
+				foreach($query->result_array() as $row)
+				{
+					$this->checkout($row['spots_place_id'], $this->current_user->id);
+				}
+			}*/
+			// Redirect to people page
+			Template::redirect( '/home/people/'.$this->input->post('place_id') );
 		}
 	}
 
@@ -280,7 +315,8 @@ class Home extends Front_Controller
 		if($spot !== FALSE){
 			// Checkout spot
 			$this->spots_model->update($spot->id,
-							array('checkout_time' => date('Y-m-d H:i:s')));
+							array('checkout_time' => date('Y-m-d H:i:s'),
+								  'is_checkin' => 0));
 			// Update history
 			$spot_history_id = $this->spots_history_model->select('id')->order_by('id','desc')->find_by('spots_id',$spot->id);
 			if($spot_history_id !== FALSE){
