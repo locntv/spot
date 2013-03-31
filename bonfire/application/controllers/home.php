@@ -95,6 +95,20 @@ class Home extends Front_Controller
 		if ( $this->auth->is_logged_in() === FALSE ) {
 			Template::redirect( '/dialog/index?type=register' );
 		}
+		$checkin = 0;
+		
+		$query_str = "SELECT count(history.id) as count
+							FROM sp_users user, sp_spots as spot, sp_spots_history as history
+							WHERE user.id = spot.spots_user_id
+							AND spot.id = history.spots_id
+							AND spot.spots_user_id = {$this->current_user->id}";
+		$query = $this->db->query($query_str);
+		if ($query->num_rows() > 0)
+		{
+			$checkin = $query->result();
+		}
+		Template::set('count', $checkin);
+		Template::set('user', $this->current_user);
 		Template::set('page_title', 'Me');
 		Template::render();
 	}//end me()
@@ -148,15 +162,16 @@ class Home extends Front_Controller
 			$is_checkin = $this->is_checkin($this->input->post('place_id'), $this->current_user->id);
 			//$this->current_user->id
 			if($place !== FALSE){ // Place is not existed
-				if($distance <= 1 && $is_checkin === TRUE){ // In allowed distance and has checked in
-					$result = 2;
+				$result['place_name'] = $place->places_name;
+ 				if($distance <= 1 && $is_checkin === TRUE){ // In allowed distance and has checked in
+					$result['code'] = 2;
 				} else if($distance > 1) {
 					if($is_checkin === TRUE){
 						$this->checkout($this->input->post('place_id'), $this->current_user->id);
 					}
-					$result = 0;
+					$result['code'] = 0;
 				} else if($distance <=1 && $is_checkin === FALSE){
-					$result = 1;
+					$result['code'] = 1;
 				}
 			}
 		}
