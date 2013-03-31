@@ -15,8 +15,9 @@
 		});
 	});
 
-	var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
+	//var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
 	function listing_item( id, data ) {
+		var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
 		if (data.places_image) {
 			var name = data.places_image;
 			img_venue += name.replace(".","_160x160.");
