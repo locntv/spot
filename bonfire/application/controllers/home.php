@@ -269,5 +269,26 @@ class Home extends Front_Controller
 			}
 		}
 	}
+	
+	public function update_profile(){
+		//$this->load->library('form_validation');
+		$error = array();
+		$data = array();
+		if($this->input->post('password') && !empty($this->input->post('place_id'))){
+			//$this->form_validation->set_rules('password', 'lang:bf_password', 'trim|strip_tags|min_length[8]|max_length[120]|valid_password');
+			$pass = trim($this->input->post('password'));
+			if( strlen($pass) < 8 ){
+				$error['password'] = 'Password must be from 8 characters';
+			} else {
+				$data['password'] = $this->input->post('password');
+				$data['pass_confirm'] = $this->input->post('password');
+			}
+		}
+		
+		if(isset($_FILES['user_image']['name']) && $_FILES['user_image']['name']!='' ){
+			
+		}
+	}
+	
 
 }//end class
