@@ -210,7 +210,7 @@ class Home extends Front_Controller
 										)
 							);
 								
-					Template::redirect( '/home/people' );
+					Template::redirect( '/home/people/'.$this->input->post('place_id') );
 				}
 			} else {
 				$sql = "UPDATE sp_spots SET is_checkin = 1, checkin_time = NOW(),checkin_status = {$this->input->post('checkin-status')}
@@ -225,7 +225,7 @@ class Home extends Front_Controller
 									'checkin_time'	=> date('Y-m-d H:i:s')
 							)
 					);
-					Template::redirect( '/home/people' );
+					Template::redirect( '/home/people/'.$this->input->post('place_id') );
 				}
 			}
 		}
