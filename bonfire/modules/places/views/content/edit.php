@@ -6,8 +6,22 @@
 	src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=en">
 </script>
 <script src="<?php echo Template::theme_url('js/google.map.custom.js'); ?>"></script>
-<script type="text/javascript">
 
+<?php // Change the css classes to suit your needs
+	if( isset($places) ) {
+		$places = (array)$places;
+	}
+	$id = isset($places['id']) ? $places['id'] : '';
+
+	if (!empty($places['places_address'])) {
+		$is_current = 0;
+	} else {
+		$is_current = 1;
+	}
+?>
+
+<script type="text/javascript">
+	var is_current = '<?php echo $is_current ?>';
 	$(document).ready(function() {
 
 		var address = [];
@@ -16,8 +30,13 @@
 		address['lng'] = '#places_longitude';
 
 		MYMAP.init('#map_canvas', 15);
-		MYMAP.setCurrentMarker(true, address);
-		MYMAP.addDragMarkerEvent(MYMAP.currentMarker, '#places_address', '#places_latitude', '#places_longitude');
+		if (is_current == 1) {
+			MYMAP.setCurrentMarker(true, address);
+			MYMAP.addDragMarkerEvent(MYMAP.currentMarker, '#places_address', '#places_latitude', '#places_longitude');
+		} else {
+			MYMAP.setLocation('<?php echo $places['places_latitude']?>', '<?php echo $places['places_longitude']?>', '#places_address', '#places_latitude', '#places_longitude');
+		}
+
 	});
 	function codeAddress() {
 		MYMAP.searchLocation(MYMAP.currentMarker, '#places_address', '#places_latitude', '#places_longitude');
@@ -32,12 +51,7 @@
 <?php echo validation_errors(); ?>
 </div>
 <?php endif; ?>
-<?php // Change the css classes to suit your needs
-	if( isset($places) ) {
-		$places = (array)$places;
-	}
-	$id = isset($places['id']) ? $places['id'] : '';
-?>
+
 <div class="admin-box">
 	<h3>Places</h3>
 <?php echo form_open($this->uri->uri_string(), 'class="form-horizontal" enctype="multipart/form-data"'); ?>

@@ -144,6 +144,31 @@ MYMAP.searchLocation = function(marker, address_elementid, lat_elementid, lng_el
 		}
 	});
 }
+
+MYMAP.setLocation = function(lat, lng, address_elementid, lat_elementid, lng_elementid) {
+	var latlng = new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
+	var marker = new google.maps.Marker({
+		draggable: true,
+		position: latlng,
+		map: MYMAP.map,
+		title: "your venue"
+	});
+	MYMAP.map.setCenter(latlng);
+
+	//Add listener to marker for reverse geocoding
+	google.maps.event.addListener(marker, 'drag', function() {
+		//MYMAP.getMarkerInfo(marker, address_elementid, lat_elementid, lng_elementid);
+		MYMAP.geocoder.geocode({'latLng': marker.getPosition()}, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				if (results[0]) {
+					$(address_elementid).val(results[0].formatted_address);
+					$(lat_elementid).val(marker.getPosition().lat());
+					$(lng_elementid).val(marker.getPosition().lng());
+				}
+			}
+		});
+	});
+}
 /*MYMAP.placeMarkers = function(filename) {
 	$.get(filename, function(xml){
 		$(xml).find("marker").each(function(){
