@@ -274,9 +274,8 @@ class Api extends Front_Controller
 							$result['code'] = '103';
 						}
 					} else {
-						$sql = "UPDATE sp_spots SET is_checkin = 1, checkin_time = NOW(),
-							checkin_status = {$_POST['status_checkin']}, spots_place_id = {$_POST['place_id']}
-							WHERE spots_user_id = {$_POST['user_id']}";
+						$sql = "UPDATE sp_spots SET is_checkin = 1, checkin_time = NOW(),checkin_status = {$_POST['status_checkin']} 
+							WHERE spots_user_id = {$_POST['user_id']} AND spots_place_id = {$_POST['place_id']}";
 						$query = $this->db->query($sql);
 						if ( $query !== TRUE) {
 							$result['code'] = '101';
@@ -537,7 +536,33 @@ class Api extends Front_Controller
 			$result['code'] = '100';
 		} else {
 			$user = $this->user_model->find_by('email', $_POST['email']);
+			if($user !== FALSE){
+				$this->load->helpers(array('string', 'security'));
 
+				$new_password = random_string('alnum', 8);
+				$this->user_model->update($user->id,
+						array('password' => $new_password,
+							  'pass_confirm' => $new_password));
+				
+				$this->load->library('emailer/emailer');
+				
+				$data = array(
+						'to'	=> $_POST['email'],
+						'subject'	=> lang('us_reset_pass_subject'),
+						'message'	=> $this->load->view('_emails/reset_password', array('new_password' => $new_password), TRUE)
+				);
+				
+				if ($this->emailer->send($data))
+				{
+					$result['code'] = '200';
+				}
+				else
+				{
+					$result['code'] = '103';
+				}
+			} else {
+				$result['code'] = '102';
+			}
 		}
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");

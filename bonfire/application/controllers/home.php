@@ -150,7 +150,7 @@ class Home extends Front_Controller
 	 *  2 : checked in and distance is allowed
 	 */
 	public function checkin(){
-		$result = 0;
+		$result = array();
 
 		if ( $this->input->post('lat') && $this->input->post('lng') && $this->input->post('place_id') ) {
 			$this->load->model('places/places_model', null, true);
@@ -180,6 +180,55 @@ class Home extends Front_Controller
 		/*Template::set('result', json_encode($result));
 		Template::set_view("ajax/index");
 		Template::render('ajax');*/
+	}
+	
+	//
+	public function process_checkin(){
+		if ( $this->input->post('checkin-status') && $this->input->post('place_id') ) {
+			$this->load->model('places/spots_model', null, true);
+			$this->load->model('places/spots_history_model', null, true);
+			
+			$spot = $this->spots_model->find_by( array(
+					'spots_user_id' => $this->current_user->id,
+					'spots_place_id' => $this->input->post('place_id'),
+			));
+			if ( $spot === FALSE ) {
+				if($spot_id = $this->spots_model->insert(
+						array(
+								'spots_user_id' => $this->current_user->id,
+								'spots_place_id'=> $this->input->post('place_id'),
+								'checkin_status'=> $this->input->post('checkin-status'),
+								'is_checkin'	=> 1,
+								'checkin_time'	=> date('Y-m-d H:i:s'))) !== FALSE
+						){
+							//Insert spots history
+							$this->spots_history_model->insert(
+									array(
+										'spots_id' => $spot_id,
+										'checkin_status'=> $this->input->post('checkin-status'),
+										'checkin_time'	=> date('Y-m-d H:i:s')
+										)
+							);
+								
+					Template::redirect( '/home/people' );
+				}
+			} else {
+				$sql = "UPDATE sp_spots SET is_checkin = 1, checkin_time = NOW(),checkin_status = {$this->input->post('checkin-status')}
+						WHERE spots_user_id = {$this->current_user->id} AND spots_place_id = {$this->input->post('place_id')}";
+				$query = $this->db->query($sql);
+				if ( $query === TRUE) {
+				//Insert spots history
+					$this->spots_history_model->insert(
+							array(
+									'spots_id' => $spot->id,
+									'checkin_status'=> $this->input->post('checkin-status'),
+									'checkin_time'	=> date('Y-m-d H:i:s')
+							)
+					);
+					Template::redirect( '/home/people' );
+				}
+			}
+		}
 	}
 
 	private function is_checkin($place_id, $user_id){
