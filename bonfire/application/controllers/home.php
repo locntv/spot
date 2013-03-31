@@ -92,10 +92,32 @@ class Home extends Front_Controller
 	 */
 	public function me()
 	{
+		$this->load->helper('form');
 		if ( $this->auth->is_logged_in() === FALSE ) {
 			Template::redirect( '/dialog/index?type=register' );
 		}
 		$checkin = 0;
+		if ($this->input->post('submit')) {
+
+			$this->load->helper('file_upload');
+			$file_upload_result = file_upload_image( $_FILES, 'user_image', 'user', 128, 128 );
+			$thumb = $this->input->post('thumb');
+			if ( empty( $file_upload_result["error"] ) ) {
+				$data['user_image'] = $file_upload_result["data"];
+				if ( $type == 'update' && !empty( $thumb ) ) {
+					$thumb_arr = explode(".", $thumb);
+					delete_file_upload( realpath("assets/images/user"), $thumb_arr[0] );
+				}
+			} else {
+				$data['user_image'] = ( !empty( $thumb ) )?$this->input->post('thumb'):'';
+			}
+
+			if (!empty($data['user_image'])) {
+				$this->user_model->update($this->current_user->id,
+					array('image' => $data['user_image'])
+				);
+			}
+		}
 
 		$query_str = "SELECT count(history.id) as count
 							FROM sp_users user, sp_spots as spot, sp_spots_history as history
@@ -269,26 +291,6 @@ class Home extends Front_Controller
 			}
 		}
 	}
-	
-	public function update_profile(){
-		//$this->load->library('form_validation');
-		$error = array();
-		$data = array();
-		if($this->input->post('password') && !empty($this->input->post('place_id'))){
-			//$this->form_validation->set_rules('password', 'lang:bf_password', 'trim|strip_tags|min_length[8]|max_length[120]|valid_password');
-			$pass = trim($this->input->post('password'));
-			if( strlen($pass) < 8 ){
-				$error['password'] = 'Password must be from 8 characters';
-			} else {
-				$data['password'] = $this->input->post('password');
-				$data['pass_confirm'] = $this->input->post('password');
-			}
-		}
-		
-		if(isset($_FILES['user_image']['name']) && $_FILES['user_image']['name']!='' ){
-			
-		}
-	}
-	
+
 
 }//end class
