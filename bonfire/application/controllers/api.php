@@ -333,6 +333,7 @@ class Api extends Front_Controller
 			$spot = $this->spots_model->find_by( array(
 					'spots_user_id' => $_POST['user_id'],
 					'spots_place_id' => $_POST['place_id'],
+					'is_checkin'	=> 1
 			));
 			if($spot === FALSE){
 				$result['code'] = '102'; 
@@ -346,7 +347,7 @@ class Api extends Front_Controller
 					$this->spots_history_model->insert(
 									array(
 											'spots_id' => $spot->id,
-											'checkin_status'=> $_POST['status_checkin'],
+											'checkin_status'=> $spot->checkin_status,
 											'checkout_time'	=> date('Y-m-d H:i:s')));
 					$result['code'] = '200';
 				}
