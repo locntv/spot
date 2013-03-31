@@ -344,11 +344,13 @@ class Api extends Front_Controller
 				if($query !== TRUE){
 					$result['code'] = '101';
 				} else {
-					$this->spots_history_model->insert(
-									array(
-											'spots_id' => $spot->id,
-											'checkin_status'=> $spot->checkin_status,
-											'checkout_time'	=> date('Y-m-d H:i:s')));
+					$spot_history_id = $this->spots_history_model->select('id')->order_by('id','desc')->find_by('spots_id',$spot->id);
+					if($spot_history_id !== FALSE){
+						$spot_history_id = $spot_history_id->id;
+						$this->spots_history_model->update($spot_history_id,array(
+								'checkout_time'	=> date('Y-m-d H:i:s')
+								));
+					}
 					$result['code'] = '200';
 				}
 			}
@@ -377,7 +379,8 @@ class Api extends Front_Controller
 			if($user !== FALSE){
 				$query_str = "SELECT user.id,user.image,user.first_name,user.last_name,spot.checkin_status
 					FROM sp_spots spot left join sp_users user on user.id = spot.spots_user_id
-					WHERE spot.spots_place_id = {$_POST['place_id']}";
+					WHERE spot.spots_place_id = {$_POST['place_id']}
+					AND spot.is_checkin = 1";
 				$query = $this->db->query($query_str);
 				if ($query->num_rows() > 0)
 				{
@@ -409,11 +412,11 @@ class Api extends Front_Controller
 		} else {
 			if($user = $this->user_model->find($_POST['user_id']) !== FALSE){
 				$cur_date = date('Y-m-d');
-				$query_str = "SELECT user.id, user.first_name, user.last_name, user.image, count(spot.id) as checkin_time
-							FROM sp_users user, sp_spots as spot
+				$query_str = "SELECT user.id, user.first_name, user.last_name, user.image, count(history.id) as checkin_time
+							FROM sp_users user, sp_spots as spot, sp_spots_history as history
 							WHERE user.id = spot.spots_user_id
-							AND spot.spots_user_id = {$_POST['user_id']}
-							AND DATE(spot.checkin_time) = CURDATE()";
+							AND spot.id = history.spots_id
+							AND spot.spots_user_id = {$_POST['user_id']}";
 				$query = $this->db->query($query_str);
 				if ($query->num_rows() > 0)
 				{
