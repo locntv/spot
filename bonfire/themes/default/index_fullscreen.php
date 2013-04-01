@@ -4,6 +4,7 @@
 	<div data-role="header">
 		<a href="#" data-icon="home">refresh</a>
 		<h1><?php echo isset($page_title) ? $page_title : $this->settings_lib->item('site.title'); ?></h1>
+		<a href="<?php echo base_url()."logout"?>" data-ajax="false" data-icon="arrow-r">Logout</a>
 	</div>
 	<div>
 		<?php echo Template::message(); ?>

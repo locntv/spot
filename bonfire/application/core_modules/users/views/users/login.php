@@ -3,7 +3,7 @@
 ?>
 <section id="login">
 	<div class="page-header">
-		<h1 style="text-align: center;"><img  alt="" src="<?php echo Template::theme_url("images/spot_home_logo.png");?>"></h1>
+		<h1 ><img width="90%" alt="" src="<?php echo Template::theme_url("images/spot_home_logo.png");?>"></h1>
 	</div>
 
 
