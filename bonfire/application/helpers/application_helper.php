@@ -614,9 +614,9 @@ if ( ! function_exists('navbar_select'))
 		$output = '<ul>';
 		foreach ( $navbar as $key => $val)  {
 			if ( in_array( $cur_uri, $val['active'] ) ) {
-				$output .= '<li><a href="' . $CI->config->site_url( $val['active'][0] ) . '" data-icon="' . $key . '" data-ajax="false" class="ui-btn-active" >' . $val['name'] . '</a></li>';
+				$output .= '<li><a href="' . $CI->config->site_url( $val['active'][0] ) . '" data-icon="' . $key . '" data-ajax="false" class="ui-btn-active ui-btn-'.$key.'" >' . $val['name'] . '</a></li>';
 			} else {
-				$output .= '<li><a href="' . $CI->config->site_url( $val['active'][0] ) . '" data-icon="' . $key . '" data-ajax="false" >' . $val['name'] . '</a></li>';
+				$output .= '<li><a href="' . $CI->config->site_url( $val['active'][0] ) . '" data-icon="' . $key . '" data-ajax="false" class="ui-btn-'.$key.'"  >' . $val['name'] . '</a></li>';
 			}
 		}
 		$output .= '</ul>';
