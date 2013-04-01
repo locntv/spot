@@ -55,6 +55,17 @@ class Dialog extends Front_Controller
 				Template::set('dialog', $dialog);
 				Template::set('dialog_title', 'Error');
 				break;
+			case 'checkin':
+				$dialog = array(
+						'content' => 'You have to check in one spot first before go to this page',
+						'goto' => array(
+								'name' => 'Back To Spots',
+								'url' => 'home'
+						)
+				);
+				Template::set('dialog', $dialog);
+				Template::set('dialog_title', 'Notice');
+			break;
 		}
 
 		Template::set('page_title', 'Spots');

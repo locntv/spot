@@ -73,6 +73,11 @@ class Home extends Front_Controller
 		if ( $this->auth->is_logged_in() === FALSE ) {
 			Template::redirect( '/dialog/index?type=register' );
 		}
+		if ( $spot = $this->is_checked_in() === FALSE ) {
+			Template::redirect( '/dialog/index?type=checkin' );
+		} else {
+			$place_id = $spot->spots_place_id;
+		}
 		
 		//Checkout previous spot
 		$query_str = "SELECT spots_place_id FROM sp_spots WHERE
@@ -286,6 +291,25 @@ class Home extends Front_Controller
 			// Redirect to people page
 			Template::redirect( '/home/people/'.$this->input->post('place_id') );
 		}
+	}
+	
+	public function is_checked_in(){
+		$result = array();
+		$this->load->model('places/spots_model', null, true);
+		return $this->spots_model->find_by(
+				array('spots_user_id'=>$this->current_user->id,'is_checkin' => 1)
+		);
+// 		if($spot = $this->spots_model->find_by(
+// 				array('spots_user_id'=>$this->current_user->id,'is_checkin' => 1)
+// 				) !== FALSE){
+// 			$result['code'] = 1;
+// 			$result['place_id'] = $spot->spots_place_id;
+// 		} else {
+// 			$result['code'] = 0;
+// 		}
+		
+// 		echo json_encode($result);
+// 		die;
 	}
 
 	private function is_checkin($place_id, $user_id){

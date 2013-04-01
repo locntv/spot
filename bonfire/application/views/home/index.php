@@ -13,11 +13,6 @@
 			var place_id = $(this).attr('id');
 			checkin(place_id.split("_")[1]);
 		});
-
-		$('.ui-btn-people').on('click', function(){
-			alert("aaaaa");
-					return false;
-		});
 	});
 
 	//var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
