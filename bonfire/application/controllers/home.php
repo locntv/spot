@@ -174,6 +174,7 @@ class Home extends Front_Controller
 		{
 			$checkin = $query->result();
 		}
+		$this->current_user = $this->user_model->find($this->auth->user_id()); 
 		Template::set('checkin', $checkin[0]);
 		Template::set('user', $this->current_user);
 		Template::set('error', $error);
