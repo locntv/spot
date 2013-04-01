@@ -73,12 +73,15 @@ class Home extends Front_Controller
 		if ( $this->auth->is_logged_in() === FALSE ) {
 			Template::redirect( '/dialog/index?type=register' );
 		}
-		$spot = $this->is_checked_in();
-		if ( $spot === FALSE ) {
-			Template::redirect( '/dialog/index?type=checkin' );
-		} else {
-			$place_id = $spot->spots_place_id;
+		if($place_id == 0 ){
+			$spot = $this->is_checked_in();
+			if ( $spot === FALSE ) {
+				Template::redirect( '/dialog/index?type=checkin' );
+			} else {
+				$place_id = $spot->spots_place_id;
+			}
 		}
+		
 
 		//Checkout previous spot
 		$query_str = "SELECT spots_place_id FROM sp_spots WHERE
