@@ -37,9 +37,9 @@ class Home extends Front_Controller
 		if(!isset($this->current_user)){
 			Template::redirect("/login");
 		}
-		
+
 	}//end __construct()
-	
+
 	/**
 	 * Displays the spots page
 	 *
@@ -73,12 +73,13 @@ class Home extends Front_Controller
 		if ( $this->auth->is_logged_in() === FALSE ) {
 			Template::redirect( '/dialog/index?type=register' );
 		}
-		if ( $spot = $this->is_checked_in() === FALSE ) {
+		$spot = $this->is_checked_in();
+		if ( $spot === FALSE ) {
 			Template::redirect( '/dialog/index?type=checkin' );
 		} else {
 			$place_id = $spot->spots_place_id;
 		}
-		
+
 		//Checkout previous spot
 		$query_str = "SELECT spots_place_id FROM sp_spots WHERE
 					is_checkin = 1 AND spots_user_id = {$this->current_user->id}
@@ -275,11 +276,11 @@ class Home extends Front_Controller
 					);
 				}
 			}
-			
+
 			//Checkout previous spot
 			/*$query_str = "SELECT spots_place_id FROM sp_spots WHERE
-						  is_checkin = 1 AND spots_user_id = {$this->current_user->id}
-						  AND spots_place_id != {$this->input->post('place_id')}";
+						is_checkin = 1 AND spots_user_id = {$this->current_user->id}
+						AND spots_place_id != {$this->input->post('place_id')}";
 			$query = $this->db->query($query_str);
 			if ($query->num_rows() > 0)
 			{
@@ -292,7 +293,7 @@ class Home extends Front_Controller
 			Template::redirect( '/home/people/'.$this->input->post('place_id') );
 		}
 	}
-	
+
 	public function is_checked_in(){
 		$result = array();
 		$this->load->model('places/spots_model', null, true);
@@ -307,7 +308,7 @@ class Home extends Front_Controller
 // 		} else {
 // 			$result['code'] = 0;
 // 		}
-		
+
 // 		echo json_encode($result);
 // 		die;
 	}
@@ -340,7 +341,7 @@ class Home extends Front_Controller
 			// Checkout spot
 			$this->spots_model->update($spot->id,
 							array('checkout_time' => date('Y-m-d H:i:s'),
-								  'is_checkin' => 0));
+								'is_checkin' => 0));
 			// Update history
 			$spot_history_id = $this->spots_history_model->select('id')->order_by('id','desc')->find_by('spots_id',$spot->id);
 			if($spot_history_id !== FALSE){

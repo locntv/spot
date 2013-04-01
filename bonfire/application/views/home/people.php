@@ -17,9 +17,9 @@
 		<?php foreach ( $result as $item ) : ?>
 		<li data-role="fieldcontain">
 			<table><tr>
-				<td width="30%"><img src="<?php echo base_url() ?>assets/images/user/<?php echo $item['image'] ?>" style="width: 100%; max-width:100px;"/></td>
+				<td width="30%"><img src="<?php echo base_url() ?>assets/images/user/<?php echo $item['image'] ?>" style="width: 128px;"/></td>
 				<td width="60%" style="text-align: center;">
-					<img src="<?php echo Template::theme_url('images/spot_circle_'.$item['checkin_status']); ?>.png" style="width: 100%; max-width:50px;"/>
+					<img src="<?php echo Template::theme_url('images/spot_circle_'.$item['checkin_status']); ?>.png" style="width: 50px;"/>
 					<h3><?php echo $item['last_name'] ?></h3>
 				</td>
 			</tr></table>
