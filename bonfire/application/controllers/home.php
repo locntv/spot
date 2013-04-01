@@ -126,25 +126,38 @@ class Home extends Front_Controller
 			Template::redirect( '/dialog/index?type=register' );
 		}
 		$checkin = 0;
+		$error = array();
 		if ($this->input->post('submit')) {
-
-			$this->load->helper('file_upload');
-			$file_upload_result = file_upload_image( $_FILES, 'user_image', 'user', 128, 128 );
-			$thumb = $this->input->post('thumb');
-			if ( empty( $file_upload_result["error"] ) ) {
-				$data['user_image'] = $file_upload_result["data"];
-				if ( $type == 'update' && !empty( $thumb ) ) {
-					$thumb_arr = explode(".", $thumb);
-					delete_file_upload( realpath("assets/images/user"), $thumb_arr[0] );
+			if(isset($_FILES['user_image']['name']) && $_FILES['user_image']['name'] !=''){
+				$this->load->helper('file_upload');
+				$file_upload_result = file_upload_image( $_FILES, 'user_image', 'user', 128, 128 );
+				$thumb = $this->input->post('thumb');
+				if ( empty( $file_upload_result["error"] ) ) {
+					$data['user_image'] = $file_upload_result["data"];
+					if ( $type == 'update' && !empty( $thumb ) ) {
+						$thumb_arr = explode(".", $thumb);
+						delete_file_upload( realpath("assets/images/user"), $thumb_arr[0] );
+					}
+				} else {
+					$data['user_image'] = ( !empty( $thumb ) )?$this->input->post('thumb'):'';
+					$error['image'] = $file_upload_result["error"];
 				}
-			} else {
-				$data['user_image'] = ( !empty( $thumb ) )?$this->input->post('thumb'):'';
+	
+				if (!empty($data['user_image'])) {
+					$this->user_model->update($this->current_user->id,
+						array('image' => $data['user_image'])
+					);
+				}
 			}
-
-			if (!empty($data['user_image'])) {
-				$this->user_model->update($this->current_user->id,
-					array('image' => $data['user_image'])
-				);
+			$pass = trim($this->input->post('user-pass'));
+			if( !empty($pass) ){
+				if(strlen($pass) >= 8){
+					$this->user_model->update($this->current_user->id,
+							array('password' => $pass,'pass_confirm'=>$pass)
+					);
+				} else {
+					$error['pass'] = 'Please input password from 8 characters';
+				}
 			}
 		}
 
@@ -158,8 +171,9 @@ class Home extends Front_Controller
 		{
 			$checkin = $query->result();
 		}
-		Template::set('count', $checkin);
+		Template::set('checkin', $checkin[0]);
 		Template::set('user', $this->current_user);
+		Template::set('error', $error);
 		Template::set('page_title', 'Me');
 		Template::render();
 	}//end me()

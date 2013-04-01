@@ -3,6 +3,20 @@
 		$image_thumb = str_replace(".", "_128x128.", $user->image);
 	}
 ?>
+<?php if ($error && !empty($error)) : ?>
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="alert alert-error fade in">
+						<a data-dismiss="alert" class="close">&times;</a>
+					<?php 
+						foreach($error as $err){
+							echo $err;
+						}
+					?>
+				</div>
+			</div>
+		</div>
+<?php endif; ?>
 <div class="container">
 	<?php echo form_open('home/me', array('class' => "form-horizontal", 'autocomplete' => 'off','enctype' => 'multipart/form-data')); ?>
 		<ul data-role="listview" data-inset="true">
@@ -21,11 +35,9 @@
 				<input type="password" data-clear-btn="true" name="user-pass" id="user-pass" value="" autocomplete="off">
 			</li>
 			<li data-role="fieldcontain">
-				<label for="slider2">Slider:</label>
-				<input type="range" name="slider2" id="slider2" value="0" min="0" max="100" data-highlight="true">
+				<label for="slider2">Checkin: <?php echo ($checkin->count);?></label>
 			</li>
 			<li data-role="fieldcontain">
-
 				<input type="submit" name="submit"  value="save" >
 			</li>
 		</ul>
