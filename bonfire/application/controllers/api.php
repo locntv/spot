@@ -101,17 +101,24 @@ class Api extends Front_Controller
 				$is_image		   = FALSE;
 				if(isset($_FILES['image']) && $_FILES['image']['name'] != ''){
 					$is_image 				= TRUE;
-					$config['upload_path'] 	= ASSET_PATH.'images/user';
-					$config['allowed_types']= 'gif|jpg|png';
-					$config['max_size']		= '1024';
-					$config['max_width']  	= '128';
-					$config['max_height']  	= '128';
-
-					$this->load->library('upload', $config);
-					if(!$this->upload->do_upload("image")){
-						//$error = array('errors' => $this->upload->display_errors());
+					$this->load->helper('file_upload');
+					$file_upload_result = file_upload_image( $_FILES, 'image', 'user', 128, 128 );
+					if ( !empty( $file_upload_result["error"] ) ) {
 						$is_image_uploaded = FALSE;
+					} else {
+						$image_name = $file_upload_result["data"];
 					}
+// 					$config['upload_path'] 	= ASSET_PATH.'images/user';
+// 					$config['allowed_types']= 'gif|jpg|png';
+// 					$config['max_size']		= '1024';
+// 					$config['max_width']  	= '128';
+// 					$config['max_height']  	= '128';
+
+// 					$this->load->library('upload', $config);
+// 					if(!$this->upload->do_upload("image")){
+// 						//$error = array('errors' => $this->upload->display_errors());
+// 						$is_image_uploaded = FALSE;
+// 					}
 				}
 				$data = array(
 						'first_name'=> $_POST['first_name'],
@@ -126,12 +133,13 @@ class Api extends Front_Controller
 				} else {
 					if($user_id = $this->user_model->insert($data)){ // Save data success
 						if($is_image){ // Upload image
-							$image_name = $user_id."_imageprofile.png";
+							/*$image_name = $user_id."_imageprofile.png";
 							$command = "mv {$config['upload_path']}/{$_FILES['image']['name']}  {$config['upload_path']}/{$image_name}";
 							@shell_exec($command);
 							//Assets::assets_url('image')."/user/".$user_id."_imageprofile.png";
+							 */
 							if($this->user_model->update($user_id, array(
-									'image' => Assets::assets_url('image')."/user/".$user_id."_imageprofile.png")
+									'image' => $image_name)
 							) ){
 								$result['code'] = '200';
 								$result['user_id'] = $user_id;
@@ -385,6 +393,7 @@ class Api extends Front_Controller
 				{
 					foreach($query->result_array() as $row)
 					{
+						$row['image'] = $this->get_user_thumb_image($row['image']);
 						$result ['data'][] = $row;
 					}
 					$result['code'] = '200';
@@ -425,7 +434,7 @@ class Api extends Front_Controller
 						$result ['person']['user_id'] 			= $row['id'];
 						$result ['person']['first_name'] 		= $row['first_name'];
 						$result ['person']['last_name'] 		= $row['id'];
-						$result ['person']['image'] 			= $row['image'];
+						$result ['person']['image'] 			= $this->get_user_thumb_image($row['image']);
 						$result ['person']['checkin_times'] 	= $row['checkin_time'];
 					}
 					$result['code'] = '200';
@@ -474,29 +483,43 @@ class Api extends Front_Controller
 			$result['code'] = '100';
 		} else {
 			if($user = $this->user_model->find($_POST['user_id']) !== FALSE){
-				$config['upload_path'] 	= ASSET_PATH.'images/user';
-				$config['allowed_types']= 'gif|jpg|png';
-				$config['max_size']		= '1024';
-				$config['max_width']  	= '128';
-				$config['max_height']  	= '128';
-
-				$this->load->library('upload', $config);
-				if(!$this->upload->do_upload("image")){
-					//$error = array('errors' => $this->upload->display_errors());
-					$result['code'] = '103';
-				} else {
-					$image_name = $_POST['user_id']."_imageprofile.png";
-					$command = "mv {$config['upload_path']}/{$_FILES['image']['name']}  {$config['upload_path']}/{$image_name}";
-					@shell_exec($command);
+				$this->load->helper('file_upload');
+				$file_upload_result = file_upload_image( $_FILES, 'image', 'user', 128, 128 );
+				if ( empty( $file_upload_result["error"] ) ) {
+					$image_name = $file_upload_result["data"];
+					if ( $user->image ) {
+						$thumb_arr = explode(".", $user->image);
+						delete_file_upload( realpath("assets/images/user"), $thumb_arr[0] );
+					}
+					// Update database
 					if($this->user_model->update($_POST['user_id'], array(
-							'image' => Assets::assets_url('image')."user/".$image_name)
+							'image' => $image_name)
 					) ){
 						$result['code'] = '200';
 						$result['user_id'] = $_POST['user_id'];
 					} else {
 						$result['code'] = '102';
 					}
+				} else {
+					$result['code'] = '103';
 				}
+				
+// 				if(!$this->upload->do_upload("image")){
+// 					//$error = array('errors' => $this->upload->display_errors());
+// 					$result['code'] = '103';
+// 				} else {
+// 					$image_name = $_POST['user_id']."_imageprofile.png";
+// 					$command = "mv {$config['upload_path']}/{$_FILES['image']['name']}  {$config['upload_path']}/{$image_name}";
+// 					@shell_exec($command);
+// 					if($this->user_model->update($_POST['user_id'], array(
+// 							'image' => Assets::assets_url('image')."user/".$image_name)
+// 					) ){
+// 						$result['code'] = '200';
+// 						$result['user_id'] = $_POST['user_id'];
+// 					} else {
+// 						$result['code'] = '102';
+// 					}
+// 				}
 			} else {
 				$result['code'] = '101';
 			}
@@ -695,6 +718,14 @@ class Api extends Front_Controller
 					'image'		=> base_url()."assets/images/venue/".$data['places_image'],
 					'people'	=> $data['people']
 				);
+	}
+	
+	private function get_user_thumb_image($image_name){
+		if(!empty($image_name) && $image_name!= "NULL"){
+			$image_arr = explode(".", $image_name);
+			return Assets::assets_url('image')."user/".$image_arr[0]."_128x128.".$image_arr[1];
+		}
+		return '';
 	}
 
 	/**

@@ -610,6 +610,10 @@ if ( ! function_exists('navbar_select'))
 		// First, grab the states from the config
 		$navbar = config_item($nav_name);
 
+		$arr = explode("/", $cur_uri);
+		if(count($arr) > 2){
+			$cur_uri = substr($cur_uri, 0, strrpos($cur_uri, "/"));
+		}
 		$CI =& get_instance();
 		$output = '<ul>';
 		foreach ( $navbar as $key => $val)  {

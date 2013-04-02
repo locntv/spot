@@ -18,7 +18,7 @@
 		<?php foreach ( $result as $item ) : ?>
 		<?php 
 			if ( !empty( $item['image'] ) && file_exists(ASSET_PATH . 'images/user/' . $item['image'] )) {
-				$image_thumb = str_replace(".", "_128x128.", $user->image);
+				$image_thumb = str_replace(".", "_128x128.", $item['image']);
 			} else {
 				$image_thumb = 'happyface.png';
 			}
