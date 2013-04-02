@@ -81,7 +81,7 @@ class Home extends Front_Controller
 				$place_id = $spot->spots_place_id;
 			}
 		}
-		
+
 
 		//Checkout previous spot
 		$query_str = "SELECT spots_place_id FROM sp_spots WHERE
@@ -145,7 +145,7 @@ class Home extends Front_Controller
 					$data['user_image'] = ( !empty( $thumb ) )?$this->input->post('thumb'):'';
 					$error['image'] = $file_upload_result["error"];
 				}
-	
+
 				if (!empty($data['user_image'])) {
 					$this->user_model->update($this->current_user->id,
 						array('image' => $data['user_image'])
@@ -174,7 +174,7 @@ class Home extends Front_Controller
 		{
 			$checkin = $query->result();
 		}
-		$this->current_user = $this->user_model->find($this->auth->user_id()); 
+		$this->current_user = $this->user_model->find($this->auth->user_id());
 		Template::set('checkin', $checkin[0]);
 		Template::set('user', $this->current_user);
 		Template::set('error', $error);
@@ -187,28 +187,107 @@ class Home extends Front_Controller
 	 *
 	 * @return void
 	 */
-	public function pie_icon( $width, $height ) {
-		$my_image = @imagecreatetruecolor($width, $height);
+	public function pie_icon( $width, $height, $place_id ) {
 
+		//$pie_image = @imagecreatetruecolor($width, $height);
+		//$pie_image = @imagecreatetruecolor($width, $height);
+
+		$query_str = "SELECT spot.checkin_status, count(spot.checkin_status) as count
+					FROM sp_spots spot
+					WHERE spot.spots_place_id = {$place_id}
+					AND spot.is_checkin = 1
+					GROUP BY spot.checkin_status";
+		$query = $this->db->query($query_str);
+		$checkin_status = array();
+		$total = $query->num_rows();
+		if ( $total > 0 ) {
+			$total_percent = 0;
+			$num = 0;
+			foreach ( $query->result_array() as $row ) {
+				$num++;
+				if ( $num == $total ) {
+					$checkin_status[$row['checkin_status']] = 100-$total_percent;
+				}
+				$checkin_status[$row['checkin_status']] = $row['count'] / $total * 100;
+			}
+		} else {
+			$checkin_status[0] = 100;
+		}
+//var_dump($checkin_status);die;
+		/*$arun = 0;
+		$a1 = $a2 = $a3 = $a4 = $a5 = 0;
 		$white = imagecolorallocate($my_image, 255, 255, 255);
-		$red  = imagecolorallocate($my_image, 255, 0, 0);
-		$green = imagecolorallocate($my_image, 0, 102, 0);
-		$yellow = imagecolorallocate($my_image, 255, 255, 102);
+		if ( isset( $checkin_status[1] ) ) {
+			$a1 = $arun;
+			$a2 = $a1 + ($checkin_status[1]*360/100);
+			$red = imagecolorallocate($my_image, 255, 0, 0);
+		}
+		if ( isset( $checkin_status[2] ) ) {
+			if ( $a1 == 0 ) {
+				$a1 = $arun;
+			}
+			$yellow = imagecolorallocate($my_image, 255, 255, 102);
+		}
+		if ( isset( $checkin_status[3] ) ) {
+			$green = imagecolorallocate($my_image, 0, 102, 0);
+		}
+
 		$black = imagecolorallocate($my_image, 0, 0, 0);
 
 		// Make the background transparent
 		imagecolortransparent($my_image, $black);
 
-		imagefilledarc($my_image, $width/2 - 1, $height/2 - 1, $width - 1, $height - 1, 0, 90, $red, IMG_ARC_PIE);
-		imagefilledarc($my_image, $width/2 - 1, $height/2 - 1, $width - 1, $height - 1, 90, 180 , $green, IMG_ARC_PIE);
-		imagefilledarc($my_image, $width/2 - 1, $height/2 - 1, $width - 1, $height - 1, 180, 360 , $yellow, IMG_ARC_PIE);
+		imagefilledarc($my_image, $width/2 - 1, $height/2 - 1, $width - 1, $height - 1, $a1, $a2, $red, IMG_ARC_PIE);
+		imagefilledarc($my_image, $width/2 - 1, $height/2 - 1, $width - 1, $height - 1, $a3, $a4 , $yellow, IMG_ARC_PIE);
+		imagefilledarc($my_image, $width/2 - 1, $height/2 - 1, $width - 1, $height - 1, $a5, $a6 , $green, IMG_ARC_PIE);
+
 
 		header("Content-type: image/png");
 		imagepng($my_image);
 
-		imagedestroy($my_image);
+		imagedestroy($my_image);*/
+		$this->draw_pie($width, $height, $checkin_status);
+
 		Template::render('api');
 	}//end me()
+
+	private function draw_pie($width, $height, $dataArr) {
+
+		$pie_image = imagecreate($width, $height);
+
+		$x = round($width/2)-1;
+		$y = round($height/2)-1;
+		$total = array_sum($dataArr);
+		$angle_start = 0;
+		$ylegend = 2;
+		$black = imagecolorallocate($pie_image, 0, 0, 0);
+		$is_empty = true;
+		//$white = imagecolorallocate($pie_image, 255, 255, 255);
+		//imagefilledrectangle($pie_image, 0, 0, $width, $piewidth, imagecolorallocate($pie_image, 0, 0, 0));
+		foreach ( $dataArr as $label => $value ) {
+
+			if ( $label == 1 ) { // red
+				$color = imagecolorallocate($pie_image, 255, 0, 0);
+			} elseif ($label == 2) { // yellow
+				$color = imagecolorallocate($pie_image, 255, 255, 102);
+			} elseif ($label == 3) { // green
+				$color = imagecolorallocate($pie_image, 0, 102, 0);
+			} else {
+				$color = imagecolorallocate($pie_image, 139, 137, 137);
+			}
+			$angle_done = ($value/$total) * 360; /** angle calculated for 360 degrees */
+			$perc       = round(($value/$total) * 100, 1); /** percentage calculated */
+			imagefilledarc($pie_image, $x, $y, $width-1, $height-1, $angle_start, $angle_done+= $angle_start, $color, IMG_ARC_PIE);
+			$ylegend += 4;
+			$angle_start = $angle_done;
+		}
+
+		imagecolortransparent($pie_image, $black);
+		header("Content-type: image/png");
+		imagepng($pie_image);
+
+		imagedestroy($pie_image);
+	}
 	//--------------------------------------------------------------------
 
 /**

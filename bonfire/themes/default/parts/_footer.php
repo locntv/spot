@@ -1,4 +1,4 @@
-	<div data-role="footer" data-position="fixed">
+	<div data-role="footer" data-position="fixed" data-theme="b">
 		<?php if ( isset ( $current_user->email ) ) : ?>
 		<div data-role="navbar">
 			<?php echo navbar_select( 'navbar.footer', uri_string() ); ?>

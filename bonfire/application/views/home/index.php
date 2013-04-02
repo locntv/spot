@@ -18,15 +18,21 @@
 	//var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
 	function listing_item( id, data ) {
 		var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
+		var img_icon = '<?php echo site_url() ?>/home/pie_icon/32/32/' + data.id;
 		if (data.places_image) {
 			var name = data.places_image;
 			img_venue += name.replace(".","_160x160.");
 		}
-		html =  '<li id="place_' + data.id + '"><a href="#"><img src="' + img_venue + '" />';
-		html += '<h2><span>' + id + '.</span> ' + data.places_name + '</h2>';
+		html =  '<li data-role="fieldcontain" id="place_' + data.id + '">';
+		html += '<table width="100%" cellpadding="0" cellspacing="0">'
+		html += '<tr><td width="20%"><img src="' + img_venue + '" style="width: 100px;" /></td>';
+		html += '<td width="80%" style="text-align: left;">';
+		html += '<div style="padding:0 10px;"><h2><span>' + id + '.</span> ' + data.places_name + '</h2>';
 		html += '<p>' + data.places_address + '</p>';
-		html += '<p>' + data.places_type + '</p>';
-		html += '</a></li>';
+		html += '<p>' + data.places_type + '</p></div>';
+		html += '</td><td width="10%" style="text-align: center;">';
+		html += '<img src="' + img_icon + '" /></td></tr></table>';
+		html += '</li>';
 		return html;
 	}
 
@@ -54,7 +60,7 @@
 </script>
 
 <div class="container">
-	<ul id="listing" data-role="listview" data-inset="true"></ul>
+	<ul id="listing" data-role="listview" data-inset="false"></ul>
 </div>
 
 <div data-role="popup" id="popupDialog" data-overlay-theme="a" data-theme="c" style="max-width:400px;" class="ui-corner-all">
@@ -68,7 +74,7 @@
 			<fieldset data-role="controlgroup">
 				<input type="radio" name="checkin-status" id="checkin-status-1" value="1" checked="checked" />
 				<label for="checkin-status-1"><img alt="red" src="<?php echo Template::theme_url('images/spot_circle_1.png'); ?>" width="20%"/><span style="vertical-align: 75%;padding-left: 10px;">Wingman</span></label>
-					
+
 				<input type="radio" name="checkin-status" id="checkin-status-2" value="2" />
 				<label for="checkin-status-2"><img alt="yellow" src="<?php echo Template::theme_url('images/spot_circle_2.png'); ?>" width="20%"/><span style="vertical-align: 75%;padding-left: 10px;">Not Sure</span></label>
 

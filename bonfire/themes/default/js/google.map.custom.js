@@ -162,7 +162,7 @@ MYMAP.placeMarkersByLocation = function(url, icon_url) {
 						var point = new google.maps.LatLng(parseFloat(lat),parseFloat(lng));
 
 						var image = new google.maps.MarkerImage(
-							icon_url,
+							icon_url + element.id,
 							new google.maps.Size(32,32),
 							new google.maps.Point(0,0),
 							new google.maps.Point(16,32)
