@@ -4,7 +4,6 @@
 			<?php echo navbar_select( 'navbar.footer', uri_string() ); ?>
 		</div><!-- /navbar -->
 		<?php else : ?>
-			<h4>Spots</h4>
 		<?php endif; ?>
 	</div><!-- /footer -->
 </div><!-- /page -->

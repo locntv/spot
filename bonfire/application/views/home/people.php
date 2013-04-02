@@ -9,15 +9,23 @@
 	$(document).ready(function() {
 		MYMAP.getPeopleByLocation('#listing', '<?php echo site_url() ?>places/people_ajax');
 	});
+	
 //-->
 </script>
 
 <div class="container">
 	<ul data-role="listview" data-inset="true" data-inset="false">
 		<?php foreach ( $result as $item ) : ?>
+		<?php 
+			if ( !empty( $item['image'] ) && file_exists(ASSET_PATH . 'images/user/' . $item['image'] )) {
+				$image_thumb = str_replace(".", "_128x128.", $user->image);
+			} else {
+				$image_thumb = 'happyface.png';
+			}
+		?>
 		<li data-role="fieldcontain">
 			<table><tr>
-				<td width="30%"><img src="<?php echo base_url() ?>assets/images/user/<?php echo $item['image'] ?>" style="width: 128px;"/></td>
+				<td width="30%"><img src="<?php echo base_url() ?>assets/images/user/<?php echo $image_thumb; ?>" style="width: 128px;"/></td>
 				<td width="60%" style="text-align: center;">
 					<img src="<?php echo Template::theme_url('images/spot_circle_'.$item['checkin_status']); ?>.png" style="width: 50px;"/>
 					<h3><?php echo $item['last_name'] ?></h3>

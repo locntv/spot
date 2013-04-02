@@ -1,6 +1,8 @@
 <?php
-	if ( !empty( $user->image ) ) {
+	if ( !empty( $user->image ) && file_exists(ASSET_PATH . 'images/user/' . $user->image )) {
 		$image_thumb = str_replace(".", "_128x128.", $user->image);
+	} else {
+		$image_thumb = 'happyface.png';
 	}
 ?>
 <?php if ($error && !empty($error)) : ?>
