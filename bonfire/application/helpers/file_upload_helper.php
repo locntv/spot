@@ -69,9 +69,9 @@ if ( ! function_exists('file_upload_image'))
 
 			$config['upload_path'] = './assets/images/'.$folder_name.'/';
 			$config['allowed_types'] = 'gif|jpg|jpeg|png';
-			$config['max_size'] = 2048;
-			$config['max_width']  = '1280';
-			$config['max_height']  = '1024';
+			$config['max_size'] = 5120;
+			$config['max_width']  = '4320';
+			$config['max_height']  = '3240';
 			$ci =& get_instance();
 			$ci->load->library('upload', $config);
 			$data = $ci->upload->do_upload($file_element_name);
