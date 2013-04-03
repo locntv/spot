@@ -79,7 +79,7 @@
 				<label for="checkin-status-2"><img alt="yellow" src="<?php echo Template::theme_url('images/spot_circle_2.png'); ?>" width="20%"/><span style="vertical-align: 75%;padding-left: 10px;">Not Sure</span></label>
 
 				<input type="radio" name="checkin-status" id="checkin-status-3" value="3" />
-				<label for="checkin-status-3"><img alt="green" src="<?php echo Template::theme_url('images/spot_circle_3.png'); ?>" width="20%"/> <span style="vertical-align: 75%;padding-left: 10px;">Game On</span> </label>
+				<label for="checkin-status-3"><img alt="green" src="<?php echo Template::theme_url('images/spot_circle_3.png'); ?>" width="20%"/> <span style="vertical-align: 75%;padding-left: 5px;">Game On</span> </label>
 			</fieldset>
 		</div>
 		<a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>

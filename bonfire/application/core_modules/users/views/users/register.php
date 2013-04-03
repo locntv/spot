@@ -1,3 +1,17 @@
+<script type="text/javascript">
+function iOSversion() {
+	  if (/iP(hone|od|ad)/.test(navigator.platform)) {
+	    // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
+	    var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+	    return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+	  }
+	  return null;
+	}
+	ver = iOSversion();
+	if(ver != null &&  ver < 6){
+		$(".check-os").html("Not support upload image");
+	}
+</script>
 <section id="register">
 	<div class="page-header">
 		<h1><?php echo lang('us_login'); ?></h1>
@@ -65,13 +79,6 @@
 			</div>
 		</div>
 
-		<div class="control-group <?php echo iif( form_error('pass_confirm') , 'error'); ?>">
-			<label class="control-label required" for="pass_confirm"><?php echo lang('bf_password_confirm'); ?></label>
-			<div class="controls">
-				<input class="span6" type="password" name="pass_confirm" id="pass_confirm" value="" placeholder="<?php echo lang('bf_password_confirm'); ?>" />
-			</div>
-		</div>
-		
 		<div class="control-group <?php echo iif( form_error('gender') , 'error'); ?>">
 		    <label for="select-native-1">I am:</label>
 		    <div class="controls">
@@ -85,8 +92,8 @@
 		
 		<span class="fileinput-button" data-role="button" data-icon="plus">
 		    <input type="file" data-clear-btn="false" name="image" multiple data-role="none" accept="image/*"/>
+		    <label class="check-os"></label>
 		</span>
-		<p class="help-block"><?php echo lang('us_img_help'); ?></p>
 
 		<?php
 			// Allow modules to render custom fields
@@ -95,7 +102,7 @@
 
 	<div class="control-group">
 		<div class="controls">
-			<input class="btn btn-primary" type="submit" name="submit" id="submit" value="<?php echo lang('us_register'); ?>"  />
+			<input class="btn btn-primary" data-theme="b" type="submit" name="submit" id="submit" value="<?php echo lang('us_register'); ?>"  />
 		</div>
 	</div>
 

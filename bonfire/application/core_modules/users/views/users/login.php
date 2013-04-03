@@ -9,8 +9,7 @@
 		</h1>
 	</div>
 
-
-
+<?php ?>
 <?php if ( !$site_open ) : ?>
 <div class="row-fluid">
 	<div class="span12">
@@ -53,20 +52,11 @@
 		</div>
 	</div>
 
-	<?php if ($this->settings_lib->item('auth.allow_remember')) : ?>
-		<div class="control-group">
-			<div class="controls">
-				<label class="checkbox" for="remember_me">
-					<input type="checkbox" name="remember_me" id="remember_me" value="1" tabindex="3" />
-					<span class="inline-help"><?php echo lang('us_remember_note'); ?></span>
-				</label>
-			</div>
-		</div>
-	<?php endif; ?>
-
 	<div class="control-group">
 		<div class="controls">
-			<input class="btn btn-primary" type="submit" name="submit" id="submit" value="Let Me In" tabindex="5" />
+			<input class="btn btn-primary" data-theme="b" type="submit" name="submit" id="submit" value="Sign in" tabindex="5" />
+			<?php echo anchor('/register', 'Register', "data-role='button' data-theme='b' "); ?>
+			<?php echo anchor('/forgot_password', lang('us_forgot_your_password'), "data-role='button' data-theme='b' "); ?>
 		</div>
 	</div>
 <?php echo form_close(); ?>
@@ -91,19 +81,5 @@
 	</div>
 </div>
 <?php endif; ?>
-
-<div class="row-fluid">
-	<div class="span12">
-
-	<p style="text-align: center" class="well">
-		<?php if ( $site_open ) : ?>
-			<?php echo lang('us_no_account'); ?> <?php echo anchor('/register', lang('us_sign_up')); ?> &nbsp;&nbsp; &#8226; &nbsp;&nbsp;
-		<?php endif; ?>
-
-		<?php echo anchor('/forgot_password', lang('us_forgot_your_password')); ?>
-	</p>
-
-	</div>
-</div>
 
 </section>
