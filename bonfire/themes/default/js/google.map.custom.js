@@ -223,3 +223,48 @@ MYMAP.getPlacesByLocation = function(selector, url) {
 		handleNoGeolocation(false);
 	}
 }
+
+MYMAP.getPeopleByLocation = function(selector, url) {
+
+	// Try HTML5 geolocation
+	if(navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+			MYMAP.curLat = position.coords.latitude;
+			MYMAP.curLng = position.coords.longitude;
+			$.ajax({
+				'dataType': 'json',
+				'type'    : 'POST',
+				'async'   : false,
+				'url'     : url,
+				'data'    : { lat: position.coords.latitude, lng: position.coords.longitude },
+				'success' : function(data) {
+					$(selector).empty();
+					$.each(data, function(index, element) {
+						$(selector).append(listing_item(index + 1, element));
+					});
+				}
+			});
+			$(selector).listview("refresh");
+		}, function() {
+			handleNoGeolocation(true);
+		});
+	} else {
+		// Browser doesn't support Geolocation
+		handleNoGeolocation(false);
+	}
+}
+
+MYMAP.getCurrentPos = function() {
+	// Try HTML5 geolocation
+	if(navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+			MYMAP.curLat = position.coords.latitude;
+			MYMAP.curLng = position.coords.longitude;
+		}, function() {
+			handleNoGeolocation(true);
+		});
+	} else {
+		// Browser doesn't support Geolocation
+		handleNoGeolocation(false);
+	}
+}
