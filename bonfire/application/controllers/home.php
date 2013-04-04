@@ -193,8 +193,11 @@ class Home extends Front_Controller
 		//$pie_image = @imagecreatetruecolor($width, $height);
 
 		$query_str = "SELECT spot.checkin_status, count(spot.checkin_status) as count
-					FROM sp_spots spot
+					FROM sp_spots spot, sp_users user
 					WHERE spot.spots_place_id = {$place_id}
+					AND user.id = spot.spots_user_id
+					AND spot.spots_user_id != {$this->current_user->id}
+					AND user.gender != {$this->current_user->gender}
 					AND spot.is_checkin = 1
 					GROUP BY spot.checkin_status";
 		$query = $this->db->query($query_str);

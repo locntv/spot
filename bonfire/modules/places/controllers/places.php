@@ -52,6 +52,8 @@ class places extends Front_Controller {
 			$places = array();
 			if ( $query->num_rows() > 0 ) {
 				foreach ( $query->result_array() as $row ) {
+					$row['distance'] = round($row['distance'],3, PHP_ROUND_HALF_UP);
+					$row['people'] = $this->count_opposite_in_place($row['id']);
 					$places[] = $row;
 				}
 				$places_json = json_encode($places);
@@ -64,5 +66,21 @@ class places extends Front_Controller {
 	}
 
 	//--------------------------------------------------------------------
+	private function count_opposite_in_place($place_id=''){
+		$result = 0;
+		$query_str = "SELECT count(sp_users.id) as count
+		FROM sp_spots left join sp_users on sp_spots.spots_user_id = sp_users.id
+		WHERE spots_place_id = {$place_id}
+		AND sp_users.gender != {$this->current_user->gender}
+		AND sp_spots.is_checkin = 1
+		GROUP BY sp_users.id";
+		$query = $this->db->query($query_str);
+		if( $query->num_rows() > 0 ){
+			foreach ($query->result_array() as $row){
+				$result = $row['count'];
+			}
+		}
 
+		return $result;
+	}
 }
