@@ -30,7 +30,7 @@
 		html += '<div style="padding:0 5px 0 10px;"><h2><span>' + id + '.</span> ' + data.places_name + '</h2>';
 		html += '<p>' + data.places_address + '</p>';
 		html += '<p>' + data.places_type + '</p>';
-		html += '<p>' + data.people + '&nbsp;person(s)&nbsp;&nbsp;&nbsp;&nbsp;' + data.distance+'</p></div>';
+		html += '<p>' + data.people + '&nbsp;person(s)&nbsp;&nbsp;&nbsp;&nbsp;' + data.distance+'&nbsp;mile(s)</p></div>';
 		html += '</td><td width="5%" style="text-align: center;">';
 		html += '<img src="' + img_icon + '" /></td></tr></table>';
 		html += '</li>';
