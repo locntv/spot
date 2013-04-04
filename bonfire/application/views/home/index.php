@@ -24,7 +24,7 @@
 			img_venue += name.replace(".","_160x160.");
 		}
 		html =  '<li style="padding: 5px;" data-role="fieldcontain" id="place_' + data.id + '">';
-		html += '<table width="100%" cellpadding="0" cellspacing="0">'
+		html += '<table width="100%" cellpadding="0" cellspacing="0">';
 		html += '<tr><td width="5%"><img src="' + img_venue + '" style="width: 80px;" /></td>';
 		html += '<td width="90%" style="text-align: left;">';
 		html += '<div style="padding:0 5px 0 10px;"><h2><span>' + id + '.</span> ' + data.places_name + '</h2>';
