@@ -59,3 +59,7 @@
 .ui-navbar li .ui-btn-icon-top .ui-btn-inner {
 	padding-top:40px;
 }
+
+body .ui-li .ui-li-desc {
+	white-space: normal;
+}

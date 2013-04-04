@@ -271,9 +271,9 @@ class Home extends Front_Controller
 			} elseif ($label == 2) { // yellow
 				$color = imagecolorallocate($pie_image, 255, 255, 102);
 			} elseif ($label == 3) { // green
-				$color = imagecolorallocate($pie_image, 0, 102, 0);
+				$color = imagecolorallocate($pie_image, 128, 255, 0);
 			} else {
-				$color = imagecolorallocate($pie_image, 139, 137, 137);
+				$color = imagecolorallocate($pie_image, 51, 153, 255);
 			}
 			$angle_done = ($value/$total) * 360; /** angle calculated for 360 degrees */
 			$perc       = round(($value/$total) * 100, 1); /** percentage calculated */
