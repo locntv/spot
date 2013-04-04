@@ -1,4 +1,12 @@
 <script type="text/javascript">
+
+$(document).ready(function(){
+	ver = iOSversion();
+	//alert(ver[0]);
+	if(ver != null &&  ver[0] < 6){
+		$(".check-os").append("This OS does not support to upload image");
+	}
+})
 function iOSversion() {
 	  if (/iP(hone|od|ad)/.test(navigator.platform)) {
 	    // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
@@ -6,10 +14,6 @@ function iOSversion() {
 	    return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
 	  }
 	  return null;
-	}
-	ver = iOSversion();
-	if(ver != null &&  ver < 6){
-		$(".check-os").html("Not support upload image");
 	}
 </script>
 <section id="register">
@@ -92,8 +96,8 @@ function iOSversion() {
 		
 		<span class="fileinput-button" data-role="button" data-icon="plus">
 		    <input type="file" data-clear-btn="false" name="image" multiple data-role="none" accept="image/*"/>
-		    <label class="check-os"></label>
 		</span>
+		<label class="check-os"></label>
 
 		<?php
 			// Allow modules to render custom fields

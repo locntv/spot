@@ -1,3 +1,22 @@
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+	ver = iOSversion();
+	//alert(ver[0]);
+	if(ver != null &&  ver[0] < 6){
+		$(".check-os").append("This OS does not support to upload image");
+	}
+})
+function iOSversion() {
+	  if (/iP(hone|od|ad)/.test(navigator.platform)) {
+	    // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
+	    var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+	    return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+	  }
+	  return null;
+}
+//-->
+</script>
 <?php
 	if ( !empty( $user->image ) && file_exists(ASSET_PATH . 'images/user/' . $user->image )) {
 		$image_thumb = str_replace(".", "_128x128.", $user->image);
@@ -31,6 +50,7 @@
 				<label for="user_image">Update picture</label>
 				<input id="user_image" type="file" name="user_image" />
 				<input type="hidden" name="thumb" value="<?php echo $user->image ?>" />
+				<label class="check-os"></label>
 			</li>
 			<li data-role="fieldcontain">
 				<label for="user-pass">Update password</label>
