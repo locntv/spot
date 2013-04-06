@@ -460,7 +460,7 @@ class Home extends Front_Controller
 		return $this->spots_model->select('spots.spots_place_id, spots.is_checkin, places.places_longitude, places.places_latitude')
 								->find_by(array(
 									'spots_user_id' => $this->current_user->id,
-									//'is_checkin' => 1
+									'is_checkin' => 1
 								)
 		);
 // 		if($spot = $this->spots_model->find_by(
