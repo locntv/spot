@@ -1,64 +1,38 @@
 <script type="text/javascript"
-	src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=en">
+	src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry&language=en">
 </script>
 <script src="<?php echo Template::theme_url('js/google.map.custom.js'); ?>"></script>
 
 <script type="text/javascript">
 <!--
 	$(document).ready(function() {
-		MYMAP.getPeopleByLocation('#listing', '<?php echo site_url() ?>places/people_ajax');
-		MYMAP.getCurrentPos();
-		place_id = <?php echo $place_id ?>;
-		checkin(place_id);
+		MYMAP.getPeopleByLocation('#listing', '<?php echo site_url() ?>home/people_ajax', '<?php echo $spot->spots_place_id ?>', '<?php echo $spot->places_longitude ?>', '<?php echo $spot->places_latitude ?>', <?php echo $spot->is_checkin ?>);
 	});
-	
-	function checkin(place_id) {
-		
-		$.ajax({
-			'dataType': 'json',
-			'type'    : 'POST',
-			'url'     : "<?php echo base_url('home/checkin')?>",
-			'data'    : { lat: MYMAP.curLat, lng: MYMAP.curLng, place_id: place_id },
-			'success' : function(data) {
-				alert(data.code);
-				if (data.code == 1) { // Not checkin and in range allowed
-					$( "#popup_spot_name" ).html(data.place_name);
-					$( "#popup_place_id" ).val(place_id);
-					$( "#popupDialog" ).popup( "open" );
-				} else if (data.code == 2) {
-					document.location.href = 'home/people/' + place_id;
-				} else {
-					$("#popupNoticeDialog").popup("open");
-					//document.location.href = 'home';
-				}
-			}
-		});
+
+	function listing_item( data ) {
+		var img_user = '<?php echo base_url() ?>assets/images/user/';
+		var img_icon = '<?php echo Template::theme_url('images/spot_circle_') ?>' + data.checkin_status + '.png';
+
+		if (data.image) {
+			var name = data.image;
+			img_user += name.replace(".","_128x128.");
+		} else {
+			img_user += 'happyface.png';
+		}
+		html =  '<li style="padding: 5px;" data-role="fieldcontain">';
+		html += '<table width="100%" cellpadding="0" cellspacing="0">';
+		html += '<tr><td width="30%"><img src="' + img_user + '" style="width: 128px;" /></td>';
+		html += '<td width="70%" style="text-align: center;">';
+		html += '<img src="' + img_icon + '" style="width: 50px;" /></td></tr></table>';
+		html += '</li>';
+		return html;
 	}
-	
+
 //-->
 </script>
 
 <div class="container">
-	<ul data-role="listview" data-inset="true" data-inset="false">
-		<?php foreach ( $result as $item ) : ?>
-		<?php 
-			if ( !empty( $item['image'] ) && file_exists(ASSET_PATH . 'images/user/' . $item['image'] )) {
-				$image_thumb = str_replace(".", "_128x128.", $item['image']);
-			} else {
-				$image_thumb = 'happyface.png';
-			}
-		?>
-		<li data-role="fieldcontain">
-			<table><tr>
-				<td width="30%"><img src="<?php echo base_url() ?>assets/images/user/<?php echo $image_thumb; ?>" style="width: 128px;"/></td>
-				<td width="60%" style="text-align: center;">
-					<img src="<?php echo Template::theme_url('images/spot_circle_'.$item['checkin_status']); ?>.png" style="width: 50px;"/>
-					<h3><?php echo $item['last_name'] ?></h3>
-				</td>
-			</tr></table>
-		</li>
-		<?php endforeach; ?>
-	</ul>
+	<ul id="listing" data-role="listview" data-inset="true"></ul>
 </div>
 <div data-role="popup" id="popupDialog" data-overlay-theme="a" data-theme="c" style="max-width:400px;" class="ui-corner-all">
 	<div data-role="header" data-theme="a" class="ui-corner-top">
@@ -66,7 +40,7 @@
 	</div>
 	<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
 		<h3 class="ui-title" id="popup_spot_name" style="text-align: center;"></h3>
-		<form action="home/process_checkin" data-ajax="false" method="post">
+		<form action="process_checkin" data-ajax="false" method="post">
 		<div data-role="fieldcontain">
 			<fieldset data-role="controlgroup">
 				<input type="radio" name="checkin-status" id="checkin-status-1" value="1" checked="checked" />
@@ -90,6 +64,6 @@
 <div data-role="popup" id="popupNoticeDialog" data-dismissible="false" data-overlay-theme="a" data-theme="c" style="max-width:400px;" class="ui-corner-all">
 	<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content" style="text-align: center;">
 		<h1 class="ui-title" id="popup_notice">Sorry too far away</h1><br/><br/>
-		<a href="home/spot" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+		<a href="<?php echo site_url() ?>home" data-role="button" data-inline="true" data-theme="c" data-ajax="false">Cancel</a>
 	</div>
 </div>

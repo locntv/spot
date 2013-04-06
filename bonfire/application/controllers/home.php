@@ -73,7 +73,7 @@ class Home extends Front_Controller
 		if ( $this->auth->is_logged_in() === FALSE ) {
 			Template::redirect( '/dialog/index?type=register' );
 		}
-		if($place_id == 0 ){
+		if ( $place_id == 0 ){
 			$spot = $this->is_checked_in();
 			if ( $spot === FALSE ) {
 				Template::redirect( '/dialog/index?type=checkin' );
@@ -81,7 +81,6 @@ class Home extends Front_Controller
 				$place_id = $spot->spots_place_id;
 			}
 		}
-
 
 		//Checkout previous spot
 		$query_str = "SELECT spots_place_id FROM sp_spots WHERE
@@ -97,8 +96,7 @@ class Home extends Front_Controller
 		}
 		//
 
-		$result = array();
-
+		/*$result = array();
 		$query_str = "SELECT user.id,user.image,user.first_name,user.last_name,spot.checkin_status
 			FROM sp_spots spot left join sp_users user on user.id = spot.spots_user_id
 			WHERE spot.spots_place_id = {$place_id}
@@ -111,11 +109,60 @@ class Home extends Front_Controller
 				$result[] = $row;
 			}
 		}
-
-		Template::set('result', $result);
+		Template::set('result', $result);*/
+		Template::set('spot', $spot);
 		Template::set('page_title', 'People');
 		Template::render();
 	}//end people()
+
+	/*
+		Method: people_ajax()
+		Displays a list of form data.
+	*/
+	public function people_ajax( $place_id = 0 ) {
+
+		$result = array();
+		$location_json = '';
+		if ( !empty( $place_id ) ) {
+			$query_str = "SELECT user.id,user.image,user.first_name,user.last_name,spot.checkin_status
+				FROM sp_spots spot left join sp_users user on user.id = spot.spots_user_id
+				WHERE spot.spots_place_id = {$place_id}
+				AND spot.is_checkin = 1";
+			$query = $this->db->query($query_str);
+			if ( $query->num_rows() > 0 ) {
+				foreach ( $query->result_array() as $row ) {
+					$result[] = $row;
+				}
+			}
+			$people_json = json_encode($result);
+		}
+
+		/*$flag = false;
+		$records = array();
+		$location_json = '';
+		if ( $this->input->post('lat') && $this->input->post('lng') ) {
+			$flag = true;
+			$query_str = "SELECT
+								id,places_name,places_address,places_type,places_latitude, places_longitude,places_image,
+								3956 * 2 * ASIN(SQRT(POWER(SIN(({$this->input->post('lat')}- places_latitude) * pi()/180 / 2), 2) +COS({$this->input->post('lat')} * pi()/180) *COS(places_latitude * pi()/180) *POWER(SIN(({$this->input->post('lng')} -places_longitude) * pi()/180 / 2), 2) )) as distance
+							FROM sp_places HAVING distance < 25 ORDER BY distance;";
+			$query = $this->db->query($query_str);
+
+			$places = array();
+			if ( $query->num_rows() > 0 ) {
+				foreach ( $query->result_array() as $row ) {
+					$row['distance'] = round($row['distance'],3, PHP_ROUND_HALF_UP);
+					$row['people'] = $this->count_opposite_in_place($row['id']);
+					$places[] = $row;
+				}
+				$places_json = json_encode($places);
+			}
+		}*/
+
+		Template::set('result', $people_json);
+		Template::set_view("ajax/index");
+		Template::render('ajax');
+	}
 
 	/**
 	 * Displays the me page
@@ -396,9 +443,15 @@ class Home extends Front_Controller
 
 	public function is_checked_in(){
 		$result = array();
+
 		$this->load->model('places/spots_model', null, true);
-		return $this->spots_model->find_by(
-				array('spots_user_id'=>$this->current_user->id,'is_checkin' => 1)
+
+		$this->db->join('places', 'places.id = spots.spots_place_id', 'left');
+		return $this->spots_model->select('spots.spots_place_id, spots.is_checkin, places.places_longitude, places.places_latitude')
+								->find_by(array(
+									'spots_user_id' => $this->current_user->id,
+									//'is_checkin' => 1
+								)
 		);
 // 		if($spot = $this->spots_model->find_by(
 // 				array('spots_user_id'=>$this->current_user->id,'is_checkin' => 1)
@@ -427,14 +480,14 @@ class Home extends Front_Controller
 		return FALSE;
 	}
 
-	function checkout($place_id, $user_id){
+	public function checkout($place_id){
 		$this->load->model('places/spots_model', null, true);
 		$this->load->model('places/spots_history_model', null, true);
 
 		$spot = $this->spots_model->find_by(
 					array(
 						'spots_place_id' => $place_id,
-						'spots_user_id' => $user_id
+						'spots_user_id' => $this->current_user->id
 						)
 				);
 		if($spot !== FALSE){

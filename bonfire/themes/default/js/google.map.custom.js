@@ -224,27 +224,51 @@ MYMAP.getPlacesByLocation = function(selector, url) {
 	}
 }
 
-MYMAP.getPeopleByLocation = function(selector, url) {
+MYMAP.getPeopleByLocation = function(selector, url, place_id, lng, lat, is_checkin) {
 
 	// Try HTML5 geolocation
 	if(navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
-			MYMAP.curLat = position.coords.latitude;
-			MYMAP.curLng = position.coords.longitude;
-			$.ajax({
-				'dataType': 'json',
-				'type'    : 'POST',
-				'async'   : false,
-				'url'     : url,
-				'data'    : { lat: position.coords.latitude, lng: position.coords.longitude },
-				'success' : function(data) {
-					$(selector).empty();
-					$.each(data, function(index, element) {
-						$(selector).append(listing_item(index + 1, element));
+
+			var p1 = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+			var p2 = new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
+			var distance = google.maps.geometry.spherical.computeDistanceBetween(p1, p2) * 0.000621371;
+			if ( distance > 1 ) {
+				if (is_checkin) {
+					// call ajax checkout
+					$.ajax({
+						'type'    : 'GET',
+						'url'     : 'checkout/' + place_id,
+						'success' : function() {
+							$("#popupNoticeDialog").popup("open");
+						}
 					});
+				} else {
+					$("#popupNoticeDialog").popup("open");
 				}
-			});
-			$(selector).listview("refresh");
+			} else {
+				if (is_checkin) {
+					// call ajax bind people
+					$.ajax({
+						'dataType': 'json',
+						'type'    : 'GET',
+						'url'     : 'people_ajax/' + place_id,
+						'success' : function(data) {
+							$(selector).empty();
+							$.each(data, function(index, element) {
+								$(selector).append(listing_item(element));
+							});
+							$(selector).listview("refresh");
+						}
+					});
+					$(selector).listview("refresh");
+				} else {
+					// show popup to choose checkin status
+					$( "#popup_place_id" ).val(place_id);
+					$( "#popupDialog" ).popup( "open" );
+				}
+			}
+
 		}, function() {
 			handleNoGeolocation(true);
 		});
