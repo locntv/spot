@@ -102,8 +102,7 @@ class places extends Front_Controller {
 		FROM sp_spots left join sp_users on sp_spots.spots_user_id = sp_users.id
 		WHERE spots_place_id = {$place_id}
 		AND sp_users.gender != {$this->current_user->gender}
-		AND sp_spots.is_checkin = 1
-		GROUP BY sp_users.id";
+		AND sp_spots.is_checkin = 1";
 		$query = $this->db->query($query_str);
 		if( $query->num_rows() > 0 ){
 			foreach ($query->result_array() as $row){
