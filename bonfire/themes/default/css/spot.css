@@ -63,3 +63,6 @@
 body .ui-li .ui-li-desc {
 	white-space: normal;
 }
+.spot-selected{
+	background: #ffb7b7;
+}

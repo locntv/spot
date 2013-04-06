@@ -41,6 +41,7 @@ class places extends Front_Controller {
 		$flag = false;
 		$records = array();
 		$location_json = '';
+		$this->load->model('places/spots_model', null, true);
 		if ( $this->input->post('lat') && $this->input->post('lng') ) {
 			$flag = true;
 			$query_str = "SELECT
@@ -52,8 +53,9 @@ class places extends Front_Controller {
 			$places = array();
 			if ( $query->num_rows() > 0 ) {
 				foreach ( $query->result_array() as $row ) {
-					$row['distance'] = round($row['distance'],3, PHP_ROUND_HALF_UP);
+					$row['distance'] = round($row['distance'],2, PHP_ROUND_HALF_UP);
 					$row['people'] = $this->count_opposite_in_place($row['id']);
+					$row['is_checkin'] = $this->is_checkin($row['id']); 	
 					$places[] = $row;
 				}
 				$places_json = json_encode($places);
@@ -63,6 +65,34 @@ class places extends Front_Controller {
 		Template::set('result', $places_json);
 		Template::set_view("ajax/index");
 		Template::render('ajax');
+	}
+	
+	public function people_ajax() {
+		$flag = false;
+		$records = array();
+		$location_json = '';
+		if ( $this->input->post('lat') && $this->input->post('lng') ) {
+			$flag = true;
+			$query_str = "SELECT
+			id,places_name,places_address,places_type,places_latitude, places_longitude,places_image,
+			3956 * 2 * ASIN(SQRT(POWER(SIN(({$this->input->post('lat')}- places_latitude) * pi()/180 / 2), 2) +COS({$this->input->post('lat')} * pi()/180) *COS(places_latitude * pi()/180) *POWER(SIN(({$this->input->post('lng')} -places_longitude) * pi()/180 / 2), 2) )) as distance
+			FROM sp_places HAVING distance < 25 ORDER BY distance;";
+			$query = $this->db->query($query_str);
+	
+			$places = array();
+			if ( $query->num_rows() > 0 ) {
+			foreach ( $query->result_array() as $row ) {
+			$row['distance'] = round($row['distance'],3, PHP_ROUND_HALF_UP);
+			$row['people'] = $this->count_opposite_in_place($row['id']);
+			$places[] = $row;
+			}
+			$places_json = json_encode($places);
+			}
+			}
+	
+			Template::set('result', $places_json);
+			Template::set_view("ajax/index");
+			Template::render('ajax');
 	}
 
 	//--------------------------------------------------------------------
@@ -82,5 +112,19 @@ class places extends Front_Controller {
 		}
 
 		return $result;
+	}
+	
+	private function is_checkin($place_id){
+		$this->load->model('places/spots_model', null, true);
+		$spot = $this->spots_model->find_by(array(
+					'spots_place_id' => $place_id,
+					'spots_user_id'  => $this->current_user->id,
+					'is_checkin'	=> 1));
+		if($spot !== FALSE){
+			return 1;
+		} else {
+			return 0;
+		}
+		return 0;
 	}
 }

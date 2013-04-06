@@ -23,7 +23,12 @@
 			var name = data.places_image;
 			img_venue += name.replace(".","_160x160.");
 		}
-		html =  '<li style="padding: 5px;" data-role="fieldcontain" id="place_' + data.id + '">';
+		var is_checkin = data.is_checkin;
+		if(is_checkin == 1){
+			html =  '<li style="padding: 5px;" data-role="fieldcontain" class="spot-selected" id="place_' + data.id + '">';
+		} else {
+			html =  '<li style="padding: 5px;" data-role="fieldcontain" id="place_' + data.id + '">';
+		}
 		html += '<table width="100%" cellpadding="0" cellspacing="0">';
 		html += '<tr><td width="5%"><img src="' + img_venue + '" style="width: 80px;" /></td>';
 		html += '<td width="90%" style="text-align: left;">';
