@@ -18,7 +18,7 @@
 	//var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
 	function listing_item( id, data ) {
 		var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
-		var img_icon = '<?php echo site_url() ?>/home/pie_icon/32/32/' + data.id;
+		var img_icon = '<?php echo site_url() ?>home/pie_icon/32/32/' + data.id;
 		if (data.places_image) {
 			var name = data.places_image;
 			img_venue += name.replace(".","_160x160.");

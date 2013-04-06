@@ -6,7 +6,11 @@
 <script type="text/javascript">
 <!--
 	$(document).ready(function() {
-		MYMAP.getPeopleByLocation('#listing', '<?php echo site_url() ?>home/people_ajax', '<?php echo $spot->spots_place_id ?>', '<?php echo $spot->places_longitude ?>', '<?php echo $spot->places_latitude ?>', <?php echo $spot->is_checkin ?>);
+		MYMAP.getPeopleByLocation('#listing', '<?php echo site_url() ?>home/people_ajax',
+				'<?php echo empty( $spot->spots_place_id ) ? 0 : $spot->spots_place_id ?>',
+				'<?php echo empty( $spot->places_longitude ) ? 0 : $spot->places_longitude ?>',
+				'<?php echo empty( $spot->places_latitude ) ? 0 : $spot->places_latitude ?>',
+				<?php echo empty( $spot->is_checkin ) ? 0 : $spot->is_checkin ?>);
 	});
 
 	function listing_item( data ) {
@@ -40,7 +44,7 @@
 	</div>
 	<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
 		<h3 class="ui-title" id="popup_spot_name" style="text-align: center;"></h3>
-		<form action="process_checkin" data-ajax="false" method="post">
+		<form action="<?php echo site_url() ?>home/process_checkin" data-ajax="false" method="post">
 		<div data-role="fieldcontain">
 			<fieldset data-role="controlgroup">
 				<input type="radio" name="checkin-status" id="checkin-status-1" value="1" checked="checked" />
