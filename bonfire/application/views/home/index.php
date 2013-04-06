@@ -75,7 +75,7 @@
 	</div>
 	<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
 		<h3 class="ui-title" id="popup_spot_name" style="text-align: center;"></h3>
-		<form action="home/process_checkin" data-ajax="false" method="post">
+		<form action="<?php echo site_url() ?>home/process_checkin" data-ajax="false" method="post">
 		<div data-role="fieldcontain">
 			<fieldset data-role="controlgroup">
 				<input type="radio" name="checkin-status" id="checkin-status-1" value="1" checked="checked" />

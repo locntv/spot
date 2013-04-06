@@ -73,13 +73,23 @@ class Home extends Front_Controller
 		if ( $this->auth->is_logged_in() === FALSE ) {
 			Template::redirect( '/dialog/index?type=register' );
 		}
-		if ( $place_id == 0 ){
+		if ( empty( $place_id ) ){
 			$spot = $this->is_checked_in();
 			if ( $spot === FALSE ) {
 				Template::redirect( '/dialog/index?type=checkin' );
 			} else {
 				$place_id = $spot->spots_place_id;
 			}
+		} else {
+			$this->load->model('places/spots_model', null, true);
+
+			$this->db->join('places', 'places.id = spots.spots_place_id', 'left');
+			$spot = $this->spots_model->select('spots.spots_place_id, spots.is_checkin, places.places_longitude, places.places_latitude')
+								->find_by(array(
+									'spots_user_id' => $this->current_user->id,
+									'spots_place_id' => $place_id
+								)
+			);
 		}
 
 		//Checkout previous spot
