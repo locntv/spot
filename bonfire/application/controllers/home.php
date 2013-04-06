@@ -94,8 +94,8 @@ class Home extends Front_Controller
 
 		//Checkout previous spot
 		$query_str = "SELECT spots_place_id FROM sp_spots WHERE
-					is_checkin = 1 AND spots_user_id = {$this->current_user->id}
-					AND spots_place_id != {$place_id}";
+					is_checkin = 1 AND spots_user_id = " . $this->current_user->id .
+					" AND spots_place_id != {$place_id}";
 		$query = $this->db->query($query_str);
 		if ($query->num_rows() > 0)
 		{

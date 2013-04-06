@@ -6,7 +6,7 @@
 <script type="text/javascript">
 <!--
 	$(document).ready(function() {
-		MYMAP.getPeopleByLocation('#listing', '<?php echo site_url() ?>home/people_ajax',
+		MYMAP.getPeopleByLocation('#listing', '<?php echo site_url() ?>',
 				'<?php echo empty( $spot->spots_place_id ) ? 0 : $spot->spots_place_id ?>',
 				'<?php echo empty( $spot->places_longitude ) ? 0 : $spot->places_longitude ?>',
 				'<?php echo empty( $spot->places_latitude ) ? 0 : $spot->places_latitude ?>',

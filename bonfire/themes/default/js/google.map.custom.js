@@ -238,7 +238,7 @@ MYMAP.getPeopleByLocation = function(selector, url, place_id, lng, lat, is_check
 					// call ajax checkout
 					$.ajax({
 						'type'    : 'GET',
-						'url'     : 'checkout/' + place_id,
+						'url'     : url + 'home/checkout/' + place_id,
 						'success' : function() {
 							$("#popupNoticeDialog").popup("open");
 						}
@@ -252,7 +252,7 @@ MYMAP.getPeopleByLocation = function(selector, url, place_id, lng, lat, is_check
 					$.ajax({
 						'dataType': 'json',
 						'type'    : 'GET',
-						'url'     : 'people_ajax/' + place_id,
+						'url'     : url + 'home/people_ajax/' + place_id,
 						'success' : function(data) {
 							$(selector).empty();
 							$.each(data, function(index, element) {
