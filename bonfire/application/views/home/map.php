@@ -9,7 +9,7 @@
 
 	$(document).ready(function() {
 
-		MYMAP.init('#map_canvas', 12);
+		MYMAP.init('#map_canvas', 16);
 		MYMAP.setCurrentMarker(true, '');
 		MYMAP.placeMarkersByLocation('<?php echo site_url() ?>places/places_ajax', '<?php echo site_url() ?>home/pie_icon/32/32/');
 	});
