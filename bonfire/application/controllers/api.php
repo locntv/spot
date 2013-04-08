@@ -223,6 +223,7 @@ class Api extends Front_Controller
 						$row['people'] = $this->get_status_in_venue($_POST['user_id'], $row['id'], $user_gender);
 						$result ['data'][] = $this->build_data_venue($row);
 					}
+					$result['gender'] = $user_gender;
 					$result['code'] = '200';
 				} else {
 					$result['code'] = '102';

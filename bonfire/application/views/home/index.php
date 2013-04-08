@@ -24,6 +24,13 @@
 			img_venue += name.replace(".","_160x160.");
 		}
 		var is_checkin = data.is_checkin;
+		var gender = <?php echo $current_user->gender; ?>;
+		if(gender ==1){
+			gender = "girl(s)";
+		} else {
+			gender = "guy(s)";
+		}
+		
 		if(is_checkin == 1){
 			html =  '<li style="padding: 5px;" data-role="fieldcontain" class="spot-selected" id="place_' + data.id + '">';
 		} else {
@@ -35,7 +42,7 @@
 		html += '<div style="padding:0 5px 0 10px;"><h2><span>' + id + '.</span> ' + data.places_name + '</h2>';
 		html += '<p>' + data.places_address + '</p>';
 		html += '<p>' + data.places_type + '</p>';
-		html += '<p>' + data.people + '&nbsp;person(s)&nbsp;&nbsp;&nbsp;&nbsp;' + data.distance+'&nbsp;mile(s)</p></div>';
+		html += '<p>' + data.people + '&nbsp;'+ gender +'&nbsp;&nbsp;&nbsp;&nbsp;' + data.distance+'&nbsp;mile(s)</p></div>';
 		html += '</td><td width="5%" style="text-align: center;">';
 		html += '<img src="' + img_icon + '" /></td></tr></table>';
 		html += '</li>';
@@ -82,10 +89,10 @@
 				<label for="checkin-status-1"><img alt="red" src="<?php echo Template::theme_url('images/spot_circle_1.png'); ?>" width="20%"/><span style="vertical-align: 75%;padding-left: 10px;">Wingman</span></label>
 
 				<input type="radio" name="checkin-status" id="checkin-status-2" value="2" />
-				<label for="checkin-status-2"><img alt="yellow" src="<?php echo Template::theme_url('images/spot_circle_2.png'); ?>" width="20%"/><span style="vertical-align: 75%;padding-left: 10px;">Not Sure</span></label>
+				<label for="checkin-status-2"><img alt="yellow" src="<?php echo Template::theme_url('images/spot_circle_2.png'); ?>" width="20%"/><span style="vertical-align: 75%;padding-left: 10px;">Convince me</span></label>
 
 				<input type="radio" name="checkin-status" id="checkin-status-3" value="3" />
-				<label for="checkin-status-3"><img alt="green" src="<?php echo Template::theme_url('images/spot_circle_3.png'); ?>" width="20%"/> <span style="vertical-align: 75%;padding-left: 5px;">Game On</span> </label>
+				<label for="checkin-status-3"><img alt="green" src="<?php echo Template::theme_url('images/spot_circle_3.png'); ?>" width="20%"/> <span style="vertical-align: 75%;padding-left: 5px;">Ready to mingle</span> </label>
 			</fieldset>
 		</div>
 		<a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>

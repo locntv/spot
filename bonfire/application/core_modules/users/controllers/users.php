@@ -601,12 +601,14 @@ class Users extends Front_Controller
 						$type = 'success';
 					}
 
-					Template::set_message($message, $type);
+					//Template::set_message($message, $type);
 
 					// Log the Activity
 
 					$this->activity_model->log_activity($user_id, lang('us_log_register') , 'users');
-					Template::redirect('login');
+					$this->auth->login($this->input->post('email'), $this->input->post('password'));
+					$this->activity_model->log_activity($this->auth->user_id(), lang('us_log_logged').': ' . $this->input->ip_address(), 'users');
+					Template::redirect('/');
 				}
 				else
 				{
