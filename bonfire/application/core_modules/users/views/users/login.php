@@ -5,7 +5,7 @@
 	<div class="page-header">
 		<h1 style="text-align: center;">
 		<img width="90%" align="middle" src="<?php echo Template::theme_url("images/spot_home_lights.png");?>">
-		<img width="40%" align="top" alt="" src="<?php echo Template::theme_url("images/spot_home_logo.png");?>">
+		<img width="90%" align="top" alt="" src="<?php echo Template::theme_url("images/spot_home_logo.png");?>">
 		</h1>
 	</div>
 
@@ -14,7 +14,7 @@
 <div class="row-fluid">
 	<div class="span12">
 		<div class="alert alert-danger fade in span6" >
-		  <a data-dismiss="alert" class="close">&times;</a>
+		<a data-dismiss="alert" class="close">&times;</a>
 			<h4 class="alert-heading">Sorry this is invite only site.</h4>
 		</div>
 	</div>
@@ -26,7 +26,7 @@
 <div class="row-fluid">
 	<div class="span12">
 		<div class="alert alert-error fade in">
-		  <a data-dismiss="alert" class="close">&times;</a>
+		<a data-dismiss="alert" class="close">&times;</a>
 			<?php echo auth_errors() . validation_errors(); ?>
 		</div>
 	</div>

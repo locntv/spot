@@ -322,8 +322,7 @@ class Home extends Front_Controller
 		$ylegend = 2;
 		$black = imagecolorallocate($pie_image, 0, 0, 0);
 		$is_empty = true;
-		//$white = imagecolorallocate($pie_image, 255, 255, 255);
-		//imagefilledrectangle($pie_image, 0, 0, $width, $piewidth, imagecolorallocate($pie_image, 0, 0, 0));
+
 		foreach ( $dataArr as $label => $value ) {
 
 			if ( $label == 1 ) { // red
@@ -332,8 +331,8 @@ class Home extends Front_Controller
 				$color = imagecolorallocate($pie_image, 255, 255, 102);
 			} elseif ($label == 3) { // green
 				$color = imagecolorallocate($pie_image, 128, 255, 0);
-			} else {
-				$color = imagecolorallocate($pie_image, 51, 153, 255);
+			} else { // light blue 173-216-230
+				$color = imagecolorallocate($pie_image, 173, 216, 230);
 			}
 			$angle_done = ($value/$total) * 360; /** angle calculated for 360 degrees */
 			$perc       = round(($value/$total) * 100, 1); /** percentage calculated */
