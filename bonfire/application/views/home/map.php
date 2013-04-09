@@ -4,6 +4,9 @@
 <script type="text/javascript"
 	src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=en">
 </script>
+<script type="text/javascript"
+	src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js">
+</script>
 <script src="<?php echo Template::theme_url('js/google.map.custom.js'); ?>"></script>
 <script type="text/javascript">
 
