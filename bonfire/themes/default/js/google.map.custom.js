@@ -176,11 +176,36 @@ MYMAP.placeMarkersByLocation = function(url, icon_url) {
 							title: element.places_name
 						});
 
-						/*var infoWindow = new google.maps.InfoWindow();
-						var html = '<b>' + element.places_name + '</b><br />';
-						html += element.places_address;
-						infoWindow.setContent(html);
-						infoWindow.open(MYMAP.map, marker);*/
+						//var infoWindow = new google.maps.InfoWindow();
+						var html = '<div style="border:2px solid black;';
+						html += 'margin-top: 8px; background:#333; color:#FFF;';
+						html += 'font-family:Arial, Helvetica, sans-serif; font-size:11px;';
+						html += 'padding: .5em 1em; -webkit-border-radius: 2px; -moz-border-radius: 2px;';
+						html += 'border-radius: 2px; text-shadow:0 -1px #000000;';
+						html += '-webkit-box-shadow: 0 0  8px #000; box-shadow: 0 0 8px #000;';
+						html += '"><b>' + element.places_name + '</b><br />';
+						html += element.places_address + '</div>';
+						//infoWindow.setContent(html);
+						//infoWindow.open(MYMAP.map, marker);*/
+						var infobox = new InfoBox({
+							content: html,
+							disableAutoPan: false,
+							maxWidth: 150,
+							pixelOffset: new google.maps.Size(-140, 0),
+							zIndex: null,
+							boxStyle: {
+								background: "url('http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/examples/tipbox.gif') no-repeat",
+								opacity: 0.75,
+								width: "280px"
+							},
+							closeBoxMargin: "12px 4px 2px 2px",
+							closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif",
+							infoBoxClearance: new google.maps.Size(1, 1)
+						});
+						google.maps.event.addListener(marker, 'click', function() {
+							infobox.open(MYMAP.map, this);
+							MYMAP.map.panTo(point);
+						});
 					});
 				}
 			});
