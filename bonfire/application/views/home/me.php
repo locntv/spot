@@ -50,6 +50,7 @@ function iOSversion() {
 				<label for="user_image">Update picture</label>
 				<input id="user_image" type="file" name="user_image" />
 				<input type="hidden" name="thumb" value="<?php echo $user->image ?>" />
+				<input type="hidden" name="MAX_FILE_SIZE" value="100000000" />
 				<label class="check-os"></label>
 			</li>
 			<li data-role="fieldcontain">
