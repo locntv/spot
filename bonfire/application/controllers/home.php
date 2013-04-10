@@ -31,6 +31,7 @@
 class Home extends Front_Controller
 {
 
+	
 	public function __construct()
 	{
 		parent::__construct();
@@ -47,6 +48,9 @@ class Home extends Front_Controller
 	 */
 	public function index()
 	{
+		//Call auto checkout
+		$this->auto_checkout();
+		
 		Template::set('page_title', 'Spots');
 		Template::render();
 	}//end spots()
@@ -58,6 +62,8 @@ class Home extends Front_Controller
 	 */
 	public function map()
 	{
+		//Call auto checkout
+		$this->auto_checkout();
 		Template::set('page_title', 'Map');
 		Template::set('refresh', true);
 		Template::render('index_fullscreen');
@@ -73,6 +79,9 @@ class Home extends Front_Controller
 		if ( $this->auth->is_logged_in() === FALSE ) {
 			Template::redirect( '/dialog/index?type=register' );
 		}
+		//Call auto checkout
+		$this->auto_checkout();
+		
 		if ( empty( $place_id ) ){
 			$spot = $this->is_checked_in();
 			if ( $spot === FALSE ) {
@@ -511,6 +520,42 @@ class Home extends Front_Controller
 				$this->spots_history_model->update($spot_history_id,array(
 						'checkout_time'	=> date('Y-m-d H:i:s')
 				));
+			}
+		}
+	}
+	
+	
+	/**
+	 * Auto checkout user after 1 day 
+	 * 
+	 */
+	private function auto_checkout(){
+		if($this->current_user){
+			$last_login = $this->current_user->last_login;
+			if( time() > strtotime($last_login." +24 hours" )){
+				$this->load->model('places/spots_model', null, true);
+				$this->load->model('places/spots_history_model', null, true);
+				
+				$spot = $this->spots_model->find_by(
+						array(
+								'is_checkin' => 1,
+								'spots_user_id' => $this->current_user->id
+						)
+				);
+				if($spot !== FALSE){
+					// Checkout spot
+					$this->spots_model->update($spot->id,
+							array('checkout_time' => date('Y-m-d H:i:s'),
+									'is_checkin' => 0));
+					// Update history
+					$spot_history_id = $this->spots_history_model->select('id')->order_by('id','desc')->find_by('spots_id',$spot->id);
+					if($spot_history_id !== FALSE){
+						$spot_history_id = $spot_history_id->id;
+						$this->spots_history_model->update($spot_history_id,array(
+								'checkout_time'	=> date('Y-m-d H:i:s')
+						));
+					}
+				}
 			}
 		}
 	}

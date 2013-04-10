@@ -477,8 +477,21 @@ class Users extends Front_Controller
 					$meta_data[$field['name']] = $this->input->post($field['name']);
 				}
 			}*/
+			$is_image_uploaded = TRUE;
+			$is_image		   = FALSE;
+			if(isset($_FILES['image']) && $_FILES['image']['name'] != ''){
+				$is_image 				= TRUE;
+				$this->load->helper('file_upload');
+				$file_upload_result = file_upload_image( $_FILES, 'image', 'user', 128, 128 );
+				if ( !empty( $file_upload_result["error"] ) ) {
+					$is_image_uploaded = FALSE;
+					Template::set('image_error', $file_upload_result["error"]);
+				} else {
+					$image_name = $file_upload_result["data"];
+				}
+			}
 
-			if ($this->form_validation->run($this) !== FALSE && $this->upload_image() !== FALSE)
+			if ($this->form_validation->run($this) !== FALSE && $is_image_uploaded !== FALSE)
 			{
 				// Time to save the user...
 				$data = array(
@@ -488,6 +501,9 @@ class Users extends Front_Controller
 						'password'	=> $_POST['password'],
 						'gender'	=> $_POST['gender']
 					);
+				if($is_image === TRUE){
+					$data['image'] = $image_name;
+				}
 				// User activation method
 				$activation_method = $this->settings_lib->item('auth.user_activation_method');
 
@@ -502,14 +518,7 @@ class Users extends Front_Controller
 				{
 					// now add the meta is there is meta data
 					//$this->user_model->save_meta_for($user_id, $meta_data);
-					if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != ''){
-						$image_name = $user_id."_imageprofile.png";
-						$image_path = ASSET_PATH.'images/user';
-						$command = "mv {$image_path}/{$_FILES['image']['name']}  {$image_path}/{$image_name}";
-						@shell_exec($command);
-						$this->user_model->update($user_id, array(
-						'image' => Assets::assets_url('image')."user/".$user_id."_imageprofile.png"));
-					}
+					
 					/*
 					 * USER ACTIVATIONS ENHANCEMENT
 					 */
