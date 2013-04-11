@@ -541,7 +541,7 @@ class Home extends Front_Controller
 					)
 			);
 			if($spot !== FALSE){
-				if(time() > strtotime($spot->checkin_time . " +2 minutes" )){
+				if(time() > strtotime($spot->checkin_time . " +24 hours" )){
 					$this->spots_model->update($spot->id,
 							array('checkout_time' => date('Y-m-d H:i:s'),
 									'is_checkin' => 0));
