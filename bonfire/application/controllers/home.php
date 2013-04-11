@@ -531,19 +531,17 @@ class Home extends Front_Controller
 	 */
 	private function auto_checkout(){
 		if($this->current_user){
-			$last_login = $this->current_user->last_login;
-			if( time() > strtotime($last_login." +24 hours" )){
-				$this->load->model('places/spots_model', null, true);
-				$this->load->model('places/spots_history_model', null, true);
-				
-				$spot = $this->spots_model->find_by(
-						array(
-								'is_checkin' => 1,
-								'spots_user_id' => $this->current_user->id
-						)
-				);
-				if($spot !== FALSE){
-					// Checkout spot
+			$this->load->model('places/spots_model', null, true);
+			$this->load->model('places/spots_history_model', null, true);
+			$this->load->helper("date");
+			$spot = $this->spots_model->find_by(
+					array(
+							'is_checkin' => 1,
+							'spots_user_id' => $this->current_user->id
+					)
+			);
+			if($spot !== FALSE){
+				if(time() > strtotime($spot->checkin_time . " +2 minutes" )){
 					$this->spots_model->update($spot->id,
 							array('checkout_time' => date('Y-m-d H:i:s'),
 									'is_checkin' => 0));
