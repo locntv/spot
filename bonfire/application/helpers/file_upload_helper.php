@@ -84,6 +84,7 @@ if ( ! function_exists('file_upload_image'))
 				if ( !empty( $width ) && !empty( $height ) ) {
 					$source_image = './assets/images/'.$folder_name.'/'.$new_name;
 					$ci->load->library('image_lib', $config);
+					image_fix_orientation($source_image);
 					$source_image_info = $ci->image_lib->get_image_properties( $source_image, true );
 
 					$newwidth = $width; // This can be a set value or a percentage of original size ($width)
@@ -158,4 +159,38 @@ if ( ! function_exists('delete_file_upload'))
 		closedir( $dh );
 	}
 }
+if ( ! function_exists('image_fix_orientation'))
+{
+	function image_fix_orientation($filename) {
+		$ci =& get_instance();
+		$exif = exif_read_data($filename);
+
+		if (!empty($exif['Orientation'])) {
+			$ci->load->library('image_lib', $config);
+			
+			$config['image_library'] = 'gd2';
+			$config['source_image'] = $filename;
+			
+			switch ($exif['Orientation']) {
+				case 3:
+					$config['rotation_angle'] = 180;
+					break;
+
+				case 6:
+					$config['rotation_angle'] = 270;
+					break;
+
+				case 8:
+					$config['rotation_angle'] = 90;
+					break;
+			}
+			
+			$ci->image_lib->initialize($config);
+			$ci->image_lib->rotate();
+		}
+	}
+
+}
+
+
 
