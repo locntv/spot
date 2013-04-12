@@ -36,7 +36,8 @@ if ( ! function_exists('file_upload_image'))
 		if ( !empty( $file_info[$file_element_name]['error'] ) ) {
 			switch( $file_info[$file_element_name]['error'] ) {
 				case '1':
-					$error = 'The uploaded file exceeds the upload_max_filesize directive in php.ini';
+					//$error = 'The uploaded file exceeds the upload_max_filesize directive in php.ini';
+					$error = 'The uploaded file is too large. Please select another file';
 					break;
 				case '2':
 					$error = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form';
@@ -70,8 +71,8 @@ if ( ! function_exists('file_upload_image'))
 			$config['upload_path'] = './assets/images/'.$folder_name.'/';
 			$config['allowed_types'] = 'gif|jpg|jpeg|png';
 			$config['max_size'] = 5120;
-			$config['max_width']  = '4320';
-			$config['max_height']  = '3240';
+			$config['max_width']  = '10000';
+			$config['max_height']  = '10000';
 			$ci =& get_instance();
 			$ci->load->library('upload', $config);
 			$data = $ci->upload->do_upload($file_element_name);
