@@ -595,6 +595,170 @@ class Api extends Front_Controller
 
 	//--------------------------------------------------------------------
 
+	
+	public function add_spot(){
+		$this->write_log_for_request("add_spot");
+		// dummy data
+		$result = array();
+		if(!isset($_POST['places_name']) || !isset($_POST['places_type']) || !isset($_POST['places_longitude']) ||
+		   !isset($_POST['places_latitude']) || !isset($_POST['places_address']) ){
+			$result['code'] = '100';
+		} else {
+			$validate_name = 
+			$validate = $this->validate_signup($_POST['places_latitude'],$_POST['places_longitude']);
+			if( $validate['status'] == 'error' ){
+				$result['code'] = $validate['code'];
+			} else {
+				$is_image_uploaded = TRUE;
+				$is_image		   = FALSE;
+				if(isset($_FILES['image']) && $_FILES['image']['name'] != ''){
+					$is_image 				= TRUE;
+					$this->load->helper('file_upload');
+					$file_upload_result = file_upload_image( $_FILES, 'image', 'user', 128, 128 );
+					if ( !empty( $file_upload_result["error"] ) ) {
+						$is_image_uploaded = FALSE;
+					} else {
+						$image_name = $file_upload_result["data"];
+					}
+					// 					$config['upload_path'] 	= ASSET_PATH.'images/user';
+					// 					$config['allowed_types']= 'gif|jpg|png';
+					// 					$config['max_size']		= '1024';
+					// 					$config['max_width']  	= '128';
+					// 					$config['max_height']  	= '128';
+
+					// 					$this->load->library('upload', $config);
+					// 					if(!$this->upload->do_upload("image")){
+					// 						//$error = array('errors' => $this->upload->display_errors());
+					// 						$is_image_uploaded = FALSE;
+					// 					}
+					}
+					$data = array(
+							'first_name'=> $_POST['first_name'],
+							'last_name'	=> $_POST['last_name'],
+							'email'		=> $_POST['email'],
+							'password'	=> $_POST['password'],
+							'gender'	=> $_POST['gender'],
+							'active'	=> 1
+					);
+					if($is_image_uploaded == FALSE){ // upload image error
+						$result['code'] = '103';
+					} else {
+						if($user_id = $this->user_model->insert($data)){ // Save data success
+							if($is_image){ // Upload image
+								/*$image_name = $user_id."_imageprofile.png";
+								$command = "mv {$config['upload_path']}/{$_FILES['image']['name']}  {$config['upload_path']}/{$image_name}";
+								@shell_exec($command);
+								//Assets::assets_url('image')."/user/".$user_id."_imageprofile.png";
+							 */
+								if($this->user_model->update($user_id, array(
+										'image' => $image_name)
+								) ){
+									$result['code'] = '200';
+									$result['user_id'] = $user_id;
+								} else {
+									$result['code'] = '102';
+								}
+							} else { // Not upload image
+								$result['code'] = '200';
+								$result['user_id'] = $user_id;
+							}
+						}else {
+							$result['code'] = '102';
+						}
+					}
+			}
+
+		}
+
+		Template::set('result', json_encode($result));
+		Template::set_view("api/index");
+		Template::render('api');
+	}
+	
+	/**
+	 * Validate add spot data 
+	 */
+	private function validate_add_spot($longitude, $latitude, $name, $address){
+		$this->load->model('places_model', null, true);
+		$result = array();
+		
+		$place = $this->places_model->find_by('places_name', $name);
+		if($place !== FALSE){
+			return array('error' => 101);
+		}
+		$place = $this->places_model->find_by('places_address', $address);
+		if($place !== FALSE){
+			return array('error' => 102);
+		}
+		$place = $this->places_model->find_by(
+					array('places_longitude' => $longitude,
+						  'places_latitude' => $latitude)
+				);
+		if($place !== FALSE){
+			return array('error' => 103);
+		}
+		return;
+	}
+	
+	private function save_places($type='insert', $id=0)
+	{
+		if ($type == 'update') {
+			$_POST['id'] = $id;
+		}
+	
+		$this->form_validation->set_rules('places_name','Name','required|unique[sp_places.places_name,sp_places.id]|max_length[255]');
+		$this->form_validation->set_rules('places_address','Address','required|unique[sp_places.places_address,sp_places.id]|max_length[255]');
+		$this->form_validation->set_rules('places_type','Type','required|max_length[255]');
+		$this->form_validation->set_rules('places_longitude','longitude','required|max_length[25]');
+		$this->form_validation->set_rules('places_latitude','Latitude','required|max_length[25]');
+	
+		$is_image = FALSE;
+		$is_image_uploaded = TRUE;
+		if ($this->form_validation->run() === FALSE )
+		{
+			return FALSE;
+		}
+	
+		$data = array();
+		$data['places_name']        = $this->input->post('places_name');
+		$data['places_address']        = $this->input->post('places_address');
+		$data['places_type']        = $this->input->post('places_type');
+		$data['places_longitude']        = $this->input->post('places_longitude');
+		$data['places_latitude']        = $this->input->post('places_latitude');
+	
+		$this->load->helper('file_upload');
+		$file_upload_result = file_upload_image( $_FILES, 'places_image', 'venue', 160, 160 );
+		$thumb = $this->input->post('thumb');
+		if ( empty( $file_upload_result["error"] ) ) {
+			$data['places_image'] = $file_upload_result["data"];
+			if ( $type == 'update' && !empty( $thumb ) ) {
+				$thumb_arr = explode(".", $thumb);
+				delete_file_upload( realpath("assets/images/venue"), $thumb_arr[0] );
+			}
+		} else {
+			$data['places_image'] = ( !empty( $thumb ) )?$this->input->post('thumb'):'';
+		}
+	
+		if ($type == 'insert')
+		{
+			$id = $this->places_model->insert($data);
+	
+			if (is_numeric($id))
+			{
+				$return = $id;
+			} else
+			{
+				$return = FALSE;
+			}
+		}
+		else if ($type == 'update')
+		{
+			$return = $this->places_model->update($id, $data);
+		}
+	
+	
+		return $return;
+	}
 	/**
 	 * Validate sign up
 	 *
