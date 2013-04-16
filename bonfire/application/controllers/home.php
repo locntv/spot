@@ -31,7 +31,7 @@
 class Home extends Front_Controller
 {
 
-	
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -50,8 +50,38 @@ class Home extends Front_Controller
 	{
 		//Call auto checkout
 		$this->auto_checkout();
-		
+		Template::set('is_spot', true);
 		Template::set('page_title', 'Spots');
+		Template::render();
+	}//end spots()
+
+
+	/**
+	 * Displays the spots page
+	 *
+	 * @return void
+	 */
+	public function new_spot()
+	{
+		$this->load->library('form_validation');
+		if ($this->input->post('save'))
+		{
+			if ($insert_id = $this->save_places())
+			{
+				// Log the activity
+				$this->activity_model->log_activity($this->current_user->id, lang('places_act_create_record').': ' . $insert_id . ' : ' . $this->input->ip_address(), 'places');
+
+				Template::set_message(lang('places_create_success'), 'success');
+				Template::redirect(SITE_AREA .'/content/places');
+			}
+			else
+			{
+				Template::set_message(lang('places_create_failure') . $this->places_model->error, 'error');
+			}
+		}
+
+		Template::set('is_new', true);
+		Template::set('page_title', 'New spot');
 		Template::render();
 	}//end spots()
 
@@ -81,7 +111,7 @@ class Home extends Front_Controller
 		}
 		//Call auto checkout
 		$this->auto_checkout();
-		
+
 		if ( empty( $place_id ) ){
 			$spot = $this->is_checked_in();
 			if ( $spot === FALSE ) {
@@ -523,11 +553,11 @@ class Home extends Front_Controller
 			}
 		}
 	}
-	
-	
+
+
 	/**
-	 * Auto checkout user after 1 day 
-	 * 
+	 * Auto checkout user after 1 day
+	 *
 	 */
 	private function auto_checkout(){
 		if($this->current_user){
