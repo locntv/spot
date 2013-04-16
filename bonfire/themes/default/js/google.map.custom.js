@@ -234,9 +234,13 @@ MYMAP.getPlacesByLocation = function(selector, url) {
 				'data'    : { lat: position.coords.latitude, lng: position.coords.longitude },
 				'success' : function(data) {
 					$(selector).empty();
-					$.each(data, function(index, element) {
-						$(selector).append(listing_item(index + 1, element));
-					});
+					if ( data.length == 0 ) {
+						$(selector).append("<li>An error has occurred with get located. Please refresh the page.</li>");
+					} else {
+						$.each(data, function(index, element) {
+							$(selector).append(listing_item(index + 1, element));
+						});
+					}
 				}
 			});
 			$(selector).listview("refresh");
