@@ -64,22 +64,19 @@ class Home extends Front_Controller
 	public function new_spot()
 	{
 		$this->load->library('form_validation');
-		if ($this->input->post('save'))
-		{
-			if ($insert_id = $this->save_places())
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('places_act_create_record').': ' . $insert_id . ' : ' . $this->input->ip_address(), 'places');
 
-				Template::set_message(lang('places_create_success'), 'success');
-				Template::redirect(SITE_AREA .'/content/places');
-			}
-			else
-			{
+		if ($this->input->post('check_address')) {
+			$this->load->model('places/places_model', null, true);
+			if ($insert_id = $this->save_places()) {
+				Template::redirect('/home');
+			} else {
+				//Template::set('file_error', true);
 				Template::set_message(lang('places_create_failure') . $this->places_model->error, 'error');
 			}
 		}
 
+		// Read our current settings from the application config
+		Template::set('spot_type', config_item('spot.type'));
 		Template::set('is_new', true);
 		Template::set('page_title', 'New spot');
 		Template::render();
@@ -588,5 +585,65 @@ class Home extends Front_Controller
 		}
 	}
 
+	private function save_places($type='insert', $id=0) {
+
+		if ($type == 'update') {
+			$_POST['id'] = $id;
+		}
+
+		$this->form_validation->set_rules('places_name','Name','required|unique[sp_places.places_name,sp_places.id]|max_length[255]');
+		$this->form_validation->set_rules('places_address','Address','required|unique[sp_places.places_address,sp_places.id]|max_length[255]');
+		$this->form_validation->set_rules('places_type','Type','required|max_length[255]');
+		$this->form_validation->set_rules('places_longitude','longitude','required|max_length[25]');
+		$this->form_validation->set_rules('places_latitude','Latitude','required|max_length[25]');
+
+		$is_image = FALSE;
+		$is_image_uploaded = TRUE;
+		if ($this->form_validation->run() === FALSE )
+		{
+			return FALSE;
+		}
+
+		$data = array();
+		$data['places_name']        = $this->input->post('places_name');
+		$data['places_address']        = $this->input->post('places_address');
+		$data['places_type']        = $this->input->post('places_type');
+		$data['places_longitude']        = $this->input->post('places_longitude');
+		$data['places_latitude']        = $this->input->post('places_latitude');
+
+		$this->load->helper('file_upload');
+		$file_upload_result = file_upload_image( $_FILES, 'places_image', 'venue', 160, 160 );
+		$thumb = $this->input->post('thumb');
+		if ( empty( $file_upload_result["error"] ) ) {
+			$data['places_image'] = $file_upload_result["data"];
+			if ( $type == 'update' && !empty( $thumb ) ) {
+					$thumb_arr = explode(".", $thumb);
+					delete_file_upload( realpath("assets/images/venue"), $thumb_arr[0] );
+				}
+		} else {
+			return;
+			$data['places_image'] = ( !empty( $thumb ) )?$this->input->post('thumb'):'';
+		}
+
+		if ($type == 'insert')
+		{
+			$id = $this->places_model->insert($data);
+
+			if (is_numeric($id))
+			{
+				$return = $id;
+			} else
+			{
+				$return = FALSE;
+			}
+		}
+		else if ($type == 'update')
+		{
+			$return = $this->places_model->update($id, $data);
+		}
+
+
+		return $return;
+	}
 
 }//end class

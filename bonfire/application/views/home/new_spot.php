@@ -7,16 +7,26 @@
 <script type="text/javascript">
 <!--
 	$(document).ready(function() {
-		//$('#mypage').live('pagecreate', function(e){
-			$("#new-spot-done").click(function(e) {
-				alert('submit');
-			});
-		//});
+		var is_valid;
+		$("#new-spot-done").click(function(e) {
+			codeAddress();
+		});
 	});
+
+	function codeAddress() {
+		MYMAP.searchLocation(MYMAP.currentMarker, '#places_address', '#places_latitude', '#places_longitude');
+	}
 //-->
 </script>
+<?php if (validation_errors()) : ?>
+	<div class="alert alert-block alert-error fade in ">
+		<h4 class="alert-heading">Please fix the following errors :</h4>
+		<?php echo validation_errors(); ?>
+	</div>
+<?php endif; ?>
+
 <div class="container">
-	<?php echo form_open($this->uri->uri_string(), 'class="form-horizontal" enctype="multipart/form-data"'); ?>
+	<?php echo form_open($this->uri->uri_string(), 'class="form-horizontal" id="new_spot" enctype="multipart/form-data"'); ?>
 		<fieldset>
 			<div class="control-group <?php echo form_error('places_name') ? 'error' : ''; ?>">
 				<?php echo form_label('Name'. lang('bf_form_label_required'), 'places_name', array('class' => "control-label") ); ?>
@@ -30,18 +40,18 @@
 				<?php echo form_label('Address'. lang('bf_form_label_required'), 'places_address', array('class' => "control-label") ); ?>
 				<div class='controls'>
 					<input id="places_address" type="text" name="places_address" maxlength="255" value="<?php echo set_value('places_address', isset($places['places_address']) ? $places['places_address'] : ''); ?>"  />
-					<span class="help-inline"><?php echo form_error('places_address'); ?></span>
-					<a href="#" style="margin-left: 10px;font-size:14px;" onclick="javascript:codeAddress();">Search</a>
+					<span class="address-help-inline"><?php echo form_error('places_address'); ?></span>
+					<input id="check_address" type="hidden" name="check_address" value="" />
 				</div>
 			</div>
 
 			<div class="control-group <?php echo form_error('places_type') ? 'error' : ''; ?>">
-				<?php echo form_label('Type'. lang('bf_form_label_required'), 'places_type', array('class' => "control-label") ); ?>
-				<div class='controls'>
-					<input id="places_type" type="text" name="places_type" maxlength="255" value="<?php echo set_value('places_type', isset($places['places_type']) ? $places['places_type'] : ''); ?>"  />
-					<span class="help-inline"><?php echo form_error('places_type'); ?></span>
-				</div>
-
+				<label for="places_type" class="select">Type</label>
+				<select name="places_type" id="places_type" data-native-menu="false">
+					<?php foreach ( $spot_type as $key => $type_name ) : ?>
+						<option value="<?php echo $key ?>"><?php echo $type_name ?></option>
+					<?php endforeach; ?>
+				</select>
 			</div>
 
 			<input id="places_longitude" type="hidden" name="places_longitude" value="<?php echo set_value('places_longitude', isset($places['places_longitude']) ? $places['places_longitude'] : ''); ?>"  />

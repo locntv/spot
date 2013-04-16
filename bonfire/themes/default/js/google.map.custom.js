@@ -123,19 +123,18 @@ MYMAP.addDragMarkerEvent = function(marker, address_elementid, lat_elementid, ln
 }
 
 MYMAP.searchLocation = function(marker, address_elementid, lat_elementid, lng_elementid) {
-	var address = document.getElementById("address").value;
-	MYMAP.geocoder.geocode ( { 'address': address }, function( results, status )  {
+	var address = document.getElementById("places_address").value;
+	this.geocoder = new google.maps.Geocoder();
+	MYMAP.geocoder.geocode ( { 'address': address }, function( results, status ) {
 		if ( status == google.maps.GeocoderStatus.OK ) {
-			MYMAP.map.setCenter( results[0].geometry.location );
-			marker.setPosition( results[0].geometry.location );
-			$(address_elementid).val( results[0].formatted_address );
+			//$(address_elementid).val( results[0].formatted_address );
 			$(lat_elementid).val( results[0].geometry.location.lat() );
 			$(lng_elementid).val( results[0].geometry.location.lng() );
-			//updateDistance(pos, results[0].geometry.location);
-			//map.setZoom(15);
-			//google.maps.geometry.spherical.computeDistanceBetween(pos, results[0].geometry.location);
+			$("#check_address").val("1");
+			$('form#new_spot').submit();
 		} else {
-			alert("Geocode was not successful for the following reason: " + status);
+			$("#check_address").val("");
+			$(".address-help-inline").html("Can't submit the bad address");
 		}
 	});
 }

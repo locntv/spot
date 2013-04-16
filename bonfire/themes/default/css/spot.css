@@ -66,3 +66,5 @@ body .ui-li .ui-li-desc {
 .spot-selected{
 	background: #ffb7b7;
 }
+
+.help-inline,.address-help-inline { color: #b94a48; font-style:italic; }

@@ -2,9 +2,9 @@
 <div data-role="page" id="mypage"> <!-- Start of Page -->
 	<div data-role="header" data-theme="b">
 		<?php if ( isset( $is_new ) ) : ?>
-			<a href="<?php echo site_url(uri_string().'/home') ?>" data-ajax="false">Cancel</a>
+			<a href="<?php echo base_url().'home' ?>" data-ajax="false">Cancel</a>
 		<?php elseif ( isset( $is_spot ) ) : ?>
-			<a href="<?php echo site_url(uri_string().'/home/new_spot') ?>" data-icon="new" data-ajax="false">Add</a>
+			<a href="<?php echo base_url().'home/new_spot' ?>" data-icon="new" data-ajax="false">Add</a>
 		<?php else : ?>
 			<a href="<?php echo site_url(uri_string()) ?>" data-icon="refresh" data-ajax="false">refresh</a>
 		<?php endif; ?>

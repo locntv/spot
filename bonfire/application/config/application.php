@@ -303,3 +303,9 @@ $config['navbar.footer'] = array(
 		'active' => array('home/me')
 	),
 );
+
+$config['spot.type'] = array(
+	0 => 'Bar',
+	1 => 'Bar & Restaurants',
+	2 => 'House Party'
+);
