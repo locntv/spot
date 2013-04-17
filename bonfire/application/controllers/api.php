@@ -628,7 +628,8 @@ class Api extends Front_Controller
 						'places_address'	=> $_POST['address'],
 						'places_type'		=> $_POST['type'],
 						'places_longitude'	=> $_POST['longitude'],
-						'places_latitude'	=> $_POST['latitude']
+						'places_latitude'	=> $_POST['latitude'],
+						'places_image'		=> ''
 				);
 					if($is_image_uploaded == FALSE){ // upload image error
 						$result['code'] = '104';

@@ -83,8 +83,12 @@ function iOSversion() {
 			</div>
 		</div>
 
+		<span class="fileinput-button" data-role="button" data-icon="plus">
+		<span>Add Photo</span>
+		    <input type="file" data-clear-btn="false" name="image" multiple data-role="none" accept="image/*"/>
+		</span>
+		<label class="check-os"></label>
 		<div class="control-group <?php echo iif( form_error('gender') , 'error'); ?>">
-		    <label for="select-native-1">I am:</label>
 		    <div class="controls">
 			    <select name="gender" id="select-native-1">
 			    	<option value="">Select Sex</option>
@@ -94,11 +98,6 @@ function iOSversion() {
 		    </div>
 		</div>
 		
-		<span class="fileinput-button" data-role="button" data-icon="plus">
-		    <input type="file" data-clear-btn="false" name="image" multiple data-role="none" accept="image/*"/>
-		</span>
-		<label class="check-os"></label>
-
 		<?php
 			// Allow modules to render custom fields
 			Events::trigger('render_user_form');
