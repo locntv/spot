@@ -144,7 +144,21 @@ MYMAP.placeMarkersByLocation = function(url, icon_url) {
 	// Try HTML5 geolocation
 	if(navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
-
+			var infobox = new InfoBox({
+				//content: html,
+				disableAutoPan: false,
+				maxWidth: 150,
+				pixelOffset: new google.maps.Size(-140, 0),
+				zIndex: null,
+				boxStyle: {
+					background: "url('http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/examples/tipbox.gif') no-repeat",
+					opacity: 0.75,
+					width: "280px"
+				},
+				closeBoxMargin: "12px 4px 2px 2px",
+				closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif",
+				infoBoxClearance: new google.maps.Size(1, 1)
+			});
 			$.ajax({
 				'dataType': 'json',
 				'type'    : 'POST',
@@ -186,7 +200,7 @@ MYMAP.placeMarkersByLocation = function(url, icon_url) {
 						html += element.places_address + '</div>';
 						//infoWindow.setContent(html);
 						//infoWindow.open(MYMAP.map, marker);*/
-						var infobox = new InfoBox({
+						/*var infobox = new InfoBox({
 							content: html,
 							disableAutoPan: false,
 							maxWidth: 150,
@@ -200,8 +214,10 @@ MYMAP.placeMarkersByLocation = function(url, icon_url) {
 							closeBoxMargin: "12px 4px 2px 2px",
 							closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif",
 							infoBoxClearance: new google.maps.Size(1, 1)
-						});
+						});*/
+						infobox.setContent(html);
 						google.maps.event.addListener(marker, 'click', function() {
+							infobox.close();
 							infobox.open(MYMAP.map, this);
 							MYMAP.map.panTo(point);
 						});
