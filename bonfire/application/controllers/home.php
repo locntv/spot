@@ -68,7 +68,8 @@ class Home extends Front_Controller
 		if ($this->input->post('check_address')) {
 			$this->load->model('places/places_model', null, true);
 			if ($insert_id = $this->save_places()) {
-				Template::redirect('/home');
+				//Template::redirect('/home');
+				Template::redirect( '/dialog/index?type=add-spot' );
 			} else {
 				//Template::set('file_error', true);
 				Template::set_message(lang('places_create_failure') . $this->places_model->error, 'error');
@@ -610,20 +611,23 @@ class Home extends Front_Controller
 		$data['places_type']        = $this->input->post('places_type');
 		$data['places_longitude']        = $this->input->post('places_longitude');
 		$data['places_latitude']        = $this->input->post('places_latitude');
-
-		$this->load->helper('file_upload');
-		$file_upload_result = file_upload_image( $_FILES, 'places_image', 'venue', 160, 160 );
-		$thumb = $this->input->post('thumb');
-		if ( empty( $file_upload_result["error"] ) ) {
-			$data['places_image'] = $file_upload_result["data"];
-			if ( $type == 'update' && !empty( $thumb ) ) {
+		$data['places_image']      = '';
+		if( isset($_FILES['places_image']['name']) && $_FILES['places_image']['name'] != ''){
+			$this->load->helper('file_upload');
+			$file_upload_result = file_upload_image( $_FILES, 'places_image', 'venue', 160, 160 );
+			$thumb = $this->input->post('thumb');
+			if ( empty( $file_upload_result["error"] ) ) {
+				$data['places_image'] = $file_upload_result["data"];
+				if ( $type == 'update' && !empty( $thumb ) ) {
 					$thumb_arr = explode(".", $thumb);
 					delete_file_upload( realpath("assets/images/venue"), $thumb_arr[0] );
 				}
-		} else {
-			return;
-			$data['places_image'] = ( !empty( $thumb ) )?$this->input->post('thumb'):'';
+			} else {
+				return;
+				$data['places_image'] = ( !empty( $thumb ) )?$this->input->post('thumb'):'';
+			}
 		}
+		
 
 		if ($type == 'insert')
 		{

@@ -49,7 +49,7 @@
 				<label for="places_type" class="select">Type</label>
 				<select name="places_type" id="places_type" data-native-menu="false">
 					<?php foreach ( $spot_type as $key => $type_name ) : ?>
-						<option value="<?php echo $key ?>"><?php echo $type_name ?></option>
+						<option value="<?php echo $type_name ?>"><?php echo $type_name ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>

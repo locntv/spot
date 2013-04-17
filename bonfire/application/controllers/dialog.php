@@ -66,6 +66,17 @@ class Dialog extends Front_Controller
 				Template::set('dialog', $dialog);
 				Template::set('dialog_title', 'Notice');
 			break;
+			case 'add-spot':
+				$dialog = array(
+					'content' => 'Place created successfully',
+					'goto' => array(
+							'name' => 'Back To Spots',
+							'url' => 'home'
+					)
+				);
+				Template::set('dialog', $dialog);
+				Template::set('dialog_title', 'Notice');
+			break;
 		}
 
 		Template::set('page_title', 'Spots');
