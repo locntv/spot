@@ -738,7 +738,7 @@ class Api extends Front_Controller
 		$result['red'] = 0;
 		$result['yellow'] = 0;
 		$result['green'] = 0;
-		$query_str = "SELECT checkin_status, count(checkin_status)
+		$query_str = "SELECT checkin_status, count(checkin_status) as count
 						FROM 	sp_spots , sp_users
 						WHERE spots_place_id = {$place_id}
 						AND sp_users.id = spots_user_id
@@ -752,13 +752,13 @@ class Api extends Front_Controller
 			foreach ($query->result_array() as $row){
 				switch ($row['checkin_status'] ){
 					case $this->red_status:
-						$result['red']++;
+						$result['red'] = $row['count'];
 						break;
 					case $this->yellow_status:
-						$result['yellow']++;
+						$result['yellow'] = $row['count'];
 						break;
 					case $this->green_status:
-						$result['green']++;
+						$result['green'] = $row['count'];
 						break;
 				}
 
