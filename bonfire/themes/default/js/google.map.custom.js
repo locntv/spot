@@ -159,6 +159,8 @@ MYMAP.placeMarkersByLocation = function(url, icon_url) {
 				closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif",
 				infoBoxClearance: new google.maps.Size(1, 1)
 			});
+
+			var arr_infobox = [];
 			$.ajax({
 				'dataType': 'json',
 				'type'    : 'POST',
@@ -215,9 +217,11 @@ MYMAP.placeMarkersByLocation = function(url, icon_url) {
 							closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif",
 							infoBoxClearance: new google.maps.Size(1, 1)
 						});*/
-						infobox.setContent(html);
+						arr_infobox[element.places_address] = html
+
 						google.maps.event.addListener(marker, 'click', function() {
 							infobox.close();
+							infobox.setContent(arr_infobox[element.places_address]);
 							infobox.open(MYMAP.map, this);
 							MYMAP.map.panTo(point);
 						});
