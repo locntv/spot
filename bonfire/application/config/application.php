@@ -305,7 +305,8 @@ $config['navbar.footer'] = array(
 );
 
 $config['spot.type'] = array(
-	0 => 'Bar',
-	1 => 'Bar & Restaurants',
-	2 => 'House Party'
+	0 => 'Bar/Club',
+	1 => 'Restaurants',
+	2 => 'Party',
+	3 => 'Other'
 );
