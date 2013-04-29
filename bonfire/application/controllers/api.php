@@ -554,10 +554,8 @@ class Api extends Front_Controller
 							'checkout_time'	=> date('Y-m-d H:i:s')
 					));
 				}
-				$result['code'] = '200';
-			} else {
-				$result['code'] = '101';
 			}
+			$result['code'] = '200';
 // 			$sql = "UPDATE sp_spots
 // 					SET is_checkin =0,checkout_time= NOW()
 // 					WHERE spots_user_id = {$_POST['user_id']}";
