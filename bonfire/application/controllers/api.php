@@ -537,15 +537,36 @@ class Api extends Front_Controller
 		if(!isset($_POST['user_id'])){
 			$result['code'] = '100';
 		} else {
-			$sql = "UPDATE sp_spots
-					SET is_checkin =0,checkout_time= NOW()
-					WHERE spots_user_id = {$_POST['user_id']}";
-			$query = $this->db->query($sql);
-			if($query !== TRUE){
-				$result['code'] = '101';
-			} else {
+			$this->load->model('places/spots_model', null, true);
+			$this->load->model('places/spots_history_model', null, true);
+				
+			$spot = $this->spots_model->find_by(
+					array('spots_user_id' => $_POST['user_id'],
+							'is_checkin'=> 1));
+			if($spot !== FALSE){
+				$this->spots_model->update($spot->id,
+						array('checkout_time' => date('Y-m-d H:i:s'),
+								'is_checkin'	  => 0));
+				$spot_history_id = $this->spots_history_model->select('id')->order_by('id','desc')->find_by('spots_id',$spot->id);
+				if($spot_history_id !== FALSE){
+					$spot_history_id = $spot_history_id->id;
+					$this->spots_history_model->update($spot_history_id,array(
+							'checkout_time'	=> date('Y-m-d H:i:s')
+					));
+				}
 				$result['code'] = '200';
+			} else {
+				$result['code'] = '101';
 			}
+// 			$sql = "UPDATE sp_spots
+// 					SET is_checkin =0,checkout_time= NOW()
+// 					WHERE spots_user_id = {$_POST['user_id']}";
+// 			$query = $this->db->query($sql);
+// 			if($query !== TRUE){
+// 				$result['code'] = '101';
+// 			} else {
+// 				$result['code'] = '200';
+// 			}
 		}
 		Template::set('result', json_encode($result));
 		Template::set_view("api/index");
@@ -735,33 +756,41 @@ class Api extends Front_Controller
 	 */
 	private function get_status_in_venue($user_id, $place_id='', $gender= 0){
 		$result = array();
-		$result['red'] = 0;
-		$result['yellow'] = 0;
-		$result['green'] = 0;
-		$query_str = "SELECT checkin_status, count(checkin_status) as count
+		$result['red'] = array('boy' => 0, 'girl' => 0);
+		$result['yellow'] = array('boy' => 0, 'girl' => 0);
+		$result['green'] = array('boy' => 0, 'girl' => 0);
+		$query_str = "SELECT checkin_status, gender
 						FROM 	sp_spots , sp_users
 						WHERE spots_place_id = {$place_id}
 						AND sp_users.id = spots_user_id
-						AND spots_user_id != {$user_id}
-						AND sp_users.gender != {$gender}
 						AND is_checkin = 1
-						GROUP BY checkin_status
 					";
 		$query = $this->db->query($query_str);
 		if( $query->num_rows() > 0 ){
 			foreach ($query->result_array() as $row){
 				switch ($row['checkin_status'] ){
 					case $this->red_status:
-						$result['red'] = $row['count'];
+						if($row['gender'] == 0){
+							$result['red']['girl']++;
+						} else {
+							$result['red']['boy']++;
+						}
 						break;
 					case $this->yellow_status:
-						$result['yellow'] = $row['count'];
+						if($row['gender'] == 0){
+							$result['yellow']['girl']++;
+						} else {
+							$result['yellow']['boy']++;
+						}
 						break;
 					case $this->green_status:
-						$result['green'] = $row['count'];
+						if($row['gender'] == 0){
+							$result['green']['girl']++;
+						} else {
+							$result['green']['boy']++;
+						}
 						break;
 				}
-
 			}
 		}
 

@@ -27,7 +27,7 @@
 		html += '<table width="100%" cellpadding="0" cellspacing="0">';
 		html += '<tr><td width="30%"><img src="' + img_user + '" style="width: 128px;" /></td>';
 		html += '<td width="70%" style="text-align: center;">';
-		html += '<img src="' + img_icon + '" style="width: 50px;" /></td></tr></table>';
+		html += '<img src="' + img_icon + '" style="width: 50px;" /><br/><span>'+ data.first_name+'</span></td></tr></table>';
 		html += '</li>';
 		return html;
 	}

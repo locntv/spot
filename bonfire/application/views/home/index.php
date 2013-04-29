@@ -17,6 +17,7 @@
 
 	//var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
 	function listing_item( id, data ) {
+		
 		var img_venue = '<?php echo base_url(); ?>assets/images/venue/';
 		var img_icon = '<?php echo site_url() ?>home/pie_icon/32/32/' + data.id;
 		if (data.places_image) {
@@ -42,7 +43,7 @@
 		html += '<div style="padding:0 5px 0 10px;"><h2><span>' + id + '.</span> ' + data.places_name + '</h2>';
 		html += '<p>' + data.places_address + '</p>';
 		html += '<p>' + data.places_type + '</p>';
-		html += '<p>' + data.people + '&nbsp;'+ gender +'&nbsp;&nbsp;&nbsp;&nbsp;' + data.distance+'&nbsp;mile(s)</p></div>';
+		html += '<p>' + data.people['1'] + '&nbsp; guy(s)& ' +data.people['0'] +' girl(s) &nbsp;&nbsp;&nbsp;&nbsp;' + data.distance+'&nbsp;mile(s)</p></div>';
 		html += '</td><td width="5%" style="text-align: center;">';
 		html += '<img src="' + img_icon + '" /></td></tr></table>';
 		html += '</li>';

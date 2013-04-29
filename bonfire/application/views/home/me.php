@@ -58,7 +58,7 @@ function iOSversion() {
 				<input type="password" data-clear-btn="true" name="user-pass" id="user-pass" value="" autocomplete="off">
 			</li>
 			<li data-role="fieldcontain">
-				<label for="slider2">Checkin: <?php echo ($checkin->count);?></label>
+				<label for="slider2"><?php echo ($checkin->count);?> of check-ins</label>
 			</li>
 			<li data-role="fieldcontain">
 				<input type="submit" name="submit"  value="save" >

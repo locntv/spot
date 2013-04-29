@@ -159,7 +159,7 @@ class Settings extends Admin_Controller
 		$this->load->helper('ui/ui');
 
 		$this->user_model->limit($this->limit, $offset)->where($where);
-		$this->user_model->select('users.id, users.role_id, username, display_name, email, last_login, banned, active, users.deleted, role_name');
+		$this->user_model->select('users.id, users.role_id, username, first_name,last_name, gender,display_name, email, last_login, banned, active, users.deleted, role_name');
 
 		Template::set('users', $this->user_model->find_all($show_deleted));
 
@@ -289,7 +289,6 @@ class Settings extends Admin_Controller
 		Template::set('meta_fields', $meta_fields);
 
 		$user = $this->user_model->find_user_and_meta($user_id);
-
 		if ($this->input->post('submit'))
 		{
 			if ($this->save_user('update', $user_id, $meta_fields, $user->role_name))

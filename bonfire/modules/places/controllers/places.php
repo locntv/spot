@@ -54,7 +54,7 @@ class places extends Front_Controller {
 			if ( $query->num_rows() > 0 ) {
 				foreach ( $query->result_array() as $row ) {
 					$row['distance'] = round($row['distance'],2, PHP_ROUND_HALF_UP);
-					$row['people'] = $this->count_opposite_in_place($row['id']);
+					$row['people'] = $this->count_guy_girl_in_spot($row['id']);
 					$row['is_checkin'] = $this->is_checkin($row['id']); 	
 					$places[] = $row;
 				}
@@ -107,6 +107,24 @@ class places extends Front_Controller {
 		if( $query->num_rows() > 0 ){
 			foreach ($query->result_array() as $row){
 				$result = $row['count'];
+			}
+		}
+
+		return $result;
+	}
+	
+	private function count_guy_girl_in_spot($place_id=''){
+		$result = array('0' => 0, '1' => 0);
+		
+		$query_str = "SELECT sp_users.gender as gender, count(sp_users.id) as count
+		FROM sp_spots left join sp_users on sp_spots.spots_user_id = sp_users.id
+		WHERE spots_place_id = {$place_id}
+		AND sp_spots.is_checkin = 1
+		GROUP BY sp_users.gender";
+		$query = $this->db->query($query_str);
+		if( $query->num_rows() > 0 ){
+			foreach ($query->result_array() as $row){
+				$result[$row['gender']] = $row['count'];
 			}
 		}
 

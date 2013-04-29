@@ -36,6 +36,7 @@
 				<th style="width: 3em"><?php echo lang('bf_id'); ?></th>
 				<th><?php echo lang('bf_username'); ?></th>
 				<th><?php echo lang('bf_display_name'); ?></th>
+				<th><?php echo "Gender"; ?></th>
 				<th><?php echo lang('bf_email'); ?></th>
 				<th><?php echo lang('us_role'); ?></th>
 				<th style="width: 11em"><?php echo lang('us_last_login'); ?></th>
@@ -73,7 +74,8 @@
 					<a href="<?php echo site_url(SITE_AREA .'/settings/users/edit/'. $user->id); ?>"><?php echo $user->username; ?></a>
 					<?php if ($user->banned) echo '<span class="label label-warning">Banned</span>'; ?>
 				</td>
-				<td><?php echo $user->display_name ?></td>
+				<td><?php echo ($user->first_name . " " . $user->last_name); ?></td>
+				<td><?php echo ($user->gender == 0 ? "Female" : "Male") ?>
 				<td>
 					<a href="mailto:<?php echo $user->email ?>"><?php echo $user->email ?></a>
 				</td>
