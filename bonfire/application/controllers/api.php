@@ -221,6 +221,7 @@ class Api extends Front_Controller
 					{
 						//$row['people'] = $this->get_list_user_in_venue($row['id'],$user_gender);
 						$row['people'] = $this->get_status_in_venue($_POST['user_id'], $row['id'], $user_gender);
+						$row['newpeople'] = $this->get_status_in_venue_new($_POST['user_id'], $row['id'], $user_gender);
 						$result ['data'][] = $this->build_data_venue($row);
 					}
 					$result['gender'] = $user_gender;
@@ -752,7 +753,7 @@ class Api extends Front_Controller
 	 * @param place_id : id of place
 	 * @param gender   : gender of user
 	 */
-	private function get_status_in_venue($user_id, $place_id='', $gender= 0){
+	private function get_status_in_venue_new($user_id, $place_id='', $gender= 0){
 		$result = array();
 		$result['red'] = array('boy' => 0, 'girl' => 0);
 		$result['yellow'] = array('boy' => 0, 'girl' => 0);
@@ -789,6 +790,41 @@ class Api extends Front_Controller
 						}
 						break;
 				}
+			}
+		}
+
+		return $result;
+	}
+	
+	private function get_status_in_venue($user_id, $place_id='', $gender= 0){
+		$result = array();
+		$result['red'] = 0;
+		$result['yellow'] = 0;
+		$result['green'] = 0;
+		$query_str = "SELECT checkin_status, count(checkin_status) as count
+			FROM 	sp_spots , sp_users
+			WHERE spots_place_id = {$place_id}
+			AND sp_users.id = spots_user_id
+			AND spots_user_id != {$user_id}
+			AND sp_users.gender != {$gender}
+			AND is_checkin = 1
+			GROUP BY checkin_status
+		";
+		$query = $this->db->query($query_str);
+		if( $query->num_rows() > 0 ){
+			foreach ($query->result_array() as $row){
+				switch ($row['checkin_status'] ){
+					case $this->red_status:
+						$result['red'] = $row['count'];
+						break;
+					case $this->yellow_status:
+						$result['yellow'] = $row['count'];
+						break;
+					case $this->green_status:
+						$result['green'] = $row['count'];
+						break;
+				}
+
 			}
 		}
 
@@ -835,7 +871,8 @@ class Api extends Front_Controller
 					'latitude'	=> $data['places_latitude'],
 					'type'		=> $data['places_type'],
 					'image'		=> base_url()."assets/images/venue/".$data['places_image'],
-					'people'	=> $data['people']
+					'people'	=> $data['people'],
+					'newpeople' => $data['newpeople']
 				);
 	}
 	
